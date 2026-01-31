@@ -1,476 +1,753 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional POS System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f5f1e8;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<title>Cash Drawer - POS System</title>
 
-        .header-bg {
-            background-color: #2c3e50;
-            color: white;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        .table-header {
-            background-color: #34495e;
-            color: white;
-            font-weight: bold;
-        }
+body{
+    margin:0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #e8e8e8;
+    font-size:13px;
+    min-height: 100vh;
+    padding: 10px;
+}
 
-        .table-row {
-            border-bottom: 1px solid #ddd;
-            background-color: #f9f7f3;
-        }
+.pos-container{
+    width:100%;
+    max-width:1400px;
+    height:calc(100vh - 20px);
+    margin:auto;
+    background: #ffffff;
+    display:flex;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
 
-        .table-row:hover {
-            background-color: #fffbf5;
-        }
+/* LEFT SIDE */
+.left{
+    flex:3;
+    border-right:1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
 
-        .table-row.highlighted {
-            background-color: #fff8dc;
-        }
+/* TOP INFO BAR */
+.top-info{
+    background: #f5f5f5;
+    padding:12px;
+    border-bottom:1px solid #ddd;
+    display:grid;
+    grid-template-columns: repeat(6,1fr);
+    gap:8px;
+}
 
-        .table-row.selected {
-            background-color: #b3d9ff;
-        }
+.top-info input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    border-radius: 4px;
+    background: white;
+    color: #333;
+}
 
-        .payment-section {
-            background-color: #f5f1e8;
-            border: 2px solid #34495e;
-        }
+.top-info input::placeholder {
+    color: #999;
+}
 
-        .payment-header {
-            background-color: #c41e3a;
-            color: white;
-            font-weight: bold;
-            padding: 8px;
-        }
+/* ADD PRODUCT SECTION */
+.add-product-section {
+    padding: 12px;
+    background: #d3d3d3;
+    border-bottom: 1px solid #ddd;
+}
 
-        .payment-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            border-bottom: 1px solid #d0d0d0;
-        }
+.product-input-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 8px;
+    margin-bottom: 8px;
+}
 
-        .payment-row.highlight {
-            background-color: #e8f4ff;
-            border: 1px solid #34495e;
-        }
+.product-input-group input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 12px;
+    background: white;
+}
 
-        .payment-value {
-            font-weight: bold;
-            font-size: 18px;
-            color: #0066cc;
-        }
+.product-input-group button {
+    background: #000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+    font-size: 14px;
+    padding: 8px 16px;
+}
 
-        .btn-payment {
-            background-color: #27ae60;
-            color: white;
-            font-weight: bold;
-            border: none;
-            padding: 12px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
-        }
+.product-input-group button:hover {
+    background: #222;
+}
 
-        .btn-payment:hover {
-            background-color: #229954;
-        }
+/* ITEM TABLE */
+.table-header, .table-row{
+    display:grid;
+    grid-template-columns: 50px 70px 1.5fr 90px 70px 70px 70px 90px 50px;
+    border-bottom:1px solid #e0e0e0;
+    padding:8px 12px;
+    align-items: center;
+}
 
-        .btn-small {
-            background-color: #34495e;
-            color: white;
-            font-weight: bold;
-            border: 1px solid #2c3e50;
-            padding: 6px 12px;
-            cursor: pointer;
-            margin: 4px;
-            font-size: 12px;
-        }
+.table-header{
+    background: #333;
+    color:#fff;
+    font-weight:bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+}
 
-        .btn-small:hover {
-            background-color: #2c3e50;
-        }
+.table-row{
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s;
+}
 
-        .hold-bills-panel {
-            background-color: #ecf0f1;
-            border: 2px solid #34495e;
-            overflow-y: auto;
-        }
+.table-row:hover {
+    background: #f5f5f5;
+}
 
-        .hold-bill-item {
-            background-color: #f9f7f3;
-            border-bottom: 1px solid #bdc3c7;
-            padding: 10px;
-            cursor: pointer;
-            margin-bottom: 4px;
-        }
+.table-row.selected{
+    background: #e8e8e8;
+    color:#333;
+    font-weight: bold;
+}
 
-        .hold-bill-item:hover {
-            background-color: #fff8dc;
-        }
+.table-delete-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 11px;
+}
 
-        .hold-bill-item.selected {
-            background-color: #b3d9ff;
-            border-left: 4px solid #0066cc;
-        }
+.table-delete-btn:hover {
+    background: #ff5252;
+}
 
-        .info-box {
-            background-color: white;
-            border: 1px solid #bdc3c7;
-            padding: 8px;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
+.table-scroll {
+    overflow-y: auto;
+    flex: 1;
+}
 
-        .info-label {
-            color: #666;
-            font-weight: bold;
-        }
+/* NUMPAD SECTION */
+.numpad-section {
+    padding: 12px;
+    background: #f9f9f9;
+    border-top: 1px solid #ddd;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-        .scrollable {
-            overflow-y: auto;
-        }
+.numpad-label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
 
-        .hidden-row {
-            display: none;
-        }
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    flex: 1;
+}
 
-        input[type="text"], input[type="number"], select {
-            padding: 4px 8px;
-            border: 1px solid #bdc3c7;
-            font-size: 12px;
-        }
-    </style>
+.numpad-btn {
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 28px;
+    background: #000;
+    color: white;
+    transition: all 0.2s;
+}
+
+.numpad-btn:hover {
+    background: #222;
+    color: white;
+    border-color: #555;
+}
+
+.numpad-btn.clear {
+    background: #ff6b6b;
+    color: white;
+    border-color: #ff6b6b;
+    font-size: 24px;
+}
+
+.numpad-btn.clear:hover {
+    background: #ff5252;
+    border-color: #ff5252;
+}
+
+/* QUICK LINKS SECTION */
+.quick-links-section {
+    padding: 12px;
+    background: #f0f0f0;
+    border-top: 1px solid #ddd;
+}
+
+.quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.quick-link-btn {
+    padding: 12px;
+    border: 1px solid #999;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    background: white;
+    color: #333;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.quick-link-btn:hover {
+    background: #333;
+    color: white;
+    border-color: #333;
+}
+
+.quick-link-btn.red {
+    background: #ff6b6b;
+    color: white;
+    border-color: #ff6b6b;
+}
+
+.quick-link-btn.red:hover {
+    background: #ff5252;
+}
+
+.quick-link-btn.orange {
+    background: #ffa500;
+    color: white;
+    border-color: #ffa500;
+}
+
+.quick-link-btn.orange:hover {
+    background: #ff9500;
+}
+
+.quick-link-btn.blue {
+    background: #4a90e2;
+    color: white;
+    border-color: #4a90e2;
+}
+
+.quick-link-btn.blue:hover {
+    background: #3a80d2;
+}/* RIGHT PANEL */
+.right{
+    flex:1.2;
+    background: white;
+    display:flex;
+    flex-direction:column;
+    border-left: 1px solid #e0e0e0;
+}
+
+.panel-title{
+    background: #333;
+    color:white;
+    padding:12px;
+    font-weight:bold;
+    text-align:center;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.payment-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-bottom:1px solid #f0f0f0;
+    align-items: center;
+}
+
+.payment-row-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.payment-value{
+    font-size:16px;
+    font-weight:bold;
+    color:#333;
+}
+
+.payment-value.secondary {
+    color: #666;
+}
+
+.big-value{
+    font-size:24px;
+    font-weight:bold;
+    color: #333;
+}
+
+.pay-btn{
+    background: #333;
+    color:white;
+    font-size:16px;
+    padding:14px;
+    border:none;
+    width:100%;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:auto;
+    transition: background 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.pay-btn:hover {
+    background: #222;
+}
+
+.pay-btn:active {
+    background: #111;
+}
+
+.payment-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 8px 12px;
+}
+
+/* LOYALTY MODAL */
+.loyalty-modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.loyalty-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.loyalty-modal-content h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.loyalty-modal-content p {
+    margin: 0 0 20px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.loyalty-modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin: 0 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.loyalty-modal-content input::placeholder {
+    color: #999;
+}
+
+.loyalty-modal-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.loyalty-modal-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.loyalty-modal-btn.confirm {
+    background: #333;
+    color: white;
+}
+
+.loyalty-modal-btn.confirm:hover {
+    background: #222;
+}
+
+.loyalty-modal-btn.skip {
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.loyalty-modal-btn.skip:hover {
+    background: #e0e0e0;
+}
+
+/* SCROLLBAR STYLING */
+.table-scroll::-webkit-scrollbar,
+.payment-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-track,
+.payment-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-scroll::-webkit-scrollbar-thumb,
+.payment-content::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 3px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover,
+.payment-content::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+</style>
 </head>
-<body class="bg-gray-100">
-    <div class="header-bg p-4">
-        <div class="flex justify-between items-center max-w-7xl mx-auto">
-            <div>
-                <h1 class="text-2xl font-bold">Professional POS System</h1>
-                <p class="text-gray-300 text-sm">Retail Transaction Management</p>
-            </div>
-            <div class="text-right">
-                <p class="text-gray-300 text-sm">User: Admin | <span id="currentTime">00:00:00</span></p>
-                <p class="text-gray-300 text-sm">Date: <span id="currentDate">01/01/2026</span></p>
-            </div>
+
+<script>
+    let numpadValue = '';
+    let loyaltyPhone = '';
+
+    function confirmLoyalty() {
+        const phone = document.getElementById('loyaltyPhone').value;
+        if (phone.trim()) {
+            loyaltyPhone = phone;
+            console.log('Loyalty customer phone:', phone);
+        }
+        document.getElementById('loyaltyModal').style.display = 'none';
+    }
+
+    function skipLoyalty() {
+        document.getElementById('loyaltyModal').style.display = 'none';
+        console.log('Loyalty customer skipped');
+    }
+
+    function numpadInput(value) {
+        numpadValue += value;
+        console.log('Keypad:', numpadValue);
+    }
+
+    function numpadClear() {
+        numpadValue = '';
+        console.log('Cleared');
+    }
+
+    function applyDiscount() {
+        alert('Apply discount functionality');
+    }
+
+    function applyTax() {
+        alert('Apply tax functionality');
+    }
+
+    function holdBill() {
+        alert('Bill held successfully');
+    }
+
+    function viewHistory() {
+        alert('View transaction history');
+    }
+
+    function printReceipt() {
+        alert('Receipt printing...');
+    }
+
+    function clearBill() {
+        if (confirm('Clear all items from bill?')) {
+            document.querySelectorAll('.table-row').forEach(row => row.remove());
+        }
+    }
+
+    function addProduct() {
+        const barcode = document.getElementById('barcodeInput').value;
+        const qty = document.getElementById('qtyInput').value;
+        const price = document.getElementById('priceInput').value;
+
+        if (!barcode || !price) {
+            alert('Please enter barcode and price');
+            return;
+        }
+
+        // Create new row
+        const tableScroll = document.querySelector('.table-scroll');
+        const newRow = document.createElement('div');
+        newRow.className = 'table-row';
+        newRow.innerHTML = `
+            <div>${barcode}</div>
+            <div>New Product</div>
+            <div>${parseFloat(price).toFixed(2)}</div>
+            <div>${parseFloat(qty).toFixed(3)}</div>
+            <div>1</div>
+            <div>0.00</div>
+            <div>${(qty * price).toFixed(2)}</div>
+            <button class="table-delete-btn" onclick="this.parentElement.remove()">Delete</button>
+        `;
+        tableScroll.appendChild(newRow);
+
+        // Clear inputs
+        document.getElementById('barcodeInput').value = '';
+        document.getElementById('qtyInput').value = '1';
+        document.getElementById('priceInput').value = '';
+        document.getElementById('barcodeInput').focus();
+    }
+
+    function processPayment() {
+        alert('Payment processed successfully!');
+    }
+
+    // Set current date and time
+    window.addEventListener('load', function() {
+        const now = new Date();
+        document.querySelectorAll('input[placeholder="Date"]')[0].value = now.toLocaleDateString();
+        document.querySelectorAll('input[placeholder="Time"]')[0].value = now.toLocaleTimeString();
+    });
+
+    // Allow Enter key to add product
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('priceInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addProduct();
+        });
+    });
+</script>
+
+<body>
+
+<!-- LOYALTY CUSTOMER MODAL -->
+<div id="loyaltyModal" class="loyalty-modal">
+    <div class="loyalty-modal-content">
+        <h2>Loyalty Customer</h2>
+        <p>Enter customer phone number (optional)</p>
+        <input type="text" id="loyaltyPhone" placeholder="Enter phone number...">
+        <div class="loyalty-modal-buttons">
+            <button class="loyalty-modal-btn confirm" onclick="confirmLoyalty()">Confirm</button>
+            <button class="loyalty-modal-btn skip" onclick="skipLoyalty()">Skip</button>
+        </div>
+    </div>
+</div>
+
+<div class="pos-container">
+
+<!-- LEFT -->
+<div class="left">
+
+    <div class="top-info">
+        <input placeholder="Invoice No" readonly>
+        <input placeholder="Customer Name">
+        <input placeholder="Phone">
+        <input placeholder="Date" readonly>
+        <input placeholder="User" readonly>
+        <input placeholder="Time" readonly>
+    </div>
+
+    <div class="table-header">
+        <div>#</div>
+        <div>Barcode</div>
+        <div>Item Name</div>
+        <div>Unit Price</div>
+        <div>Qty</div>
+        <div>PK</div>
+        <div>Disc</div>
+        <div>Total</div>
+        <div>Action</div>
+    </div>
+
+    <div class="table-scroll">
+        <div class="table-row">
+            <div>1</div>
+            <div>1018</div>
+            <div>Sugar 1Kg</div>
+            <div>180.00</div>
+            <div>1.000</div>
+            <div>1Kg</div>
+            <div>0.00</div>
+            <div>180.00</div>
+            <button class="table-delete-btn">Delete</button>
+        </div>
+
+        <div class="table-row selected">
+            <div>2</div>
+            <div>1019</div>
+            <div>Rice 1Kg</div>
+            <div>500.00</div>
+            <div>1.000</div>
+            <div>1Kg</div>
+            <div>130.00</div>
+            <div>370.00</div>
+            <button class="table-delete-btn">Delete</button>
+        </div>
+
+        <div class="table-row">
+            <div>3</div>
+            <div>1020</div>
+            <div>Dal 1Kg</div>
+            <div>450.00</div>
+            <div>2.000</div>
+            <div>1Kg</div>
+            <div>0.00</div>
+            <div>900.00</div>
+            <button class="table-delete-btn">Delete</button>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto p-4">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 h-screen-90">
-            <!-- Left Panel - Hold Bills -->
-            <div class="lg:col-span-1">
-                <div class="payment-section">
-                    <div class="payment-header">
-                        <i class="fas fa-list mr-2"></i>HOLD BILLS LIST (P7)
-                    </div>
-                    <div class="info-box">
-                        <label class="info-label">User</label>
-                        <input type="text" value="Admin" readonly class="w-full">
-                    </div>
-                    <div class="hold-bills-panel scrollable" style="height: 200px;">
-                        <div class="hold-bill-item" onclick="loadBill(1)">
-                            <strong>BILL #001</strong>
-                            <div class="text-xs text-gray-600">Amount: ₹1,256.70</div>
-                            <div class="text-xs text-gray-600">Items: 5</div>
-                        </div>
-                        <div class="hold-bill-item" onclick="loadBill(2)">
-                            <strong>BILL #002</strong>
-                            <div class="text-xs text-gray-600">Amount: ₹890.00</div>
-                            <div class="text-xs text-gray-600">Items: 3</div>
-                        </div>
-                        <div class="hold-bill-item" onclick="loadBill(3)">
-                            <strong>BILL #003</strong>
-                            <div class="text-xs text-gray-600">Amount: ₹2,450.50</div>
-                            <div class="text-xs text-gray-600">Items: 7</div>
-                        </div>
-                        <div class="hold-bill-item" onclick="loadBill(4)">
-                            <strong>BILL #004</strong>
-                            <div class="text-xs text-gray-600">Amount: ₹567.30</div>
-                            <div class="text-xs text-gray-600">Items: 2</div>
-                        </div>
-                    </div>
-                    <div style="padding: 8px;">
-                        <button class="btn-small w-full" onclick="clearBills()">Clear</button>
-                    </div>
-                </div>
-
-                <!-- Info Sections -->
-                <div class="mt-4 payment-section">
-                    <div class="info-box">
-                        <label class="info-label">Barcode</label>
-                        <input type="text" placeholder="Scan barcode..." class="w-full">
-                    </div>
-                    <div class="info-box">
-                        <label class="info-label">Item Registration</label>
-                        <button class="btn-small w-full">Add Item</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Center Panel - Items Table -->
-            <div class="lg:col-span-2">
-                <div class="bg-white border-2 border-gray-400">
-                    <!-- Table Header -->
-                    <div class="table-header p-2 text-sm grid grid-cols-10 gap-1">
-                        <div class="col-span-1">BARCODE</div>
-                        <div class="col-span-3">ITEM NAME</div>
-                        <div class="col-span-1">RETAIL PRICE</div>
-                        <div class="col-span-1">PRICE</div>
-                        <div class="col-span-1">DISC %</div>
-                        <div class="col-span-1">QTY</div>
-                        <div class="col-span-1">TOTAL AMOUNT</div>
-                    </div>
-
-                    <!-- Items List -->
-                    <div class="scrollable" style="height: 300px;" id="itemsTable">
-                        <div class="table-row p-2 text-sm grid grid-cols-10 gap-1">
-                            <div class="col-span-1">BRK001</div>
-                            <div class="col-span-3">Biscuit Pack (200g)</div>
-                            <div class="col-span-1">180.00</div>
-                            <div class="col-span-1">180.00</div>
-                            <div class="col-span-1">0.00</div>
-                            <div class="col-span-1">1.000</div>
-                            <div class="col-span-1 font-bold">180.00</div>
-                        </div>
-                        <div class="table-row p-2 text-sm grid grid-cols-10 gap-1">
-                            <div class="col-span-1">MLK002</div>
-                            <div class="col-span-3">Fresh Milk (500ml)</div>
-                            <div class="col-span-1">100.00</div>
-                            <div class="col-span-1">100.00</div>
-                            <div class="col-span-1">0.00</div>
-                            <div class="col-span-1">2.000</div>
-                            <div class="col-span-1 font-bold">200.00</div>
-                        </div>
-                        <div class="table-row p-2 text-sm grid grid-cols-10 gap-1">
-                            <div class="col-span-1">BRD003</div>
-                            <div class="col-span-3">Bread Loaf White</div>
-                            <div class="col-span-1">100.00</div>
-                            <div class="col-span-1">100.00</div>
-                            <div class="col-span-1">0.00</div>
-                            <div class="col-span-1">1.650</div>
-                            <div class="col-span-1 font-bold">165.00</div>
-                        </div>
-                        <div class="table-row highlighted p-2 text-sm grid grid-cols-10 gap-1">
-                            <div class="col-span-1">EGG004</div>
-                            <div class="col-span-3">Eggs (1 dozen)</div>
-                            <div class="col-span-1">200.00</div>
-                            <div class="col-span-1">200.00</div>
-                            <div class="col-span-1">5.00</div>
-                            <div class="col-span-1">0.950</div>
-                            <div class="col-span-1 font-bold">190.00</div>
-                        </div>
-                        <div class="table-row selected p-2 text-sm grid grid-cols-10 gap-1">
-                            <div class="col-span-1">OIL005</div>
-                            <div class="col-span-3">Cooking Oil (1L)</div>
-                            <div class="col-span-1">600.00</div>
-                            <div class="col-span-1">600.00</div>
-                            <div class="col-span-1">0.00</div>
-                            <div class="col-span-1">1.000</div>
-                            <div class="col-span-1 font-bold">600.00</div>
-                        </div>
-                    </div>
-
-                    <!-- Summary Section -->
-                    <div class="bg-gray-100 border-t-2 border-gray-400 p-3">
-                        <div class="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <div class="info-label">Total Items:</div>
-                                <div class="text-lg font-bold">6 Items</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="info-label">Total Amount:</div>
-                                <div class="text-lg font-bold text-green-700">₹1,335.00</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <div class="mt-4 grid grid-cols-2 gap-2">
-                    <button class="btn-small">Delete Item</button>
-                    <button class="btn-small">Modify</button>
-                    <button class="btn-small">View Invoice</button>
-                    <button class="btn-small">Clear Customer</button>
-                </div>
-            </div>
-
-            <!-- Right Panel - Payment -->
-            <div class="lg:col-span-1">
-                <div class="payment-section">
-                    <!-- Payment Header -->
-                    <div class="payment-header">
-                        PAYMENT SECTION
-                    </div>
-
-                    <!-- Subtotal -->
-                    <div class="payment-row">
-                        <span>Subtotal:</span>
-                        <span id="subtotal" class="font-bold">₹1,335.00</span>
-                    </div>
-
-                    <!-- Discount -->
-                    <div class="payment-row">
-                        <span>Discount %:</span>
-                        <input type="number" value="0" class="w-20" min="0" max="100">
-                    </div>
-
-                    <div class="payment-row">
-                        <span>Discount Amount:</span>
-                        <span id="discount" class="font-bold">₹0.00</span>
-                    </div>
-
-                    <!-- Tax -->
-                    <div class="payment-row">
-                        <span>Tax (GST 5%):</span>
-                        <span id="tax" class="font-bold">₹66.75</span>
-                    </div>
-
-                    <!-- Bill Amount -->
-                    <div class="payment-row">
-                        <span>Bill Amount:</span>
-                        <span id="billAmount" class="font-bold">₹1,401.75</span>
-                    </div>
-
-                    <!-- Divider -->
-                    <div style="height: 2px; background-color: #34495e; margin: 8px 0;"></div>
-
-                    <!-- Payment Type -->
-                    <div class="payment-row">
-                        <span>Payment Type:</span>
-                    </div>
-                    <div style="padding: 0 8px;">
-                        <select class="w-full border-2 border-red-600">
-                            <option>CASH</option>
-                            <option>CARD</option>
-                            <option>CHEQUE</option>
-                            <option>DIGITAL</option>
-                        </select>
-                    </div>
-
-                    <!-- Divider -->
-                    <div style="height: 2px; background-color: #34495e; margin: 8px 0;"></div>
-
-                    <!-- Received -->
-                    <div class="payment-header">Received</div>
-                    <div class="payment-row highlight">
-                        <span></span>
-                        <span class="payment-value">₹1,256.70</span>
-                    </div>
-
-                    <!-- Balance -->
-                    <div class="payment-header">Balance</div>
-                    <div class="payment-row highlight">
-                        <span></span>
-                        <span class="payment-value" style="color: #ff0000;">₹0.00</span>
-                    </div>
-
-                    <!-- Return Amount -->
-                    <div class="payment-row">
-                        <span>Return Amount:</span>
-                        <span id="returnAmount" class="font-bold">₹0.00</span>
-                    </div>
-
-                    <!-- Payment Button -->
-                    <button class="btn-payment" onclick="processPayment()">
-                        <i class="fas fa-check mr-2"></i>PAY & PRINT
-                    </button>
-
-                    <!-- Additional Buttons -->
-                    <div style="padding: 8px;">
-                        <button class="btn-small w-full" style="background-color: #e74c3c;">Special Discount</button>
-                        <button class="btn-small w-full" style="background-color: #8e44ad;">Loyalty Card</button>
-                        <button class="btn-small w-full" style="background-color: #f39c12;">Receipt Print</button>
-                    </div>
-                </div>
-
-                <!-- System Actions -->
-                <div class="mt-4 payment-section">
-                    <div class="payment-header">SYSTEM</div>
-                    <div style="padding: 8px;">
-                        <button class="btn-small w-full" style="background-color: #e74c3c;">Logout</button>
-                        <button class="btn-small w-full" style="background-color: #f39c12;">Hold Bill</button>
-                        <button class="btn-small w-full" style="background-color: #34495e;">Settings</button>
-                    </div>
-                </div>
-            </div>
+    <!-- ADD PRODUCT SECTION -->
+    <div class="add-product-section">
+        <div class="product-input-group">
+            <input type="text" id="barcodeInput" placeholder="Scan barcode or enter product name...">
+            <input type="number" id="qtyInput" placeholder="Qty" value="1" min="1">
+            <input type="number" id="priceInput" placeholder="Price">
+            <button onclick="addProduct()">ADD</button>
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-8 max-w-md text-center shadow-2xl">
-            <div class="text-5xl text-green-600 mb-4">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h2>
-            <p class="text-gray-600 mb-6">Transaction completed successfully</p>
-            <p class="text-sm text-gray-500 mb-6">Receipt has been printed</p>
-            <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-2 rounded">
-                Continue
-            </button>
+    <!-- KEYPAD SECTION -->
+    <div class="numpad-section">
+        <div class="numpad-label">NUMERIC KEYPAD</div>
+        <div class="numpad-grid">
+            <button class="numpad-btn" onclick="numpadInput('1')">1</button>
+            <button class="numpad-btn" onclick="numpadInput('2')">2</button>
+            <button class="numpad-btn" onclick="numpadInput('3')">3</button>
+            <button class="numpad-btn" onclick="numpadInput('4')">4</button>
+            <button class="numpad-btn" onclick="numpadInput('5')">5</button>
+            <button class="numpad-btn" onclick="numpadInput('6')">6</button>
+            <button class="numpad-btn" onclick="numpadInput('7')">7</button>
+            <button class="numpad-btn" onclick="numpadInput('8')">8</button>
+            <button class="numpad-btn" onclick="numpadInput('9')">9</button>
+            <button class="numpad-btn" onclick="numpadInput('0')">0</button>
+            <button class="numpad-btn" onclick="numpadInput('.')">.</button>
+            <button class="numpad-btn clear" onclick="numpadClear()">CLR</button>
         </div>
     </div>
 
-    <script>
-        // Update time and date
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-IN', { hour12: false });
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-IN');
-        }
-        updateTime();
-        setInterval(updateTime, 1000);
+    <!-- QUICK LINKS SECTION -->
+    <div class="quick-links-section">
+        <div class="quick-links-grid">
+            <button class="quick-link-btn blue" onclick="applyDiscount()">Discount</button>
+            <button class="quick-link-btn blue" onclick="applyTax()">Tax</button>
+            <button class="quick-link-btn orange" onclick="holdBill()">Hold Bill</button>
+            <button class="quick-link-btn blue" onclick="viewHistory()">History</button>
+            <button class="quick-link-btn blue" onclick="printReceipt()">Print</button>
+            <button class="quick-link-btn red" onclick="clearBill()">Clear</button>
+        </div>
+    </div>
 
-        function loadBill(billNumber) {
-            const items = document.querySelectorAll('.hold-bill-item');
-            items.forEach(item => item.classList.remove('selected'));
-            event.target.closest('.hold-bill-item').classList.add('selected');
-        }
+</div>
 
-        function clearBills() {
-            if (confirm('Clear all held bills?')) {
-                document.querySelectorAll('.hold-bill-item').forEach(item => item.remove());
-            }
-        }
+<!-- RIGHT -->
+<div class="right">
 
-        function processPayment() {
-            document.getElementById('successModal').classList.remove('hidden');
-            setTimeout(() => {
-                closeModal();
-                location.reload();
-            }, 3000);
-        }
+    <div class="payment-content">
+        <div class="panel-title">PAYMENT TYPE</div>
 
-        function closeModal() {
-            document.getElementById('successModal').classList.add('hidden');
-        }
+        <div class="payment-row">
+            <span class="payment-row-label">Method:</span>
+            <span class="payment-value">CASH</span>
+        </div>
 
-        // Calculate totals
-        function calculateTotals() {
-            const subtotal = 1335.00;
-            const discountPercent = 0;
-            const discountAmount = (subtotal * discountPercent) / 100;
-            const billAmount = subtotal - discountAmount;
-            const tax = (billAmount * 5) / 100;
-            const total = billAmount + tax;
+        <div class="divider"></div>
 
-            document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
-            document.getElementById('discount').textContent = '₹' + discountAmount.toFixed(2);
-            document.getElementById('tax').textContent = '₹' + tax.toFixed(2);
-            document.getElementById('billAmount').textContent = '₹' + total.toFixed(2);
-        }
+        <div class="panel-title">BILL SUMMARY</div>
 
-        calculateTotals();
-    </script>
+        <div class="payment-row">
+            <span class="payment-row-label">Subtotal:</span>
+            <span class="payment-value">₹1,450.00</span>
+        </div>
+
+        <div class="payment-row">
+            <span class="payment-row-label">Discount:</span>
+            <span class="payment-value secondary">-₹130.00</span>
+        </div>
+
+        <div class="payment-row">
+            <span class="payment-row-label">Tax (5%):</span>
+            <span class="payment-value">₹66.00</span>
+        </div>
+
+        <div class="payment-row" style="background: #f0f0f0; padding: 12px;">
+            <span class="payment-row-label">Bill Amount:</span>
+            <span style="font-size: 20px; font-weight: bold; color: #333;">₹1,386.00</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel-title">TRANSACTION</div>
+
+        <div class="payment-row">
+            <span class="payment-row-label">Received:</span>
+            <span class="big-value">₹1,500.00</span>
+        </div>
+
+        <div class="payment-row">
+            <span class="payment-row-label">Balance:</span>
+            <span class="big-value" style="color: #16a34a;">₹114.00</span>
+        </div>
+    </div>
+
+    <button class="pay-btn" onclick="processPayment()">💳 PAY & PRINT</button>
+
+    <!-- LOGO SECTION -->
+    <div style="padding: 20px; text-align: center; border-top: 1px solid #ddd;">
+        <img src="/assets/logo.png" alt="Company Logo" style="max-width: 180px; height: auto; display: block; margin: 0 auto;">
+    </div>
+
+</div>
+
+</div>
+
 </body>
 </html>
