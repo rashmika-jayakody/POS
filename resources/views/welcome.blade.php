@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Grocers POS | Modern Retail Solutions</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --navy-dark: #0A1A3D;
@@ -165,7 +167,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 80%, rgba(74, 158, 255, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(0, 201, 183, 0.1) 0%, transparent 50%);
         }
@@ -714,7 +716,7 @@
                 grid-template-columns: 1fr;
                 gap: 60px;
             }
-            
+
             .hero h2 {
                 font-size: 2.75rem;
             }
@@ -724,7 +726,7 @@
             .mobile-menu-btn {
                 display: block;
             }
-            
+
             .nav-links {
                 display: none;
                 position: absolute;
@@ -737,46 +739,46 @@
                 box-shadow: var(--shadow-md);
                 gap: 20px;
             }
-            
+
             .nav-links.active {
                 display: flex;
             }
-            
+
             .packages-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .highlighted {
                 margin-top: 0;
             }
-            
+
             .features-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .hero h2 {
                 font-size: 2.25rem;
             }
-            
+
             .hero p {
                 font-size: 1.125rem;
             }
-            
+
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
             }
-            
+
             .btn {
                 width: 100%;
                 max-width: 320px;
                 justify-content: center;
             }
-            
+
             .stats {
                 gap: 20px;
             }
-            
+
             .stat-item {
                 min-width: 140px;
                 padding: 20px;
@@ -789,6 +791,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -812,6 +815,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Modern Header -->
     <header>
@@ -819,7 +823,7 @@
             <div class="logo-section">
                 <!-- Replace with your logo path -->
                 <img src="/assets/logo.png" alt="Super Grocers POS Logo" class="logo">
-                
+
             </div>
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
@@ -838,7 +842,8 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <h2 class="fade-in-up">Revolutionize Your Grocery Store Operations</h2>
-            <p class="fade-in-up delay-1">AI-powered POS system designed for modern retailers. Streamline sales, inventory, and customer relationships with our intelligent platform.</p>
+            <p class="fade-in-up delay-1">AI-powered POS system designed for modern retailers. Streamline sales,
+                inventory, and customer relationships with our intelligent platform.</p>
             <div class="cta-buttons fade-in-up delay-2">
                 <button class="btn btn-primary" onclick="startDemo()">
                     <i class="fas fa-play-circle"></i> Start Free Demo
@@ -946,13 +951,17 @@
         <div class="about-container">
             <div class="about-image fade-in-up">
                 <!-- Replace with your POS screenshot -->
-                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Modern POS Interface">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Modern POS Interface">
             </div>
             <div class="about-content">
                 <h2 class="fade-in-up">Designed for Modern Retailers</h2>
-                <p class="fade-in-up delay-1">We're revolutionizing grocery store management with our intuitive, cloud-based POS system. Built by retail experts and technologists, we combine industry knowledge with cutting-edge technology.</p>
-                <p class="fade-in-up delay-1">Our mission is to empower store owners with tools that save time, reduce errors, and boost profitability through intelligent automation and real-time insights.</p>
-                
+                <p class="fade-in-up delay-1">We're revolutionizing grocery store management with our intuitive,
+                    cloud-based POS system. Built by retail experts and technologists, we combine industry knowledge
+                    with cutting-edge technology.</p>
+                <p class="fade-in-up delay-1">Our mission is to empower store owners with tools that save time, reduce
+                    errors, and boost profitability through intelligent automation and real-time insights.</p>
+
                 <div class="features-grid fade-in-up delay-2">
                     <div class="feature-item">
                         <div class="feature-icon">
@@ -1000,7 +1009,8 @@
         <div class="footer-container">
             <div class="footer-col">
                 <img src="logo.png" alt="Logo" class="footer-logo">
-                <p style="color: rgba(255,255,255,0.8); margin-bottom: 24px;">Transforming retail operations with intelligent POS solutions since 2023.</p>
+                <p style="color: rgba(255,255,255,0.8); margin-bottom: 24px;">Transforming retail operations with
+                    intelligent POS solutions since 2023.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-linkedin-in"></i></a>
@@ -1039,7 +1049,8 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2023 Super Grocers POS. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+            <p>&copy; 2023 Super Grocers POS. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms
+                    of Service</a></p>
         </div>
     </footer>
 
@@ -1047,27 +1058,27 @@
         // Mobile Menu Toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
-        
+
         mobileMenuBtn.addEventListener('click', () => {
             navLinks.classList.toggle('active');
-            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') 
-                ? '<i class="fas fa-times"></i>' 
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active')
+                ? '<i class="fas fa-times"></i>'
                 : '<i class="fas fa-bars"></i>';
         });
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
+            anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
+                if (targetId === '#') return;
+
                 const targetElement = document.querySelector(targetId);
-                if(targetElement) {
+                if (targetElement) {
                     // Close mobile menu if open
                     navLinks.classList.remove('active');
                     mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-                    
+
                     window.scrollTo({
                         top: targetElement.offsetTop - 80,
                         behavior: 'smooth'
@@ -1092,7 +1103,7 @@
                 z-index: 2000;
                 padding: 20px;
             `;
-            
+
             modal.innerHTML = `
                 <div style="
                     background: white;
@@ -1134,15 +1145,15 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(modal);
             modal.addEventListener('click', (e) => {
-                if(e.target === modal) modal.remove();
+                if (e.target === modal) modal.remove();
             });
         }
 
         function loginToPOS() {
-            window.location.href = 'pos-login.html';
+            window.location.href = "{{ route('login') }}";
         }
 
         function scrollToPackages() {
@@ -1153,13 +1164,13 @@
 
         function selectPackage(packageName) {
             const packages = {
-                'essential': {name: 'Essential Plan', price: '₹999/month'},
-                'professional': {name: 'Professional Plan', price: '₹2,499/month'},
-                'enterprise': {name: 'Enterprise Plan', price: '₹4,999/month'}
+                'essential': { name: 'Essential Plan', price: '₹999/month' },
+                'professional': { name: 'Professional Plan', price: '₹2,499/month' },
+                'enterprise': { name: 'Enterprise Plan', price: '₹4,999/month' }
             };
-            
+
             const selected = packages[packageName];
-            
+
             const modal = document.createElement('div');
             modal.style.cssText = `
                 position: fixed;
@@ -1174,7 +1185,7 @@
                 z-index: 2000;
                 padding: 20px;
             `;
-            
+
             modal.innerHTML = `
                 <div style="
                     background: white;
@@ -1226,10 +1237,10 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(modal);
             modal.addEventListener('click', (e) => {
-                if(e.target === modal) modal.remove();
+                if (e.target === modal) modal.remove();
             });
         }
 
@@ -1241,7 +1252,7 @@
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if(entry.isIntersecting) {
+                if (entry.isIntersecting) {
                     entry.target.classList.add('fade-in-up');
                 }
             });
@@ -1253,26 +1264,27 @@
         });
 
         // Add active class to nav links on scroll
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const sections = document.querySelectorAll('section[id]');
             const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-            
+
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop - 100;
                 const sectionHeight = section.clientHeight;
-                if(scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
                     current = section.getAttribute('id');
                 }
             });
 
             navLinks.forEach(link => {
                 link.classList.remove('active');
-                if(link.getAttribute('href') === `#${current}`) {
+                if (link.getAttribute('href') === `#${current}`) {
                     link.classList.add('active');
                 }
             });
         });
     </script>
 </body>
+
 </html>
