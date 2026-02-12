@@ -15,11 +15,11 @@ class SuperAdminSeeder extends Seeder
     public function run(): void
     {
         User::firstOrCreate(
-            ['email' => 'superadmin@poshere.lk'],
+            ['email' => 'admin@poshere.lk'],
             [
-                'name' => 'Super Admin',
+                'name' => 'System Owner',
                 'password' => Hash::make('Test@123'),
             ]
-        )->assignRole('superadmin');
+        )->assignRole('system_owner');
     }
 }

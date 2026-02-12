@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Unit;
+use App\Models\Branch;
+use App\Models\Stock;
+
+class ProductController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $products = Product::with(['category', 'unit', 'stocks.branch'])->get();
+        return view('products.index', compact('products'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $categories = Category::all();
+        $units = Unit::all();
+        return view('products.create', compact('categories', 'units'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'unit_id' => 'required|exists:units,id',
+            'barcode' => 'nullable|string|unique:products,barcode',
+            'cost_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+        ]);
+
+        $product = Product::create($validated);
+
+        // Initialize stock for all branches in this tenant
+        $branches = Branch::all();
+        foreach ($branches as $branch) {
+            Stock::create([
+                'product_id' => $product->id,
+                'branch_id' => $branch->id,
+                'quantity' => 0,
+                'low_stock_threshold' => 10,
+            ]);
+        }
+
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $product = Product::with(['category', 'unit', 'stocks.branch'])->findOrFail($id);
+        return view('products.show', compact('product'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $categories = Category::all();
+        $units = Unit::all();
+        return view('products.edit', compact('product', 'categories', 'units'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'unit_id' => 'required|exists:units,id',
+            'barcode' => 'nullable|string|unique:products,barcode,' . $id,
+            'cost_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
+            'description' => 'nullable|string',
+        ]);
+
+        $product->update($validated);
+
+        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->stocks()->delete();
+        $product->delete();
+
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
+    }
+}
