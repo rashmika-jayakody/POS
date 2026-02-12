@@ -40,24 +40,33 @@
                         <div>
                             <label
                                 style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Unit</label>
-                            <select name="unit_id" required
-                                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
-                                @foreach($units as $unit)
-                                    <option value="{{ $unit->id }}" {{ $product->unit_id == $unit->id ? 'selected' : '' }}>
-                                        {{ $unit->name }} ({{ $unit->short_code }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <select name="unit_id" required
+                                    style="flex: 1; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                                    @foreach($units as $unit)
+                                        <option value="{{ $unit->id }}" {{ $product->unit_id == $unit->id ? 'selected' : '' }}>
+                                            {{ $unit->name }} ({{ $unit->short_code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <a href="{{ route('units.create') }}" class="btn btn-secondary" style="padding: 12px 16px; white-space: nowrap;" title="Add new unit">
+                                    <i class="fas fa-plus"></i> Add unit
+                                </a>
+                            </div>
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 20px;">
-                        <label
-                            style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Barcode
-                            (Optional)</label>
-                        <input type="text" name="barcode" value="{{ old('barcode', $product->barcode) }}"
-                            placeholder="Scan or type barcode"
-                            style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                        <div>
+                            <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Product code (Optional)</label>
+                            <input type="text" name="code" value="{{ old('code', $product->code) }}" placeholder="e.g. SKU-001"
+                                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Barcode (Optional)</label>
+                            <input type="text" name="barcode" value="{{ old('barcode', $product->barcode) }}" placeholder="Scan or type barcode"
+                                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                        </div>
                     </div>
                 </div>
 
@@ -83,13 +92,46 @@
                     </div>
 
                     <div style="margin-bottom: 20px;">
-                        <label
-                            style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Description</label>
-                        <textarea name="description" rows="4"
-                            style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; resize: none;">{{ old('description', $product->description) }}</textarea>
+                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Additional prices</label>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 10px;">Extra price options (e.g. Wholesale, Tier 2). Selling and cost price above are always available.</p>
+                        <div id="extraPrices">
+                            @php $prices = old('prices', $product->productPrices ?? []); @endphp
+                            @forelse($prices as $i => $pp)
+                            <div class="extra-price-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px;">
+                                <input type="text" name="prices[{{ $i }}][label]" value="{{ is_array($pp) ? ($pp['label'] ?? '') : $pp->label }}" placeholder="Label" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                                <input type="number" step="0.01" min="0" name="prices[{{ $i }}][price]" value="{{ is_array($pp) ? ($pp['price'] ?? '') : $pp->price }}" placeholder="Price" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                                <button type="button" class="btn btn-secondary remove-price" style="padding: 10px 14px;">Remove</button>
+                            </div>
+                            @empty
+                            <div class="extra-price-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px;">
+                                <input type="text" name="prices[0][label]" placeholder="Label" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                                <input type="number" step="0.01" min="0" name="prices[0][price]" placeholder="Price" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                                <button type="button" class="btn btn-secondary remove-price" style="padding: 10px 14px;">Remove</button>
+                            </div>
+                            @endforelse
+                        </div>
+                        <button type="button" id="addPriceRow" class="btn btn-secondary" style="margin-top: 8px;"><i class="fas fa-plus"></i> Add another price</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Description</label>
+                        <textarea name="description" rows="4" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; resize: none;">{{ old('description', $product->description ?? '') }}</textarea>
                     </div>
                 </div>
             </div>
+            <script>
+                document.getElementById('addPriceRow').addEventListener('click', function() {
+                    const container = document.getElementById('extraPrices');
+                    const n = container.querySelectorAll('.extra-price-row').length;
+                    const row = document.createElement('div');
+                    row.className = 'extra-price-row';
+                    row.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px;';
+                    row.innerHTML = '<input type="text" name="prices[' + n + '][label]" placeholder="Label" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;"><input type="number" step="0.01" min="0" name="prices[' + n + '][price]" placeholder="Price" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;"><button type="button" class="btn btn-secondary remove-price" style="padding: 10px 14px;">Remove</button>';
+                    container.appendChild(row);
+                    row.querySelector('.remove-price').addEventListener('click', function() { row.remove(); });
+                });
+                document.querySelectorAll('.remove-price').forEach(btn => btn.addEventListener('click', function() { this.closest('.extra-price-row').remove(); }));
+            </script>
 
             <div style="margin-top: 30px; display: flex; gap: 12px; justify-content: flex-end;">
                 <a href="{{ route('products.index') }}" class="btn btn-secondary">Cancel</a>

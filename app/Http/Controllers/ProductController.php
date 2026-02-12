@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\ProductPrice;
 use App\Models\Category;
 use App\Models\Unit;
 use App\Models\Branch;
@@ -40,6 +41,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'unit_id' => 'required|exists:units,id',
+            'code' => 'nullable|string|max:60',
             'barcode' => 'nullable|string|unique:products,barcode',
             'cost_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
@@ -48,7 +50,16 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        // Initialize stock for all branches in this tenant
+        foreach ($request->input('prices', []) as $p) {
+            if (!empty($p['label']) && isset($p['price']) && is_numeric($p['price']) && (float) $p['price'] >= 0) {
+                ProductPrice::create([
+                    'product_id' => $product->id,
+                    'label' => $p['label'],
+                    'price' => (float) $p['price'],
+                ]);
+            }
+        }
+
         $branches = Branch::all();
         foreach ($branches as $branch) {
             Stock::create([
@@ -76,7 +87,7 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('productPrices')->findOrFail($id);
         $categories = Category::all();
         $units = Unit::all();
         return view('products.edit', compact('product', 'categories', 'units'));
@@ -93,6 +104,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'unit_id' => 'required|exists:units,id',
+            'code' => 'nullable|string|max:60',
             'barcode' => 'nullable|string|unique:products,barcode,' . $id,
             'cost_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
@@ -100,6 +112,17 @@ class ProductController extends Controller
         ]);
 
         $product->update($validated);
+
+        $product->productPrices()->delete();
+        foreach ($request->input('prices', []) as $p) {
+            if (!empty($p['label']) && isset($p['price']) && is_numeric($p['price']) && (float) $p['price'] >= 0) {
+                ProductPrice::create([
+                    'product_id' => $product->id,
+                    'label' => $p['label'],
+                    'price' => (float) $p['price'],
+                ]);
+            }
+        }
 
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
@@ -110,6 +133,7 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
+        $product->productPrices()->delete();
         $product->stocks()->delete();
         $product->delete();
 

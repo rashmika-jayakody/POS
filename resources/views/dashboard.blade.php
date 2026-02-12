@@ -85,10 +85,16 @@
         <div class="section">
             <h2 class="section-title"><i class="fas fa-bolt"></i> Quick Actions</h2>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                <button class="btn btn-primary"><i class="fas fa-plus"></i> New Sale</button>
-                <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Add User</button>
-                <button class="btn btn-secondary"><i class="fas fa-box-open"></i> Stock Check</button>
-                <button class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Export Report</button>
+                <a href="{{ route('cash-drawer.index') }}" class="btn btn-primary" style="text-align: center; justify-content: center;">
+                    <i class="fas fa-cash-register"></i> Go to Cash Drawer
+                </a>
+                <a href="{{ route('users.create') }}" class="btn btn-primary" style="text-align: center; justify-content: center;">
+                    <i class="fas fa-user-plus"></i> Add User
+                </a>
+                <a href="{{ route('products.index') }}" class="btn btn-secondary" style="text-align: center; justify-content: center;">
+                    <i class="fas fa-box-open"></i> Products & Stock
+                </a>
+                <button class="btn btn-secondary" type="button"><i class="fas fa-file-pdf"></i> Export Report</button>
             </div>
         </div>
 

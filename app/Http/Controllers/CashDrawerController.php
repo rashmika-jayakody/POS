@@ -2,16 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CashDrawerController extends Controller
 {
     /**
-     * Display the cash drawer page.
+     * Display the cash drawer / POS page with products for selection.
      */
     public function index()
     {
-        return view('cash-drawer.index');
+        $products = Product::with(['unit', 'productPrices'])->where('is_active', true)->orderBy('name')->get();
+        $productsJson = $products->map(function ($p) {
+            $prices = [
+                ['label' => 'Selling price', 'price' => (float) $p->selling_price],
+            ];
+            foreach ($p->productPrices as $pp) {
+                $prices[] = ['label' => $pp->label, 'price' => (float) $pp->price];
+            }
+            return [
+                'id' => $p->id,
+                'name' => $p->name,
+                'code' => $p->code ?? '',
+                'barcode' => $p->barcode ?? '',
+                'price' => (float) $p->selling_price,
+                'prices' => $prices,
+                'unit' => $p->unit ? $p->unit->short_code : '',
+            ];
+        });
+        $invoiceNo = 'INV-' . now()->format('Ymd') . '-' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
+        $storeName = optional(auth()->user()->tenant)->name ?? config('app.name');
+        return view('cash-drawer.index', compact('productsJson', 'invoiceNo', 'storeName'));
     }
 
     /**

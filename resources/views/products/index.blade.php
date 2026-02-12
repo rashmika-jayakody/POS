@@ -46,6 +46,7 @@
                                     style="font-weight: 700; color: var(--gray-900); display: block; margin-bottom: 4px;">{{ $product->name }}</span>
                                 <div
                                     style="font-size: 0.8rem; color: var(--gray-500); display: flex; align-items: center; gap: 8px;">
+                                    @if($product->code)<span><i class="fas fa-hashtag"></i> {{ $product->code }}</span>@endif
                                     <span><i class="fas fa-barcode"></i> {{ $product->barcode ?? 'No Barcode' }}</span>
                                     <span
                                         style="background: rgba(74, 158, 255, 0.1); color: var(--light-blue); padding: 2px 8px; border-radius: 4px; font-weight: 700;">{{ $product->category->name }}</span>

@@ -866,7 +866,7 @@
                     <div class="stat-label">Support</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">₹10M+</div>
+                    <div class="stat-number">LKR 10M+</div>
                     <div class="stat-label">Processed Daily</div>
                 </div>
             </div>
@@ -885,7 +885,7 @@
                 <div class="package-header">
                     <h3>Essential</h3>
                     <p>Perfect for startups & small stores</p>
-                    <div class="price">₹999<span>/month</span></div>
+                    <div class="price">LKR 35,000<span>/month</span></div>
                 </div>
                 <div class="package-body">
                     <ul class="features">
@@ -897,7 +897,7 @@
                         <li><i class="fas fa-times"></i> <del>Inventory alerts</del></li>
                         <li><i class="fas fa-times"></i> <del>Multi-store sync</del></li>
                     </ul>
-                    <button class="package-btn" onclick="selectPackage('essential')">Start Essential Plan</button>
+                    <a href="{{ route('onboarding.index', ['plan' => 'essential']) }}" class="package-btn" style="text-align: center;">Start Essential Plan</a>
                 </div>
             </div>
 
@@ -907,7 +907,7 @@
                 <div class="package-header">
                     <h3>Professional</h3>
                     <p>For growing businesses</p>
-                    <div class="price">₹2,499<span>/month</span></div>
+                    <div class="price">LKR 85,000<span>/month</span></div>
                 </div>
                 <div class="package-body">
                     <ul class="features">
@@ -919,7 +919,7 @@
                         <li><i class="fas fa-check"></i> Low stock alerts</li>
                         <li><i class="fas fa-check"></i> Priority phone support</li>
                     </ul>
-                    <button class="package-btn" onclick="selectPackage('professional')">Start Professional Plan</button>
+                    <a href="{{ route('onboarding.index', ['plan' => 'professional']) }}" class="package-btn" style="text-align: center;">Start Professional Plan</a>
                 </div>
             </div>
 
@@ -928,7 +928,7 @@
                 <div class="package-header">
                     <h3>Enterprise</h3>
                     <p>For retail chains & large stores</p>
-                    <div class="price">₹4,999<span>/month</span></div>
+                    <div class="price">LKR 175,000<span>/month</span></div>
                 </div>
                 <div class="package-body">
                     <ul class="features">
@@ -940,7 +940,7 @@
                         <li><i class="fas fa-check"></i> Custom feature development</li>
                         <li><i class="fas fa-check"></i> 24/7 dedicated support</li>
                     </ul>
-                    <button class="package-btn" onclick="selectPackage('enterprise')">Contact Sales</button>
+                    <a href="{{ route('onboarding.index', ['plan' => 'enterprise']) }}" class="package-btn" style="text-align: center;">Start Enterprise Plan</a>
                 </div>
             </div>
         </div>
@@ -1163,85 +1163,7 @@
         }
 
         function selectPackage(packageName) {
-            const packages = {
-                'essential': { name: 'Essential Plan', price: '₹999/month' },
-                'professional': { name: 'Professional Plan', price: '₹2,499/month' },
-                'enterprise': { name: 'Enterprise Plan', price: '₹4,999/month' }
-            };
-
-            const selected = packages[packageName];
-
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(10, 26, 61, 0.95);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 2000;
-                padding: 20px;
-            `;
-
-            modal.innerHTML = `
-                <div style="
-                    background: white;
-                    padding: 40px;
-                    border-radius: 20px;
-                    max-width: 500px;
-                    width: 100%;
-                    text-align: center;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                ">
-                    <div style="
-                        background: linear-gradient(135deg, #4A9EFF 0%, #00C9B7 100%);
-                        width: 80px;
-                        height: 80px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin: 0 auto 20px;
-                        color: white;
-                        font-size: 2rem;
-                    ">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <h3 style="color: #0A1A3D; margin-bottom: 10px;">${selected.name} Selected</h3>
-                    <p style="color: #00C9B7; font-size: 1.5rem; font-weight: 700; margin-bottom: 20px;">${selected.price}</p>
-                    <p style="color: #64748B; margin-bottom: 30px;">You'll be redirected to our secure checkout page. 14-day free trial included.</p>
-                    <div style="display: flex; gap: 15px; justify-content: center;">
-                        <button onclick="window.location.href='checkout.html?plan=${packageName}'" style="
-                            background: linear-gradient(135deg, #4A9EFF 0%, #00C9B7 100%);
-                            color: white;
-                            border: none;
-                            padding: 15px 30px;
-                            border-radius: 10px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            flex: 1;
-                        ">Continue to Checkout</button>
-                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
-                            background: transparent;
-                            color: #64748B;
-                            border: 2px solid #E2E8F0;
-                            padding: 15px 30px;
-                            border-radius: 10px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            flex: 1;
-                        ">Cancel</button>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(modal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.remove();
-            });
+            window.location.href = '{{ url("/onboarding") }}?plan=' + packageName;
         }
 
         // Scroll animations

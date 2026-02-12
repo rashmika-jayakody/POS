@@ -15,12 +15,18 @@ class Product extends Model
         'category_id',
         'unit_id',
         'name',
+        'code',
         'barcode',
         'cost_price',
         'selling_price',
         'image_url',
         'is_active',
     ];
+
+    public function productPrices()
+    {
+        return $this->hasMany(ProductPrice::class);
+    }
 
     public function category()
     {

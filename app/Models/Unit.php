@@ -15,4 +15,9 @@ class Unit extends Model
         'name',
         'short_code',
     ];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

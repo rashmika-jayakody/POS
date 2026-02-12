@@ -246,8 +246,93 @@
 
         .bell-icon {
             font-size: 1.2rem;
-            color: var(--gray-medium);
+            color: var(--gray-500);
             cursor: pointer;
+        }
+
+        /* User account dropdown */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 6px 10px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border: none;
+            background: none;
+            color: inherit;
+            font: inherit;
+        }
+
+        .user-dropdown-trigger:hover {
+            background: var(--gray-100);
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            min-width: 200px;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-100);
+            padding: 8px 0;
+            z-index: 1100;
+            display: none;
+        }
+
+        .user-dropdown-menu.open {
+            display: block;
+        }
+
+        .user-dropdown-menu a,
+        .user-dropdown-menu button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            text-align: left;
+            border: none;
+            background: none;
+            color: var(--gray-900);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .user-dropdown-menu a:hover,
+        .user-dropdown-menu button:hover {
+            background: var(--gray-100);
+        }
+
+        .user-dropdown-menu a i,
+        .user-dropdown-menu button i {
+            width: 20px;
+            color: var(--gray-500);
+        }
+
+        .user-dropdown-menu .dropdown-divider {
+            height: 1px;
+            background: var(--gray-100);
+            margin: 6px 0;
+        }
+
+        .user-dropdown-menu button.logout-item {
+            color: var(--accent-coral);
+        }
+
+        .user-dropdown-menu button.logout-item i {
+            color: var(--accent-coral);
         }
 
         /* Main Content */
@@ -280,8 +365,118 @@
         }
 
         .page-subtitle {
-            color: var(--gray-medium);
+            color: var(--gray-500);
             font-size: 0.85rem;
+        }
+
+        /* Dashboard: stats grid & cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid rgba(74, 158, 255, 0.1);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 14px;
+        }
+
+        .stat-card.blue .stat-icon {
+            background: rgba(74, 158, 255, 0.15);
+            color: var(--light-blue);
+        }
+
+        .stat-card.green .stat-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .stat-card.warning .stat-icon {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .stat-card.danger .stat-icon {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--navy-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .stat-card .stat-change {
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-card .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-card .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes animateIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: animateIn 0.4s ease-out forwards;
         }
 
         .section {
@@ -362,6 +557,7 @@
             height: 6px;
             border-radius: 50%;
             display: inline-block;
+            background: currentColor;
         }
 
         /* Buttons */
@@ -516,6 +712,10 @@
                     class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
                     <i class="fas fa-tags"></i> <span>Categories</span>
                 </a>
+                <a href="{{ route('units.index') }}"
+                    class="nav-item {{ request()->is('units*') ? 'active' : '' }}">
+                    <i class="fas fa-balance-scale"></i> <span>Units</span>
+                </a>
                 <a href="{{ route('suppliers.index') }}"
                     class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
                     <i class="fas fa-truck"></i> <span>Suppliers</span>
@@ -550,13 +750,24 @@
                     {{ ucfirst(str_replace('_', ' ', auth()->user()->roles->first()->name ?? 'Admin')) }}
                 </div>
                 <i class="fas fa-bell bell-icon"></i>
-                <div class="user-section">
-                    <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-                    <div style="text-align: right;">
-                        <div style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">
-                            {{ auth()->user()->name }}
+                <div class="user-dropdown" id="userAccountDropdown">
+                    <button type="button" class="user-dropdown-trigger user-section" id="userAccountTrigger" aria-expanded="false" aria-haspopup="true">
+                        <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">
+                                {{ auth()->user()->name }}
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">Account</div>
                         </div>
-                        <div style="font-size: 0.85rem; color: var(--gray-500);">Account Owner</div>
+                        <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--gray-400);"></i>
+                    </button>
+                    <div class="user-dropdown-menu" id="userAccountMenu" role="menu">
+                        <a href="{{ route('profile.edit') }}" role="menuitem"><i class="fas fa-user-cog"></i> Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="logout-item" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -588,6 +799,24 @@
                 if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
                     sidebar.classList.remove('active');
                 }
+            }
+        });
+
+        // User account dropdown
+        const userDropdown = document.getElementById('userAccountDropdown');
+        const userTrigger = document.getElementById('userAccountTrigger');
+        const userMenu = document.getElementById('userAccountMenu');
+
+        userTrigger?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userMenu.classList.toggle('open');
+            userTrigger.setAttribute('aria-expanded', userMenu.classList.contains('open'));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (userDropdown && !userDropdown.contains(e.target)) {
+                userMenu.classList.remove('open');
+                userTrigger.setAttribute('aria-expanded', 'false');
             }
         });
     </script>

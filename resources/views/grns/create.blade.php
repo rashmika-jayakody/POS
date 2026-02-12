@@ -96,6 +96,19 @@
                         </tfoot>
                     </table>
                 </div>
+
+                <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--gray-100);">
+                    <a href="{{ route('grns.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save GRN
+                    </button>
+                </div>
+            </div>
+            @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const tableBody = document.getElementById('items-body');
+                    const addItemBtn = document.getElementById('add-item');
                     const totalDisplay = document.getElementById('total-amount');
                     let itemIndex = 0;
 
@@ -170,5 +183,7 @@
                     addItemRow();
                 });
             </script>
-        @endpush
+            @endpush
+        </form>
+    </div>
 @endsection

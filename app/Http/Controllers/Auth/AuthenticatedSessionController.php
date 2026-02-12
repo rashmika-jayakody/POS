@@ -26,6 +26,22 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $tenantSlug = $request->input('tenant_slug');
+        if ($tenantSlug) {
+            if (!auth()->user()->tenant) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors(['email' => 'Use the main login page for platform access.']);
+            }
+            if (auth()->user()->tenant->slug !== $tenantSlug) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors(['email' => 'This account is not for this store. Sign in from your store link or use the main login.']);
+            }
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
