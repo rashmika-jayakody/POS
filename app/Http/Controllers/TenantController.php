@@ -16,7 +16,7 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
-        $tenant->load(['branches', 'users']);
+        $tenant->load(['branches', 'users' => fn ($q) => $q->with(['branch', 'roles'])]);
         return view('tenants.show', compact('tenant'));
     }
 

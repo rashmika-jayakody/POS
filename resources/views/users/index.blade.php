@@ -31,6 +31,9 @@
             <table class="table">
                 <thead>
                     <tr>
+                        @if(isset($isSystemOwner) && $isSystemOwner)
+                            <th>Shop / Tenant</th>
+                        @endif
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -42,6 +45,9 @@
                 <tbody>
                     @foreach($users as $user)
                         <tr>
+                            @if(isset($isSystemOwner) && $isSystemOwner)
+                                <td>{{ $user->tenant?->name ?? '—' }}</td>
+                            @endif
                             <td style="font-weight: 700; color: var(--navy-dark);">{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>
@@ -52,7 +58,7 @@
                                     </span>
                                 @endforeach
                             </td>
-                            <td>{{ $user->branch->name ?? 'All Branches' }}</td>
+                            <td>{{ $user->branch?->name ?? 'All Branches' }}</td>
                             <td>
                                 <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}">
                                     <span class="status-dot"></span>

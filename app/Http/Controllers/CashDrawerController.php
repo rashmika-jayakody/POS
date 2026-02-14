@@ -14,12 +14,9 @@ class CashDrawerController extends Controller
     {
         $products = Product::with(['unit', 'productPrices'])->where('is_active', true)->orderBy('name')->get();
         $productsJson = $products->map(function ($p) {
-            $prices = [
-                ['label' => 'Selling price', 'price' => (float) $p->selling_price],
-            ];
-            foreach ($p->productPrices as $pp) {
-                $prices[] = ['label' => $pp->label, 'price' => (float) $pp->price];
-            }
+            $prices = $p->productPrices->isNotEmpty()
+                ? $p->productPrices->map(fn ($pp) => ['label' => $pp->label, 'price' => (float) $pp->price])->values()->all()
+                : [['label' => 'Selling price', 'price' => (float) $p->selling_price]];
             return [
                 'id' => $p->id,
                 'name' => $p->name,

@@ -15,6 +15,19 @@
         <form action="{{ route('users.store') }}" method="POST">
             @csrf
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                @if($tenants ?? null)
+                    <div style="grid-column: span 2;">
+                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Shop / Tenant</label>
+                        <select name="tenant_id" required id="tenant_id"
+                            style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                            <option value="">Select shop</option>
+                            @foreach($tenants as $t)
+                                <option value="{{ $t->id }}">{{ $t->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('tenant_id') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span> @enderror
+                    </div>
+                @endif
                 <div style="grid-column: span 2;">
                     <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Full
                         Name</label>
@@ -46,11 +59,11 @@
                 <div>
                     <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Branch
                         (Optional)</label>
-                    <select name="branch_id"
+                    <select name="branch_id" id="branch_id"
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                         <option value="">All Branches</option>
                         @foreach($branches as $branch)
-                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                            <option value="{{ $branch->id }}" data-tenant-id="{{ $branch->tenant_id ?? '' }}">{{ $branch->name }}{{ isset($tenants) ? ' (' . ($branch->tenant?->name ?? '') . ')' : '' }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -79,4 +92,18 @@
             </div>
         </form>
     </div>
+    @if($tenants ?? null)
+    <script>
+        document.getElementById('tenant_id').addEventListener('change', function () {
+            var tid = this.value;
+            var opts = document.querySelectorAll('#branch_id option[data-tenant-id]');
+            opts.forEach(function (o) {
+                o.style.display = (tid === '' || o.getAttribute('data-tenant-id') === tid) ? '' : 'none';
+                if (tid !== '' && o.getAttribute('data-tenant-id') !== tid) o.disabled = true;
+                else o.disabled = false;
+            });
+            document.getElementById('branch_id').value = '';
+        });
+    </script>
+    @endif
 @endsection

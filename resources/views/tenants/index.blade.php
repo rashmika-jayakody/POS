@@ -47,7 +47,11 @@
                             </td>
                             <td>{{ $tenant->created_at->format('Y-M-d') }}</td>
                             <td style="text-align: right;">
-                                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                                    <a href="{{ route('tenants.show', $tenant) }}" class="btn btn-secondary"
+                                        style="padding: 6px 10px; font-size: 0.75rem;">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
                                     <form action="{{ route('tenants.update', $tenant->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')

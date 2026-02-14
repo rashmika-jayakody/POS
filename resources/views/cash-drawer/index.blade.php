@@ -66,10 +66,11 @@
         .loyalty-modal-btn.confirm { background: #333; color: white; }
         .loyalty-modal-btn.skip { background: #f0f0f0; color: #333; border: 1px solid #ccc; }
 
-        /* Price selection modal */
-        .price-modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        /* Price selection modal - Step 1, must show before quantity */
+        .price-modal { display: none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
         .price-modal.show { display: flex; }
         .price-modal-content { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); min-width: 340px; max-width: 95%; }
+        .price-modal-step { margin: 0 0 4px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #4a9eff; }
         .price-modal-content h2 { margin: 0 0 4px 0; font-size: 18px; color: #333; }
         .price-modal-subtitle { margin: 0 0 4px 0; font-size: 13px; color: #666; }
         .price-modal-hint { margin: 0 0 12px 0; font-size: 12px; color: #888; }
@@ -90,10 +91,11 @@
         .price-modal-btn.add:hover { background: #15803d; }
         .price-modal-btn.cancel { background: #f0f0f0; color: #333; border: 1px solid #ccc; }
 
-        /* Quantity modal */
-        .qty-modal { display: none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        /* Quantity modal - Step 2, only after price is selected */
+        .qty-modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
         .qty-modal.show { display: flex; }
         .qty-modal-content { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); min-width: 320px; max-width: 95%; }
+        .qty-modal-step { margin: 0 0 4px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #4a9eff; }
         .qty-modal-content h2 { margin: 0 0 8px 0; font-size: 18px; color: #333; }
         .qty-modal-summary { font-size: 14px; color: #666; margin-bottom: 4px; }
         .qty-modal-hint { font-size: 12px; color: #888; margin-bottom: 12px; }
@@ -142,9 +144,10 @@
 
 <div id="priceModal" class="price-modal">
     <div class="price-modal-content">
-        <h2>Select selling price</h2>
+        <p class="price-modal-step">Step 1 of 2</p>
+        <h2>Select price</h2>
         <p class="price-modal-subtitle">Product: <strong id="priceModalProductName">—</strong></p>
-        <p class="price-modal-hint">This product has multiple selling prices. Select one — then you will enter quantity in the next step.</p>
+        <p class="price-modal-hint">This product can have multiple prices. Select one — you will enter quantity in the next modal.</p>
         <div id="priceModalOptions"></div>
         <div class="price-option" data-price-type="custom" id="priceOptCustom">
             <span class="label">Custom price</span>
@@ -155,7 +158,7 @@
             <input type="number" step="0.01" min="0" id="priceModalCustomInput" placeholder="0.00">
         </div>
         <div class="price-modal-buttons">
-            <button type="button" class="price-modal-btn cancel" onclick="closePriceModal()">Cancel (Esc)</button>
+            <button type="button" class="price-modal-btn cancel" onclick="closePriceModal(); focusSearch();">Cancel (Esc)</button>
             <button type="button" class="price-modal-btn add" onclick="confirmPriceAndOpenQtyModal()">Next: enter quantity (Enter)</button>
         </div>
         <p style="font-size: 11px; color: #999; margin-top: 12px;">↑↓ change price · 1-9 select by number</p>
@@ -164,6 +167,7 @@
 
 <div id="qtyModal" class="qty-modal">
     <div class="qty-modal-content">
+        <p class="qty-modal-step">Step 2 of 2</p>
         <h2>Enter quantity</h2>
         <p class="qty-modal-hint" id="qtyModalProductLine">—</p>
         <p class="qty-modal-summary" id="qtyModalSummary">—</p>
@@ -172,7 +176,7 @@
             <input type="number" step="0.01" min="0.01" id="qtyModalQty" value="1">
         </div>
         <div class="qty-modal-buttons">
-            <button type="button" class="qty-modal-btn cancel" onclick="closeQtyModal()">Cancel (Esc)</button>
+            <button type="button" class="qty-modal-btn cancel" onclick="closeQtyModal(); focusSearch();">Cancel (Esc)</button>
             <button type="button" class="qty-modal-btn back" onclick="qtyModalBackToPrice()">Back</button>
             <button type="button" class="qty-modal-btn add" onclick="confirmQtyAndAddToCart()">Add to cart (Enter)</button>
         </div>
@@ -234,7 +238,7 @@
                 <button type="button" class="quick-link-btn blue" onclick="printBill()">Print Bill <kbd>Ctrl+P</kbd></button>
                 <button type="button" class="quick-link-btn red" onclick="clearBill()">Clear Bill <kbd>Ctrl+Shift+C</kbd></button>
             </div>
-            <p style="margin: 8px 0 0 0; font-size: 11px; color: var(--gray-500);">F2 Search | Enter Add | Esc Close | ↑↓ Select price | 1-9 Price #</p>
+            <p style="margin: 8px 0 0 0; font-size: 11px; color: #555;"><strong>Shortcuts:</strong> <kbd>F2</kbd> Search · <kbd>Enter</kbd> Add/Next · <kbd>Esc</kbd> Close · <kbd>↑↓</kbd> Price · <kbd>1-9</kbd> Pick price · <kbd>Ctrl+P</kbd> Print · <kbd>Ctrl+Shift+C</kbd> Clear</p>
         </div>
     </div>
 
@@ -324,6 +328,7 @@
     let pendingPriceSelection = null; // { product, price } after user selects price
 
     function openPriceModal(product, preselectedPrice) {
+        document.getElementById('qtyModal').classList.remove('show');
         pendingProduct = product;
         const productName = product.name || 'Product';
         document.getElementById('priceModalProductName').textContent = productName;
@@ -372,7 +377,6 @@
     function closePriceModal() {
         document.getElementById('priceModal').classList.remove('show');
         pendingProduct = null;
-        // do not clear pendingPriceSelection here – it is used when opening the quantity modal
     }
 
     function getSelectedPrice() {
@@ -426,6 +430,10 @@
         openPriceModal(product, price);
     }
 
+    function focusSearch() {
+        setTimeout(function() { document.getElementById('productSearch').focus(); }, 50);
+    }
+
     function confirmQtyAndAddToCart() {
         if (!pendingPriceSelection) return;
         const qtyInput = document.getElementById('qtyModalQty').value;
@@ -443,6 +451,7 @@
             unit: product.unit || ''
         }, qty);
         closeQtyModal();
+        focusSearch();
     }
 
     function addToCart(product, qtyOverride) {
@@ -599,10 +608,12 @@
                 this.value = '';
                 hideDropdown();
                 openPriceModal(product);
+                e.preventDefault();
+                e.stopPropagation();
             } else if (this.value.trim()) {
                 alert('No product found.');
+                e.preventDefault();
             }
-            e.preventDefault();
         }
         if (e.key === 'Escape') hideDropdown();
     });
@@ -617,6 +628,7 @@
         if (qtyModalOpen) {
             if (e.key === 'Escape') {
                 closeQtyModal();
+                focusSearch();
                 e.preventDefault();
                 return;
             }
@@ -634,6 +646,7 @@
             const inModalInput = document.activeElement && document.activeElement.id === 'priceModalCustomInput';
             if (e.key === 'Escape') {
                 closePriceModal();
+                focusSearch();
                 e.preventDefault();
                 return;
             }
