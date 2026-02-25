@@ -13,17 +13,20 @@
             width: 100%;
             position: relative;
         }
+
         html:has(.pos-wrapper)::-webkit-scrollbar,
         body:has(.pos-wrapper)::-webkit-scrollbar {
             display: none !important;
             width: 0 !important;
             height: 0 !important;
         }
+
         html:has(.pos-wrapper),
         body:has(.pos-wrapper) {
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
         }
+
         .main-content:has(.pos-wrapper) {
             overflow: hidden !important;
             height: calc(100vh - 70px) !important;
@@ -32,29 +35,36 @@
             padding: 0 !important;
             margin-left: 280px !important;
         }
+
         body.sidebar-hidden .main-content:has(.pos-wrapper) {
             margin-left: 0 !important;
         }
+
         .main-content:has(.pos-wrapper)::-webkit-scrollbar {
             display: none !important;
         }
+
         .main-content:has(.pos-wrapper) {
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
         }
+
         /* Hide scrollbar on any scrollable element inside pos */
         .pos-wrapper *::-webkit-scrollbar {
             display: none !important;
             width: 0 !important;
             height: 0 !important;
         }
+
         .pos-wrapper * {
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
         }
+
         .pos-dropdown-no-scrollbar::-webkit-scrollbar {
             display: none !important;
         }
+
         .pos-dropdown-no-scrollbar {
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
@@ -84,6 +94,7 @@
             overflow: hidden;
             min-height: 0;
         }
+
         .left-catalog {
             grid-column: 1;
             grid-row: 1 / -1;
@@ -124,6 +135,7 @@
         .pos-customer-header {
             padding: 16px 20px;
         }
+
         .right-controls .sidebar-header,
         .right-controls .payment-methods,
         .right-controls .discount-container,
@@ -131,10 +143,12 @@
         .right-controls .numpad-section {
             flex-shrink: 0;
         }
+
         .right-controls .checkout-summary {
             flex: 1 1 auto;
             min-height: 0;
         }
+
         .checkout-summary {
             flex-shrink: 0;
         }
@@ -335,7 +349,9 @@
             transition: background 0.2s;
         }
 
-        .cart-row:hover { background: #f8fafc; }
+        .cart-row:hover {
+            background: #f8fafc;
+        }
 
         .item-info .item-name {
             font-weight: 600;
@@ -345,7 +361,10 @@
             margin-bottom: 2px;
         }
 
-        .item-info .item-price { font-size: 12px; color: var(--gray-500, #64748b); }
+        .item-info .item-price {
+            font-size: 12px;
+            color: var(--gray-500, #64748b);
+        }
 
         .qty-controls {
             display: flex;
@@ -387,9 +406,15 @@
             color: var(--gray-900, #1e293b);
         }
 
-        .qty-input:focus { outline: none; }
+        .qty-input:focus {
+            outline: none;
+        }
+
         .qty-input::-webkit-outer-spin-button,
-        .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
 
         .item-total {
             font-weight: 700;
@@ -439,7 +464,9 @@
             color: var(--gray-900, #0f172a);
         }
 
-        .summary-line.total .val { color: var(--success, #10b981); }
+        .summary-line.total .val {
+            color: var(--success, #10b981);
+        }
 
         .checkout-actions {
             padding: 20px;
@@ -447,10 +474,15 @@
             grid-template-columns: 1fr 1fr 1fr;
             gap: 16px;
         }
-        .btn-hold:hover { background: #f1f5f9; border-color: var(--gray-500); color: var(--gray-900); }
+
+        .btn-hold:hover {
+            background: #f1f5f9;
+            border-color: var(--gray-500);
+            color: var(--gray-900);
+        }
 
         .btn-clear {
-            padding: 16px;
+            padding: 10px;
             border: 2px solid var(--danger, #ef4444);
             color: var(--danger, #ef4444);
             background: transparent;
@@ -460,16 +492,18 @@
             transition: all 0.2s;
         }
 
-        .btn-clear:hover { background: #fef2f2; }
+        .btn-clear:hover {
+            background: #fef2f2;
+        }
 
         .btn-pay {
-            padding: 16px;
+            padding: 10px;
             background: linear-gradient(135deg, var(--light-blue, #3b82f6) 0%, #2563eb 100%);
             color: white;
             border-radius: var(--radius-md, 12px);
             border: none;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 15px;
             cursor: pointer;
             box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
             transition: all 0.2s;
@@ -494,7 +528,9 @@
             padding: 20px;
         }
 
-        .modal-overlay.show { display: flex; }
+        .modal-overlay.show {
+            display: flex;
+        }
 
         .modal-card {
             background: white;
@@ -513,8 +549,15 @@
         }
 
         @keyframes modalPop {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .price-option {
@@ -540,19 +583,84 @@
             box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
         }
 
-        .price-option .label { font-weight: 600; color: #334155; }
-        .price-option .amount { font-weight: 700; color: var(--success, #10b981); font-size: 16px; }
+        .price-option .label {
+            font-weight: 600;
+            color: #334155;
+        }
 
-        #priceModalTable { width: 100%; border-collapse: collapse; margin: 0; }
-        #priceModalTable thead th { text-align: left; padding: 10px 14px; background: var(--light-blue-bg, #eff6ff); color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--gray-200); }
-        #priceModalTable tbody tr { cursor: pointer; transition: background 0.15s, border-color 0.15s; border-left: 3px solid transparent; }
-        #priceModalTable tbody tr:hover { background: #f8fafc; }
-        #priceModalTable tbody tr.price-row-selected { background: #eff6ff; border-left-color: var(--light-blue, #3b82f6); }
-        #priceModalTable tbody td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
-        #priceModalTable tbody td:first-child { font-weight: 600; color: var(--navy-dark); font-size: 13px; }
-        #priceModalTable tbody td:last-child { font-weight: 700; color: var(--success, #10b981); text-align: right; font-family: monospace; font-size: 15px; }
-        #priceModal .modal-footer-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
-        #priceModal .modal-footer-btns button { height: 34px; padding: 0 18px; font-size: 12px; font-weight: 600; border-radius: 8px; }
+        .price-option .amount {
+            font-weight: 700;
+            color: var(--success, #10b981);
+            font-size: 16px;
+        }
+
+        #priceModalTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        #priceModalTable thead th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--light-blue-bg, #eff6ff);
+            color: var(--gray-600);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        #priceModalTable tbody tr {
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        #priceModalTable tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        #priceModalTable tbody tr.price-row-selected {
+            background: #eff6ff;
+            border-left-color: var(--light-blue, #3b82f6);
+        }
+
+        #priceModalTable tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 13px;
+        }
+
+        #priceModalTable tbody td:first-child {
+            font-weight: 600;
+            color: var(--navy-dark);
+            font-size: 13px;
+        }
+
+        #priceModalTable tbody td:last-child {
+            font-weight: 700;
+            color: var(--success, #10b981);
+            text-align: right;
+            font-family: monospace;
+            font-size: 15px;
+        }
+
+        #priceModal .modal-footer-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        #priceModal .modal-footer-btns button {
+            height: 34px;
+            padding: 0 18px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+        }
 
         .numpad-section {
             padding: 12px 20px;
@@ -589,9 +697,21 @@
             background: #eff6ff;
         }
 
-        .numpad-btn:active { transform: scale(0.95); background: #dbeafe; }
-        .numpad-btn.clear { color: var(--danger, #ef4444); font-size: 14px; }
-        .numpad-btn.action { background: #f1f5f9; font-size: 14px; color: var(--gray-500, #64748b); }
+        .numpad-btn:active {
+            transform: scale(0.95);
+            background: #dbeafe;
+        }
+
+        .numpad-btn.clear {
+            color: var(--danger, #ef4444);
+            font-size: 14px;
+        }
+
+        .numpad-btn.action {
+            background: #f1f5f9;
+            font-size: 14px;
+            color: var(--gray-500, #64748b);
+        }
 
         .payment-methods {
             display: grid;
@@ -681,7 +801,9 @@
             width: 100%;
         }
 
-        .discount-input:focus { outline: none; }
+        .discount-input:focus {
+            outline: none;
+        }
 
         body.sidebar-hidden .pos-wrapper {
             margin-left: 0;
@@ -699,55 +821,177 @@
                 height: calc(100dvh - 126px);
                 padding: 8px;
             }
+
             .pos-container {
                 grid-template-columns: 1fr minmax(280px, 380px) minmax(280px, 360px);
                 grid-template-rows: auto 1fr;
                 gap: 8px;
             }
-            .middle-cart, .right-controls { min-width: 0; }
-            .search-wrap input { padding: 10px 12px 10px 40px; font-size: 13px; }
-            .category-bar { padding: 8px 12px; gap: 8px; }
-            .category-item { padding: 6px 14px; font-size: 12px; }
+
+            .middle-cart,
+            .right-controls {
+                min-width: 0;
+            }
+
+            .search-wrap input {
+                padding: 10px 12px 10px 40px;
+                font-size: 13px;
+            }
+
+            .category-bar {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+
+            .category-item {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
                 gap: 10px;
             }
+
             .product-card {
                 min-height: 160px;
                 padding: 12px;
             }
-            .product-image-wrap { height: 80px; }
-            .product-card .p-name { font-size: 13px; min-height: 36px; }
-            .product-card .p-price { font-size: 15px; }
-            .product-card .p-unit, .product-card .p-stock { font-size: 10px; }
-            .sidebar-header { padding: 14px 16px; }
-            .sidebar-header h3 { font-size: 16px; }
+
+            .product-image-wrap {
+                height: 80px;
+            }
+
+            .product-card .p-name {
+                font-size: 13px;
+                min-height: 36px;
+            }
+
+            .product-card .p-price {
+                font-size: 15px;
+            }
+
+            .product-card .p-unit,
+            .product-card .p-stock {
+                font-size: 10px;
+            }
+
+            .sidebar-header {
+                padding: 14px 16px;
+            }
+
+            .sidebar-header h3 {
+                font-size: 16px;
+            }
+
             .cart-row {
                 grid-template-columns: 1fr 90px 70px 36px;
                 padding: 10px 12px;
                 gap: 6px;
             }
-            .item-info .item-name { font-size: 13px; }
-            .item-info .item-price { font-size: 11px; }
-            .item-total { font-size: 13px; }
-            .qty-btn { width: 30px; height: 30px; font-size: 16px; }
-            .qty-input { width: 36px; font-size: 13px; }
-            .pos-customer-header { padding: 12px 16px; }
-            .payment-methods { padding: 8px 16px; gap: 8px; }
-            .payment-btn { padding: 8px 4px; font-size: 12px; }
-            .discount-container { padding: 8px 16px; }
-            .discount-input { font-size: 13px; }
-            .toggle-btn { padding: 3px 8px; font-size: 10px; }
-            .checkout-summary { padding: 14px 16px; gap: 8px; }
-            .checkout-actions { padding: 14px 16px; gap: 12px; }
-            .summary-line { font-size: 14px; min-height: 22px; align-items: center; }
-            .summary-line.total { font-size: 18px; margin-top: 8px; padding-top: 8px; }
-            .summary-line span:last-child, .summary-line input { flex-shrink: 0; min-width: 56px; text-align: right; }
-            .btn-clear, .btn-pay { padding: 12px; font-size: 15px; }
-            .numpad-section { padding: 10px 16px; }
-            .numpad-grid { gap: 6px; }
-            .numpad-btn { height: 44px; font-size: 16px; }
-            .numpad-btn.clear, .numpad-btn.action { font-size: 12px; }
+
+            .item-info .item-name {
+                font-size: 13px;
+            }
+
+            .item-info .item-price {
+                font-size: 11px;
+            }
+
+            .item-total {
+                font-size: 13px;
+            }
+
+            .qty-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 16px;
+            }
+
+            .qty-input {
+                width: 36px;
+                font-size: 13px;
+            }
+
+            .pos-customer-header {
+                padding: 12px 16px;
+            }
+
+            .payment-methods {
+                padding: 8px 16px;
+                gap: 8px;
+            }
+
+            .payment-btn {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+
+            .discount-container {
+                padding: 8px 16px;
+            }
+
+            .discount-input {
+                font-size: 13px;
+            }
+
+            .toggle-btn {
+                padding: 3px 8px;
+                font-size: 10px;
+            }
+
+            .checkout-summary {
+                padding: 14px 16px;
+                gap: 8px;
+            }
+
+            .checkout-actions {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+
+            .summary-line {
+                font-size: 14px;
+                min-height: 22px;
+                align-items: center;
+            }
+
+            .summary-line.total {
+                font-size: 18px;
+                margin-top: 8px;
+                padding-top: 8px;
+            }
+
+            .summary-line span:last-child,
+            .summary-line input {
+                flex-shrink: 0;
+                min-width: 56px;
+                text-align: right;
+            }
+
+            .btn-clear,
+            .btn-pay {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .numpad-section {
+                padding: 10px 16px;
+            }
+
+            .numpad-grid {
+                gap: 6px;
+            }
+
+            .numpad-btn {
+                height: 44px;
+                font-size: 16px;
+            }
+
+            .numpad-btn.clear,
+            .numpad-btn.action {
+                font-size: 12px;
+            }
         }
 
         /* 1200x800 and similar: reduce right-panel sizes so discount and keypad don't overlay */
@@ -758,66 +1002,81 @@
                 min-height: 0;
                 overflow-y: auto;
             }
+
             .right-controls .payment-methods {
                 padding: 5px 14px;
                 gap: 5px;
                 flex-shrink: 0;
             }
+
             .right-controls .payment-btn {
                 padding: 5px 2px;
                 font-size: 11px;
             }
+
             .right-controls .discount-container {
                 padding: 5px 14px;
                 flex-shrink: 0;
             }
+
             .right-controls .discount-wrap {
                 padding: 3px;
                 gap: 6px;
             }
+
             .right-controls .discount-input {
                 font-size: 12px;
             }
+
             .right-controls .toggle-btn {
                 padding: 2px 6px;
                 font-size: 9px;
             }
+
             .right-controls .checkout-summary {
                 padding: 8px 14px;
                 gap: 4px;
                 flex-shrink: 0;
             }
+
             .right-controls .summary-line {
                 font-size: 12px;
                 min-height: 18px;
             }
+
             .right-controls .summary-line.total {
                 font-size: 15px;
                 margin-top: 4px;
                 padding-top: 4px;
             }
+
             .right-controls .checkout-actions {
                 padding: 8px 14px;
                 gap: 8px;
                 flex-shrink: 0;
             }
+
             .right-controls .btn-clear,
             .right-controls .btn-pay {
                 padding: 8px 10px;
                 font-size: 13px;
             }
+
             .right-controls .numpad-section {
                 padding: 6px 14px;
                 flex-shrink: 0;
                 margin-top: auto;
             }
+
             .right-controls .numpad-grid {
                 gap: 4px;
             }
+
             .right-controls .numpad-btn {
                 height: 34px;
                 font-size: 14px;
             }
+
             .right-controls .numpad-btn.clear,
             .right-controls .numpad-btn.action {
                 font-size: 10px;
@@ -830,63 +1089,210 @@
                 height: calc(100dvh - 126px);
                 min-height: 0;
             }
-            .pos-container { gap: 6px; }
-            .search-wrap input { padding: 8px 10px 8px 36px; font-size: 12px; }
-            .category-bar { padding: 6px 10px; gap: 6px; }
-            .category-item { padding: 5px 12px; font-size: 11px; }
+
+            .pos-container {
+                gap: 6px;
+            }
+
+            .search-wrap input {
+                padding: 8px 10px 8px 36px;
+                font-size: 12px;
+            }
+
+            .category-bar {
+                padding: 6px 10px;
+                gap: 6px;
+            }
+
+            .category-item {
+                padding: 5px 12px;
+                font-size: 11px;
+            }
+
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
                 gap: 8px;
             }
+
             .product-card {
                 min-height: 120px;
                 padding: 10px;
             }
-            .product-image-wrap { height: 60px; }
-            .product-card .p-name { font-size: 12px; min-height: 32px; }
-            .product-card .p-price { font-size: 14px; }
-            .sidebar-header { padding: 12px 14px; }
-            .sidebar-header h3 { font-size: 15px; }
+
+            .product-image-wrap {
+                height: 60px;
+            }
+
+            .product-card .p-name {
+                font-size: 12px;
+                min-height: 32px;
+            }
+
+            .product-card .p-price {
+                font-size: 14px;
+            }
+
+            .sidebar-header {
+                padding: 12px 14px;
+            }
+
+            .sidebar-header h3 {
+                font-size: 15px;
+            }
+
             .cart-row {
                 grid-template-columns: 1fr 80px 62px 32px;
                 padding: 8px 10px;
                 gap: 5px;
             }
-            .item-info .item-name { font-size: 12px; }
-            .item-info .item-price { font-size: 10px; }
-            .item-total { font-size: 12px; }
-            .qty-btn { width: 28px; height: 28px; font-size: 14px; }
-            .qty-input { width: 32px; font-size: 12px; }
-            .pos-customer-header { padding: 10px 14px; }
-            .payment-methods { padding: 6px 14px; gap: 6px; }
-            .payment-btn { padding: 6px 2px; font-size: 11px; }
-            .discount-container { padding: 6px 14px; }
-            .discount-input { font-size: 12px; }
-            .toggle-btn { padding: 2px 6px; font-size: 10px; }
-            .checkout-summary { padding: 12px 14px; gap: 6px; }
-            .checkout-actions { padding: 12px 14px; gap: 10px; }
-            .summary-line { font-size: 13px; min-height: 20px; }
-            .summary-line.total { font-size: 16px; margin-top: 6px; padding-top: 6px; }
-            .btn-clear, .btn-pay { padding: 10px; font-size: 14px; }
-            .numpad-section { padding: 8px 14px; }
-            .numpad-grid { gap: 5px; }
-            .numpad-btn { height: 40px; font-size: 15px; }
-            .numpad-btn.clear, .numpad-btn.action { font-size: 11px; }
+
+            .item-info .item-name {
+                font-size: 12px;
+            }
+
+            .item-info .item-price {
+                font-size: 10px;
+            }
+
+            .item-total {
+                font-size: 12px;
+            }
+
+            .qty-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+
+            .qty-input {
+                width: 32px;
+                font-size: 12px;
+            }
+
+            .pos-customer-header {
+                padding: 10px 14px;
+            }
+
+            .payment-methods {
+                padding: 6px 14px;
+                gap: 6px;
+            }
+
+            .payment-btn {
+                padding: 6px 2px;
+                font-size: 11px;
+            }
+
+            .discount-container {
+                padding: 6px 14px;
+            }
+
+            .discount-input {
+                font-size: 12px;
+            }
+
+            .toggle-btn {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+
+            .checkout-summary {
+                padding: 12px 14px;
+                gap: 6px;
+            }
+
+            .checkout-actions {
+                padding: 12px 14px;
+                gap: 10px;
+            }
+
+            .summary-line {
+                font-size: 13px;
+                min-height: 20px;
+            }
+
+            .summary-line.total {
+                font-size: 16px;
+                margin-top: 6px;
+                padding-top: 6px;
+            }
+
+            .btn-clear,
+            .btn-pay {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .numpad-section {
+                padding: 8px 14px;
+            }
+
+            .numpad-grid {
+                gap: 5px;
+            }
+
+            .numpad-btn {
+                height: 40px;
+                font-size: 15px;
+            }
+
+            .numpad-btn.clear,
+            .numpad-btn.action {
+                font-size: 11px;
+            }
+
             /* Prevent overlay: summary and actions stay stacked, no overlap */
-            .right-controls { overflow-y: auto; display: flex; flex-direction: column; }
-            .right-controls .checkout-summary { flex: 0 0 auto; }
-            .right-controls .checkout-actions { flex-shrink: 0; }
+            .right-controls {
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .right-controls .checkout-summary {
+                flex: 0 0 auto;
+            }
+
+            .right-controls .checkout-actions {
+                flex-shrink: 0;
+            }
         }
 
         /* Small height: scale down so everything fits, nothing hidden */
         @media (max-height: 600px) {
-            .right-controls .checkout-summary { padding: 8px 10px !important; gap: 4px !important; }
-            .summary-line { font-size: 12px !important; min-height: 18px !important; }
-            .summary-line.total { font-size: 14px !important; margin-top: 4px !important; padding-top: 4px !important; }
-            .checkout-actions { padding: 8px 10px !important; }
-            .btn-clear, .btn-pay { padding: 8px !important; font-size: 13px !important; }
-            .numpad-btn { height: 36px !important; font-size: 14px !important; }
-            .numpad-grid { gap: 4px !important; }
+            .right-controls .checkout-summary {
+                padding: 8px 10px !important;
+                gap: 4px !important;
+            }
+
+            .summary-line {
+                font-size: 12px !important;
+                min-height: 18px !important;
+            }
+
+            .summary-line.total {
+                font-size: 14px !important;
+                margin-top: 4px !important;
+                padding-top: 4px !important;
+            }
+
+            .checkout-actions {
+                padding: 8px 10px !important;
+            }
+
+            .btn-clear,
+            .btn-pay {
+                padding: 8px !important;
+                font-size: 13px !important;
+            }
+
+            .numpad-btn {
+                height: 36px !important;
+                font-size: 14px !important;
+            }
+
+            .numpad-grid {
+                gap: 4px !important;
+            }
         }
 
         /* Small tablet: hide customer (name, phone, loyalty) section; right-controls fill column */
@@ -894,6 +1300,7 @@
             .pos-customer-section {
                 display: none !important;
             }
+
             .right-controls {
                 grid-row: 1 / -1;
             }
@@ -907,56 +1314,177 @@
                 height: calc(100vh - 126px);
                 height: calc(100dvh - 126px);
             }
+
             .pos-container {
                 grid-template-columns: 1fr minmax(200px, 1fr) minmax(220px, 1fr);
                 grid-template-rows: auto 1fr;
                 gap: 6px;
             }
-            .search-wrap input { padding: 6px 8px 6px 32px; font-size: 11px; }
-            .category-bar { padding: 5px 8px; gap: 5px; }
-            .category-item { padding: 4px 10px; font-size: 10px; }
+
+            .search-wrap input {
+                padding: 6px 8px 6px 32px;
+                font-size: 11px;
+            }
+
+            .category-bar {
+                padding: 5px 8px;
+                gap: 5px;
+            }
+
+            .category-item {
+                padding: 4px 10px;
+                font-size: 10px;
+            }
+
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
                 gap: 6px;
             }
+
             .product-card {
                 min-height: 120px;
                 padding: 8px;
             }
-            .product-card .p-name { font-size: 11px; min-height: 28px; }
-            .product-card .p-price { font-size: 13px; }
-            .product-image-wrap { height: 50px; }
-            .sidebar-header { padding: 10px 12px; }
-            .sidebar-header h3 { font-size: 14px; }
+
+            .product-card .p-name {
+                font-size: 11px;
+                min-height: 28px;
+            }
+
+            .product-card .p-price {
+                font-size: 13px;
+            }
+
+            .product-image-wrap {
+                height: 50px;
+            }
+
+            .sidebar-header {
+                padding: 10px 12px;
+            }
+
+            .sidebar-header h3 {
+                font-size: 14px;
+            }
+
             .cart-row {
                 grid-template-columns: 1fr 64px 54px 28px;
                 padding: 6px 10px;
                 gap: 4px;
             }
-            .item-info .item-name { font-size: 11px; }
-            .item-info .item-price { font-size: 10px; }
-            .item-total { font-size: 11px; }
-            .qty-btn { width: 26px; height: 26px; font-size: 13px; }
-            .qty-input { width: 28px; font-size: 11px; }
-            .pos-customer-header { padding: 8px 12px; }
-            .payment-methods { padding: 5px 12px; gap: 5px; }
-            .payment-btn { padding: 5px 2px; font-size: 10px; }
-            .discount-container { padding: 5px 12px; }
-            .discount-input { font-size: 11px; }
-            .toggle-btn { padding: 2px 5px; font-size: 9px; }
-            .checkout-summary { padding: 10px 12px; gap: 5px; }
-            .checkout-actions { padding: 10px 12px; gap: 8px; grid-template-columns: 1fr 1fr 1fr; }
-            .summary-line { font-size: 12px; min-height: 18px; }
-            .summary-line.total { font-size: 15px; margin-top: 5px; padding-top: 5px; }
-            .btn-clear, .btn-pay { padding: 8px; font-size: 13px; }
-            .numpad-section { padding: 6px 12px; }
-            .numpad-grid { gap: 5px; }
-            .numpad-btn { height: 38px; font-size: 14px; }
-            .numpad-btn.clear, .numpad-btn.action { font-size: 10px; }
-            .right-controls .numpad-section { margin-top: auto; }
-            .right-controls { overflow-y: auto; flex-direction: column; }
-            .right-controls .checkout-summary { flex: 0 0 auto; }
-            .right-controls .checkout-actions { flex-shrink: 0; }
+
+            .item-info .item-name {
+                font-size: 11px;
+            }
+
+            .item-info .item-price {
+                font-size: 10px;
+            }
+
+            .item-total {
+                font-size: 11px;
+            }
+
+            .qty-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 13px;
+            }
+
+            .qty-input {
+                width: 28px;
+                font-size: 11px;
+            }
+
+            .pos-customer-header {
+                padding: 8px 12px;
+            }
+
+            .payment-methods {
+                padding: 5px 12px;
+                gap: 5px;
+            }
+
+            .payment-btn {
+                padding: 5px 2px;
+                font-size: 10px;
+            }
+
+            .discount-container {
+                padding: 5px 12px;
+            }
+
+            .discount-input {
+                font-size: 11px;
+            }
+
+            .toggle-btn {
+                padding: 2px 5px;
+                font-size: 9px;
+            }
+
+            .checkout-summary {
+                padding: 10px 12px;
+                gap: 5px;
+            }
+
+            .checkout-actions {
+                padding: 10px 12px;
+                gap: 8px;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .summary-line {
+                font-size: 12px;
+                min-height: 18px;
+            }
+
+            .summary-line.total {
+                font-size: 15px;
+                margin-top: 5px;
+                padding-top: 5px;
+            }
+
+            .btn-clear,
+            .btn-pay {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .numpad-section {
+                padding: 6px 12px;
+            }
+
+            .numpad-grid {
+                gap: 5px;
+            }
+
+            .numpad-btn {
+                height: 38px;
+                font-size: 14px;
+            }
+
+            .numpad-btn.clear,
+            .numpad-btn.action {
+                font-size: 10px;
+            }
+
+            .right-controls .numpad-section {
+                margin-top: auto;
+            }
+
+            .right-controls {
+                overflow-y: auto;
+                flex-direction: column;
+            }
+
+            .right-controls .checkout-summary {
+                flex: 0 0 auto;
+            }
+
+            .right-controls .checkout-actions {
+                flex-shrink: 0;
+            }
         }
 
         /* Phone: same 3-column UI, smallest components, no overlay/hide */
@@ -965,70 +1493,238 @@
                 margin: -28px -12px -28px -12px;
                 padding: 4px;
             }
+
             .pos-container {
                 grid-template-columns: minmax(0, 1fr) minmax(100px, 1fr) minmax(120px, 1fr);
                 gap: 4px;
             }
-            .search-wrap input { padding: 5px 6px 5px 28px; font-size: 10px; }
-            .category-bar { padding: 4px 6px; gap: 4px; }
-            .category-item { padding: 3px 8px; font-size: 9px; }
+
+            .search-wrap input {
+                padding: 5px 6px 5px 28px;
+                font-size: 10px;
+            }
+
+            .category-bar {
+                padding: 4px 6px;
+                gap: 4px;
+            }
+
+            .category-item {
+                padding: 3px 8px;
+                font-size: 9px;
+            }
+
             .product-grid {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 4px;
             }
+
             .product-card {
                 min-height: 100px;
                 padding: 6px;
             }
-            .product-image-wrap { height: 42px; }
-            .product-card .p-name { font-size: 10px; min-height: 24px; -webkit-line-clamp: 2; }
-            .product-card .p-price { font-size: 11px; }
-            .product-card .p-unit, .product-card .p-stock { font-size: 8px; }
-            .sidebar-header { padding: 8px 10px; }
-            .sidebar-header h3 { font-size: 12px; }
-            .pos-customer-section .pos-customer-header { padding: 8px 10px; }
-            .pos-customer-section input[type="text"] { padding: 6px 8px !important; font-size: 11px !important; }
-            .pos-customer-section button { padding: 5px 6px !important; font-size: 10px !important; }
+
+            .product-image-wrap {
+                height: 42px;
+            }
+
+            .product-card .p-name {
+                font-size: 10px;
+                min-height: 24px;
+                -webkit-line-clamp: 2;
+            }
+
+            .product-card .p-price {
+                font-size: 11px;
+            }
+
+            .product-card .p-unit,
+            .product-card .p-stock {
+                font-size: 8px;
+            }
+
+            .sidebar-header {
+                padding: 8px 10px;
+            }
+
+            .sidebar-header h3 {
+                font-size: 12px;
+            }
+
+            .pos-customer-section .pos-customer-header {
+                padding: 8px 10px;
+            }
+
+            .pos-customer-section input[type="text"] {
+                padding: 6px 8px !important;
+                font-size: 11px !important;
+            }
+
+            .pos-customer-section button {
+                padding: 5px 6px !important;
+                font-size: 10px !important;
+            }
+
             .cart-row {
                 grid-template-columns: 1fr 52px 44px 24px;
                 padding: 5px 8px;
                 gap: 3px;
             }
-            .item-info .item-name { font-size: 10px; }
-            .item-info .item-price { font-size: 9px; }
-            .item-total { font-size: 10px; }
-            .qty-btn { width: 22px; height: 22px; font-size: 11px; }
-            .qty-input { width: 24px; font-size: 10px; }
-            .payment-methods { padding: 4px 10px; gap: 4px; }
-            .payment-btn { padding: 4px 2px; font-size: 9px; }
-            .discount-container { padding: 4px 10px; }
-            .discount-input { font-size: 10px; }
-            .toggle-btn { padding: 2px 4px; font-size: 8px; }
-            .checkout-summary { padding: 8px 10px; gap: 4px; }
-            .checkout-actions { padding: 8px 10px; gap: 6px; grid-template-columns: 1fr 1fr 1fr; }
-            .summary-line { font-size: 11px; min-height: 16px; }
-            .summary-line.total { font-size: 13px; margin-top: 4px; padding-top: 4px; }
-            .summary-line input { min-width: 50px !important; padding: 2px 4px !important; font-size: 10px !important; }
-            .btn-clear, .btn-pay { padding: 6px; font-size: 11px; }
-            .numpad-section { padding: 4px 10px; }
-            .numpad-grid { gap: 4px; }
-            .numpad-btn { height: 32px; font-size: 12px; }
-            .numpad-btn.clear, .numpad-btn.action { font-size: 9px; }
-            .right-controls { overflow-y: auto; flex-direction: column; }
-            .right-controls .checkout-summary { flex: 0 0 auto; }
-            .right-controls .checkout-actions { flex-shrink: 0; }
+
+            .item-info .item-name {
+                font-size: 10px;
+            }
+
+            .item-info .item-price {
+                font-size: 9px;
+            }
+
+            .item-total {
+                font-size: 10px;
+            }
+
+            .qty-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 11px;
+            }
+
+            .qty-input {
+                width: 24px;
+                font-size: 10px;
+            }
+
+            .payment-methods {
+                padding: 4px 10px;
+                gap: 4px;
+            }
+
+            .payment-btn {
+                padding: 4px 2px;
+                font-size: 9px;
+            }
+
+            .discount-container {
+                padding: 4px 10px;
+            }
+
+            .discount-input {
+                font-size: 10px;
+            }
+
+            .toggle-btn {
+                padding: 2px 4px;
+                font-size: 8px;
+            }
+
+            .checkout-summary {
+                padding: 8px 10px;
+                gap: 4px;
+            }
+
+            .checkout-actions {
+                padding: 8px 10px;
+                gap: 6px;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .summary-line {
+                font-size: 11px;
+                min-height: 16px;
+            }
+
+            .summary-line.total {
+                font-size: 13px;
+                margin-top: 4px;
+                padding-top: 4px;
+            }
+
+            .summary-line input {
+                min-width: 50px !important;
+                padding: 2px 4px !important;
+                font-size: 10px !important;
+            }
+
+            .btn-clear,
+            .btn-pay {
+                padding: 6px;
+                font-size: 11px;
+            }
+
+            .numpad-section {
+                padding: 4px 10px;
+            }
+
+            .numpad-grid {
+                gap: 4px;
+            }
+
+            .numpad-btn {
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .numpad-btn.clear,
+            .numpad-btn.action {
+                font-size: 9px;
+            }
+
+            .right-controls {
+                overflow-y: auto;
+                flex-direction: column;
+            }
+
+            .right-controls .checkout-summary {
+                flex: 0 0 auto;
+            }
+
+            .right-controls .checkout-actions {
+                flex-shrink: 0;
+            }
         }
 
         @media print {
-            @page { size: auto; margin: 12mm; }
-            body, .pos-wrapper { margin: 0 !important; padding: 0 !important; background: #fff !important; }
-            .pos-wrapper { display: block !important; }
-            .pos-wrapper > .no-print { display: none !important; }
-            .pos-container { display: none !important; }
-            #receipt-print { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-            #receipt-print * { visibility: visible; }
-            .receipt-paper { box-shadow: none !important; margin: 0 auto !important; }
+            @page {
+                size: auto;
+                margin: 12mm;
+            }
+
+            body,
+            .pos-wrapper {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+            }
+
+            .pos-wrapper {
+                display: block !important;
+            }
+
+            .pos-wrapper>.no-print {
+                display: none !important;
+            }
+
+            .pos-container {
+                display: none !important;
+            }
+
+            #receipt-print {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #receipt-print * {
+                visibility: visible;
+            }
+
+            .receipt-paper {
+                box-shadow: none !important;
+                margin: 0 auto !important;
+            }
         }
+
         .receipt-paper {
             font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             max-width: 320px;
@@ -1041,6 +1737,7 @@
             line-height: 1.4;
             box-sizing: border-box;
         }
+
         .receipt-paper .receipt-store {
             text-align: center;
             font-size: 20px;
@@ -1049,33 +1746,167 @@
             margin-bottom: 4px;
             color: #111;
         }
-        .receipt-paper .receipt-divider { border: none; border-top: 2px dashed #333; margin: 12px 0; }
-        .receipt-paper .receipt-line { border: none; border-top: 1px solid #333; margin: 10px 0; }
-        .receipt-paper .receipt-meta { font-size: 12px; color: #444; margin-bottom: 2px; }
-        .receipt-paper .receipt-meta strong { color: #111; }
-        .receipt-paper table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
-        .receipt-paper th { text-align: left; padding: 6px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #555; border-bottom: 1px solid #333; }
-        .receipt-paper th:nth-child(2) { text-align: center; }
-        .receipt-paper th:nth-child(3) { text-align: right; }
-        .receipt-paper td { padding: 8px 0; border-bottom: 1px dotted #ccc; vertical-align: top; }
-        .receipt-paper td:nth-child(2) { text-align: center; }
-        .receipt-paper td:nth-child(3) { text-align: right; font-weight: 600; }
-        .receipt-paper .receipt-total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-weight: 700; font-size: 16px; border-top: 2px solid #333; margin-top: 8px; }
-        .receipt-paper .receipt-sub-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; color: #444; }
-        .receipt-paper .receipt-thanks { text-align: center; margin-top: 24px; padding-top: 12px; font-size: 13px; font-weight: 600; color: #333; border-top: 1px dashed #333; }
-        .receipt-paper .receipt-badge { text-align: center; font-size: 14px; font-weight: 800; letter-spacing: 0.08em; padding: 8px 0; margin: 12px 0; border-top: 2px solid #333; border-bottom: 2px solid #333; }
-        .receipt-paper .receipt-amount { font-size: 20px; font-weight: 800; padding: 12px 0; margin: 12px 0; border-top: 2px solid #333; border-bottom: 2px solid #333; text-align: center; }
+
+        .receipt-paper .receipt-divider {
+            border: none;
+            border-top: 2px dashed #333;
+            margin: 12px 0;
+        }
+
+        .receipt-paper .receipt-line {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 10px 0;
+        }
+
+        .receipt-paper .receipt-meta {
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 2px;
+        }
+
+        .receipt-paper .receipt-meta strong {
+            color: #111;
+        }
+
+        .receipt-paper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+
+        .receipt-paper th {
+            text-align: left;
+            padding: 6px 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #555;
+            border-bottom: 1px solid #333;
+        }
+
+        .receipt-paper th:nth-child(2) {
+            text-align: center;
+        }
+
+        .receipt-paper th:nth-child(3) {
+            text-align: right;
+        }
+
+        .receipt-paper td {
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+            vertical-align: top;
+        }
+
+        .receipt-paper td:nth-child(2) {
+            text-align: center;
+        }
+
+        .receipt-paper td:nth-child(3) {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .receipt-paper .receipt-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-weight: 700;
+            font-size: 16px;
+            border-top: 2px solid #333;
+            margin-top: 8px;
+        }
+
+        .receipt-paper .receipt-sub-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            color: #444;
+        }
+
+        .receipt-paper .receipt-thanks {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-top: 1px dashed #333;
+        }
+
+        .receipt-paper .receipt-badge {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            padding: 8px 0;
+            margin: 12px 0;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+        }
+
+        .receipt-paper .receipt-amount {
+            font-size: 20px;
+            font-weight: 800;
+            padding: 12px 0;
+            margin: 12px 0;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+            text-align: center;
+        }
 
         .pos-shortcuts-bar {
-            grid-column: 1 / -1;
-            display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 14px;
-            padding: 8px 16px; background: var(--navy-dark, #0f172a); color: rgba(255,255,255,0.9);
-            font-size: 11px; font-weight: 500; border-top: 1px solid rgba(255,255,255,0.1);
+            position: fixed;
+            bottom: 0;
+            left: 280px;
+            right: 0;
+            z-index: 90;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            padding: 8px 16px;
+            background: var(--navy-dark, #0A1A3D);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 11px;
+            font-weight: 500;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .pos-shortcuts-bar kbd { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 2px; }
-        .pos-shortcuts-bar span { color: rgba(255,255,255,0.7); }
-        .shortcut-hint { font-size: 10px; color: var(--gray-500); margin-left: 4px; font-weight: 600; }
-        .shortcut-hint kbd { background: var(--gray-100); padding: 1px 4px; border-radius: 3px; font-size: 9px; }
+
+        body.sidebar-hidden .pos-shortcuts-bar {
+            left: 0;
+        }
+
+        .pos-shortcuts-bar kbd {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-right: 2px;
+        }
+
+        .pos-shortcuts-bar span {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .shortcut-hint {
+            font-size: 10px;
+            color: var(--gray-500);
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        .shortcut-hint kbd {
+            background: var(--gray-100);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 9px;
+        }
     </style>
 
     <div class="pos-wrapper">
@@ -1083,10 +1914,15 @@
             <div class="left-catalog">
                 <div class="search-wrap" style="display: flex; gap: 8px; align-items: center;">
                     <div style="flex: 1; position: relative;">
-                        <input type="text" id="productSearch" placeholder="Search by name, code, barcode or category..." autocomplete="off" style="width: 100%;">
-                        <span class="shortcut-hint" data-shortcut-action="search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><kbd>{{ $posShortcuts['search'] ?? 'F2' }}</kbd></span>
+                        <input type="text" id="productSearch" placeholder="Search by name, code, barcode or category..."
+                            autocomplete="off" style="width: 100%;">
+                        <span class="shortcut-hint" data-shortcut-action="search"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><kbd>{{ $posShortcuts['search'] ?? 'F2' }}</kbd></span>
                     </div>
-                    <button type="button" id="shortcutsHelpBtn" onclick="toggleShortcutsHelp()" title="Keyboard shortcuts" style="flex-shrink: 0; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; color: var(--gray-600); cursor: pointer; font-size: 14px;"><i class="fas fa-keyboard"></i> <span class="shortcut-hint" data-shortcut-action="help"><kbd>{{ $posShortcuts['help'] ?? 'F1' }}</kbd></span></button>
+                    <button type="button" id="shortcutsHelpBtn" onclick="toggleShortcutsHelp()" title="Keyboard shortcuts"
+                        style="flex-shrink: 0; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; color: var(--gray-600); cursor: pointer; font-size: 14px;"><i
+                            class="fas fa-keyboard"></i> <span class="shortcut-hint"
+                            data-shortcut-action="help"><kbd>{{ $posShortcuts['help'] ?? 'F1' }}</kbd></span></button>
                 </div>
                 <div class="category-bar" id="categoryBar">
                     <div class="category-item active" data-category-id="all">All Items</div>
@@ -1103,34 +1939,52 @@
                 <div class="sidebar-header" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
                     <h3 style="margin: 0; flex: 1; min-width: 0;">
                         <span>Current Order</span>
-                        <span id="invoiceBadge" style="font-size: 11px; background: #eff6ff; color: var(--light-blue, #3b82f6); padding: 4px 8px; border-radius: 6px;">{{ $invoiceNo }}</span>
+                        <span id="invoiceBadge"
+                            style="font-size: 11px; background: #eff6ff; color: var(--light-blue, #3b82f6); padding: 4px 8px; border-radius: 6px;">{{ $invoiceNo }}</span>
                     </h3>
                     <div style="position: relative;">
-                        <button type="button" id="heldBillsBtn" onclick="toggleHeldBills()" style="display: none; padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer; white-space: nowrap;"><i class="fas fa-pause-circle" style="margin-right: 4px;"></i>Held <span id="heldBillsCount">0</span></button>
-                        <div id="heldBillsDropdown" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; min-width: 220px; max-height: 280px; overflow-y: auto; background: white; border: 1px solid var(--gray-300); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 50;"></div>
+                        <button type="button" id="heldBillsBtn" onclick="toggleHeldBills()"
+                            style="display: none; padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer; white-space: nowrap;"><i
+                                class="fas fa-pause-circle" style="margin-right: 4px;"></i>Held <span
+                                id="heldBillsCount">0</span></button>
+                        <div id="heldBillsDropdown"
+                            style="display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; min-width: 220px; max-height: 280px; overflow-y: auto; background: white; border: 1px solid var(--gray-300); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 50;">
+                        </div>
                     </div>
                 </div>
-                <div class="pos-customer-section" style="flex-shrink: 0; padding: 12px 20px; border-top: 1px solid #f3f4f6;">
+                <div class="pos-customer-section"
+                    style="flex-shrink: 0; padding: 12px 20px; border-top: 1px solid #f3f4f6;">
                     <div id="customerSelectionArea" style="margin-top: 0;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                            <input type="text" id="customerName" placeholder="Name" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
-                            <input type="text" id="customerPhone" placeholder="Phone" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
+                            <input type="text" id="customerName" placeholder="Name"
+                                style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
+                            <input type="text" id="customerPhone" placeholder="Phone"
+                                style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
                         </div>
-                        <button onclick="openLoyaltyModal()" id="loyaltyPlaceholderBtn" style="width: 100%; padding: 8px; border: 1px dashed var(--gray-300); background: var(--gray-light); border-radius: 8px; color: var(--gray-500); font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-search" style="margin-right: 6px;"></i> Loyalty Search <span class="shortcut-hint" data-shortcut-action="loyalty"><kbd>{{ $posShortcuts['loyalty'] ?? 'F3' }}</kbd></span>
+                        <button onclick="openLoyaltyModal()" id="loyaltyPlaceholderBtn"
+                            style="width: 100%; padding: 8px; border: 1px dashed var(--gray-300); background: var(--gray-light); border-radius: 8px; color: var(--gray-500); font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-search" style="margin-right: 6px;"></i> Loyalty Search <span
+                                class="shortcut-hint"
+                                data-shortcut-action="loyalty"><kbd>{{ $posShortcuts['loyalty'] ?? 'F3' }}</kbd></span>
                         </button>
-                        <div id="selectedCustomerDisplay" style="display: none; margin-top: 8px; padding: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px;">
+                        <div id="selectedCustomerDisplay"
+                            style="display: none; margin-top: 8px; padding: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <div style="font-weight: 700; color: var(--gray-900); font-size: 13px;">Loyalty Member</div>
-                                    <div id="displayCustomerPoints" style="font-size: 11px; color: var(--gray-500);">Points: 0.00</div>
+                                    <div style="font-weight: 700; color: var(--gray-900); font-size: 13px;">Loyalty Member
+                                    </div>
+                                    <div id="displayCustomerPoints" style="font-size: 11px; color: var(--gray-500);">Points:
+                                        0.00</div>
                                 </div>
-                                <button onclick="resetCustomer()" style="color: var(--danger); background: none; border: none; cursor: pointer; padding: 4px;"><i class="fas fa-times-circle"></i> Clear</button>
+                                <button onclick="resetCustomer()"
+                                    style="color: var(--danger); background: none; border: none; cursor: pointer; padding: 4px;"><i
+                                        class="fas fa-times-circle"></i> Clear</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div style="text-align: center; padding: 60px 40px; color: var(--gray-400, #94a3b8); display: block;" id="emptyCartMsg">
+                <div style="text-align: center; padding: 60px 40px; color: var(--gray-400, #94a3b8); display: block;"
+                    id="emptyCartMsg">
                     <i class="fas fa-shopping-cart" style="font-size: 64px; margin-bottom: 16px; opacity: 0.3;"></i>
                     <p style="font-size: 16px; font-weight: 500;">No items in cart</p>
                     <p style="font-size: 13px;">Select a product to start an order</p>
@@ -1140,9 +1994,12 @@
 
             <div class="right-controls">
                 <div class="payment-methods">
-                    <button class="payment-btn active" onclick="setPaymentMethod('Cash', this)"><i class="fas fa-money-bill-wave"></i><span>Cash</span></button>
-                    <button class="payment-btn" onclick="setPaymentMethod('Card', this)"><i class="fas fa-credit-card"></i><span>Card</span></button>
-                    <button class="payment-btn" onclick="setPaymentMethod('Bank', this)"><i class="fas fa-university"></i><span>Bank</span></button>
+                    <button class="payment-btn active" onclick="setPaymentMethod('Cash', this)"><i
+                            class="fas fa-money-bill-wave"></i><span>Cash</span></button>
+                    <button class="payment-btn" onclick="setPaymentMethod('Card', this)"><i
+                            class="fas fa-credit-card"></i><span>Card</span></button>
+                    <button class="payment-btn" onclick="setPaymentMethod('Bank', this)"><i
+                            class="fas fa-university"></i><span>Bank</span></button>
                 </div>
                 <div class="discount-container">
                     <div class="discount-wrap">
@@ -1150,28 +2007,50 @@
                             <div class="toggle-btn active" id="type-fixed" onclick="setDiscountType('fixed')">Rs</div>
                             <div class="toggle-btn" id="type-percent" onclick="setDiscountType('percent')">%</div>
                         </div>
-                        <input type="text" inputmode="decimal" id="discountInput" class="discount-input" placeholder="0.00" value="0.00" onfocus="if(this.value==='0.00') this.value=''" onblur="if(this.value==='') this.value='0.00'" oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
+                        <input type="text" inputmode="decimal" id="discountInput" class="discount-input" placeholder="0.00"
+                            value="0.00" onfocus="if(this.value==='0.00') this.value=''"
+                            onblur="if(this.value==='') this.value='0.00'"
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
                     </div>
                 </div>
                 <div class="checkout-summary">
                     <div class="summary-line"><span>Items</span><span id="summaryItemCount">0</span></div>
                     <div class="summary-line"><span>Subtotal</span><span id="summarySubtotal">0.00</span></div>
-                    <div class="summary-line"><span>Discount</span><span id="summaryDiscount" style="color: var(--danger);">- 0.00</span></div>
+                    <div class="summary-line"><span>Discount</span><span id="summaryDiscount"
+                            style="color: var(--danger);">- 0.00</span></div>
                     <div class="summary-line total"><span>Total</span><span class="val" id="summaryTotal">0.00</span></div>
-                    <div class="summary-line" id="row-received" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee;">
+                    <div class="summary-line" id="row-received"
+                        style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; font-size: 17px; font-weight: 700;">
                         <span>Received (Rs)</span>
-                        <input type="text" inputmode="decimal" id="receivedAmount" value="" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); calculateChange()" style="width: 100px; text-align: right; padding: 4px; border: 1px solid #ddd; border-radius: 4px;">
+                        <input type="text" inputmode="decimal" id="receivedAmount" value="" placeholder="0.00"
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, ''); calculateChange()"
+                            style="width: 110px; text-align: right; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 17px; font-weight: 700;">
                     </div>
-                    <div class="summary-line" id="row-change" style="font-weight: bold;"><span>Change</span><span id="summaryChange">0.00</span></div>
+                    <div class="summary-line" id="row-change"
+                        style="font-weight: 800; font-size: 20px; color: var(--success);"><span
+                            style="color: var(--gray-900);">Change</span><span id="summaryChange">0.00</span></div>
                 </div>
                 <div class="checkout-actions" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <button type="button" class="btn-clear" onclick="clearCart()">Clear <span class="shortcut-hint" data-shortcut-action="clear"><kbd>{{ $posShortcuts['clear'] ?? 'F9' }}</kbd></span></button>
-                    <button type="button" class="btn-hold" onclick="holdBill()" style="padding: 16px; border: 2px solid var(--gray-400); color: var(--gray-700); background: white; border-radius: var(--radius-md, 12px); font-weight: 700; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pause-circle" style="margin-right: 4px;"></i>Hold <span class="shortcut-hint" data-shortcut-action="hold"><kbd>{{ $posShortcuts['hold'] ?? 'F5' }}</kbd></span></button>
-                    <button class="btn-pay" onclick="processPayment()">Pay & Print <span class="shortcut-hint" data-shortcut-action="pay" style="color: rgba(255,255,255,0.9);"><kbd style="background: rgba(255,255,255,0.25);">{{ $posShortcuts['pay'] ?? 'F8' }}</kbd></span></button>
+                    <button type="button" class="btn-clear" onclick="clearCart()">Clear <span class="shortcut-hint"
+                            data-shortcut-action="clear"><kbd>{{ $posShortcuts['clear'] ?? 'F9' }}</kbd></span></button>
+                    <button type="button" class="btn-hold" onclick="holdBill()"
+                        style="padding: 10px; border: 2px solid var(--gray-400); color: var(--gray-700); background: white; border-radius: var(--radius-md, 12px); font-weight: 700; cursor: pointer; transition: all 0.2s;"><i
+                            class="fas fa-pause-circle" style="margin-right: 4px;"></i>Hold <span class="shortcut-hint"
+                            data-shortcut-action="hold"><kbd>{{ $posShortcuts['hold'] ?? 'F5' }}</kbd></span></button>
+                    <button class="btn-pay" onclick="processPayment()">Pay & Print <span class="shortcut-hint"
+                            data-shortcut-action="pay" style="color: rgba(255,255,255,0.9);"><kbd
+                                style="background: rgba(255,255,255,0.25);">{{ $posShortcuts['pay'] ?? 'F8' }}</kbd></span></button>
                 </div>
                 <div style="padding: 0 20px 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" onclick="newBill()" style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: var(--gray-light, #f8fafc); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i class="fas fa-file-invoice" style="margin-right: 4px;"></i>New Bill <span class="shortcut-hint" data-shortcut-action="newBill"><kbd>{{ $posShortcuts['newBill'] ?? 'F4' }}</kbd></span></button>
-                    <button type="button" onclick="openRefundModal()" style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: #fef2f2; font-size: 13px; font-weight: 600; color: var(--danger, #dc2626); cursor: pointer;"><i class="fas fa-undo" style="margin-right: 4px;"></i>Return / Refund <span class="shortcut-hint" data-shortcut-action="refund" style="color: var(--danger);"><kbd>{{ $posShortcuts['refund'] ?? 'F6' }}</kbd></span></button>
+                    <button type="button" onclick="newBill()"
+                        style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: var(--gray-light, #f8fafc); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i
+                            class="fas fa-file-invoice" style="margin-right: 4px;"></i>New Bill <span class="shortcut-hint"
+                            data-shortcut-action="newBill"><kbd>{{ $posShortcuts['newBill'] ?? 'F4' }}</kbd></span></button>
+                    <button type="button" onclick="openRefundModal()"
+                        style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: #fef2f2; font-size: 13px; font-weight: 600; color: var(--danger, #dc2626); cursor: pointer;"><i
+                            class="fas fa-undo" style="margin-right: 4px;"></i>Return / Refund <span class="shortcut-hint"
+                            data-shortcut-action="refund"
+                            style="color: var(--danger);"><kbd>{{ $posShortcuts['refund'] ?? 'F6' }}</kbd></span></button>
                 </div>
                 <div class="numpad-section">
                     <div class="numpad-grid">
@@ -1190,19 +2069,26 @@
                     </div>
                 </div>
             </div>
-            <div id="posShortcutsBar" class="pos-shortcuts-bar no-print"></div>
         </div>
+        <div id="posShortcutsBar" class="pos-shortcuts-bar no-print"></div>
 
-        <div id="shortcutsHelpModal" class="modal-overlay" role="dialog" aria-label="Keyboard shortcuts" onclick="if(event.target===this)toggleShortcutsHelp()">
+        <div id="shortcutsHelpModal" class="modal-overlay" role="dialog" aria-label="Keyboard shortcuts"
+            onclick="if(event.target===this)toggleShortcutsHelp()">
             <div class="modal-card" style="max-width: 520px;" onclick="event.stopPropagation()">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h2 style="margin: 0; font-size: 18px;"><i class="fas fa-keyboard" style="margin-right: 8px;"></i>Keyboard shortcuts</h2>
+                    <h2 style="margin: 0; font-size: 18px;"><i class="fas fa-keyboard"
+                            style="margin-right: 8px;"></i>Keyboard shortcuts</h2>
                     <div style="display: flex; gap: 8px;">
-                        <button type="button" onclick="resetShortcutsToDefaults()" style="padding: 6px 12px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; cursor: pointer; font-size: 12px;">Reset to defaults</button>
-                        <button type="button" onclick="toggleShortcutsHelp()" style="padding: 6px 10px; border: none; background: var(--gray-100); border-radius: 6px; cursor: pointer; font-size: 14px;"><i class="fas fa-times"></i></button>
+                        <button type="button" onclick="resetShortcutsToDefaults()"
+                            style="padding: 6px 12px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; cursor: pointer; font-size: 12px;">Reset
+                            to defaults</button>
+                        <button type="button" onclick="toggleShortcutsHelp()"
+                            style="padding: 6px 10px; border: none; background: var(--gray-100); border-radius: 6px; cursor: pointer; font-size: 14px;"><i
+                                class="fas fa-times"></i></button>
                     </div>
                 </div>
-                <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px;">Click <strong>Change</strong> then press the key you want. Esc and Enter are fixed.</p>
+                <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px;">Click <strong>Change</strong> then
+                    press the key you want. Esc and Enter are fixed.</p>
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--gray-200);">
@@ -1218,7 +2104,8 @@
 
         <div id="priceModal" class="modal-overlay" role="dialog" aria-modal="true">
             <div class="modal-card">
-                <div class="table-wrapper" style="max-height: 400px; overflow-y: auto; margin-bottom: 24px; border: 1px solid var(--gray-200); border-radius: 8px;">
+                <div class="table-wrapper"
+                    style="max-height: 400px; overflow-y: auto; margin-bottom: 24px; border: 1px solid var(--gray-200); border-radius: 8px;">
                     <table id="priceModalTable">
                         <thead>
                             <tr>
@@ -1230,8 +2117,10 @@
                     </table>
                 </div>
                 <div class="modal-footer-btns">
-                    <button type="button" class="qty-btn" style="background: #f1f5f9; border: none;" onclick="closePriceModal()">Cancel</button>
-                    <button type="button" class="btn-pay" style="padding: 0;" id="confirmPriceBtn">Add with selected price</button>
+                    <button type="button" class="qty-btn" style="background: #f1f5f9; border: none;"
+                        onclick="closePriceModal()">Cancel</button>
+                    <button type="button" class="btn-pay" style="padding: 0;" id="confirmPriceBtn">Add with selected
+                        price</button>
                 </div>
             </div>
         </div>
@@ -1241,58 +2130,108 @@
                 <h2 style="margin-top: 0; font-size: 18px;">Loyalty Customer</h2>
                 <p style="color: var(--gray-500); font-size: 14px; margin-bottom: 20px;">Search by name or phone number.</p>
                 <div style="position: relative; margin-bottom: 20px;">
-                    <input type="text" id="loyaltySearch" placeholder="Phone or name..." style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--gray-300);" oninput="searchLoyaltyCustomers(this.value)">
-                    <div id="loyaltySearchResults" class="pos-dropdown-no-scrollbar" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--gray-300); border-radius: 12px; margin-top: 4px; max-height: 200px; overflow-y: auto; z-index: 100; display: none;"></div>
+                    <input type="text" id="loyaltySearch" placeholder="Phone or name..."
+                        style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--gray-300);"
+                        oninput="searchLoyaltyCustomers(this.value)">
+                    <div id="loyaltySearchResults" class="pos-dropdown-no-scrollbar"
+                        style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--gray-300); border-radius: 12px; margin-top: 4px; max-height: 200px; overflow-y: auto; z-index: 100; display: none;">
+                    </div>
                 </div>
-                <button class="qty-btn" style="width: 100%; height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;" onclick="closeLoyaltyModal()">Cancel</button>
+                <button class="qty-btn"
+                    style="width: 100%; height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;"
+                    onclick="closeLoyaltyModal()">Cancel</button>
             </div>
         </div>
 
         <div id="refundModal" class="modal-overlay">
             <div class="modal-card" style="max-width: 440px;">
-                <h2 style="margin-top: 0; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i class="fas fa-undo" style="color: var(--danger, #dc2626);"></i> Return & Refund</h2>
-                <p style="color: var(--gray-500); font-size: 13px; margin-bottom: 12px;">Search and select the invoice to refund.</p>
+                <h2 style="margin-top: 0; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i
+                        class="fas fa-undo" style="color: var(--danger, #dc2626);"></i> Return & Refund</h2>
+                <p style="color: var(--gray-500); font-size: 13px; margin-bottom: 12px;">Search and select the invoice to
+                    refund.</p>
                 <div style="margin-bottom: 12px; position: relative;">
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Search invoice</label>
-                    <input type="text" id="refundInvoiceSearch" placeholder="Type invoice no or customer name..." autocomplete="off" style="width: 100%; padding: 12px 12px 12px 36px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-                    <i class="fas fa-search" style="position: absolute; left: 12px; top: 38px; color: var(--gray-400); font-size: 14px;"></i>
-                    <div id="refundInvoiceResults" class="pos-dropdown-no-scrollbar" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; max-height: 200px; overflow-y: auto; background: white; border: 1px solid var(--gray-300); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 60;"></div>
+                    <label
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Search
+                        invoice</label>
+                    <input type="text" id="refundInvoiceSearch" placeholder="Type invoice no or customer name..."
+                        autocomplete="off"
+                        style="width: 100%; padding: 12px 12px 12px 36px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    <i class="fas fa-search"
+                        style="position: absolute; left: 12px; top: 38px; color: var(--gray-400); font-size: 14px;"></i>
+                    <div id="refundInvoiceResults" class="pos-dropdown-no-scrollbar"
+                        style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; max-height: 200px; overflow-y: auto; background: white; border: 1px solid var(--gray-300); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 60;">
+                    </div>
                 </div>
-                <div id="refundSelectedInvoice" style="display: none; margin-bottom: 12px; padding: 12px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; font-size: 13px;">
-                    <div style="font-weight: 700; color: var(--gray-900); margin-bottom: 4px;"><span id="refundSelInvoiceNo"></span> · <span id="refundSelCustomer"></span></div>
-                    <div style="color: var(--gray-600);"><span id="refundSelItems"></span> · Total <span id="refundCurrencyLabel">{{ $currencySymbol ?? 'Rs' }}</span> <span id="refundSelTotal"></span></div>
-                    <button type="button" onclick="clearRefundSelection()" style="margin-top: 6px; padding: 4px 8px; font-size: 11px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; cursor: pointer;">Change invoice</button>
+                <div id="refundSelectedInvoice"
+                    style="display: none; margin-bottom: 12px; padding: 12px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; font-size: 13px;">
+                    <div style="font-weight: 700; color: var(--gray-900); margin-bottom: 4px;"><span
+                            id="refundSelInvoiceNo"></span> · <span id="refundSelCustomer"></span></div>
+                    <div style="color: var(--gray-600);"><span id="refundSelItems"></span> · Total <span
+                            id="refundCurrencyLabel">{{ $currencySymbol ?? 'Rs' }}</span> <span id="refundSelTotal"></span>
+                    </div>
+                    <button type="button" onclick="clearRefundSelection()"
+                        style="margin-top: 6px; padding: 4px 8px; font-size: 11px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; cursor: pointer;">Change
+                        invoice</button>
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Refund amount ({{ $currencySymbol ?? 'Rs' }}) <span style="color: var(--danger);">*</span></label>
-                    <input type="text" inputmode="decimal" id="refundAmount" placeholder="0.00" value="" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 16px; font-weight: 600; box-sizing: border-box;" oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
+                    <label
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Refund
+                        amount ({{ $currencySymbol ?? 'Rs' }}) <span style="color: var(--danger);">*</span></label>
+                    <input type="text" inputmode="decimal" id="refundAmount" placeholder="0.00" value=""
+                        style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 16px; font-weight: 600; box-sizing: border-box;"
+                        oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">Refund method</label>
+                    <label
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">Refund
+                        method</label>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <button type="button" class="refund-method-btn" data-method="Cash" onclick="setRefundMethod('Cash', this)" style="padding: 10px; border: 2px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i class="fas fa-money-bill-wave"></i><br>Cash</button>
-                        <button type="button" class="refund-method-btn" data-method="Card" onclick="setRefundMethod('Card', this)" style="padding: 10px; border: 2px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i class="fas fa-credit-card"></i><br>Card</button>
-                        <button type="button" class="refund-method-btn" data-method="Bank" onclick="setRefundMethod('Bank', this)" style="padding: 10px; border: 2px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i class="fas fa-university"></i><br>Bank</button>
+                        <button type="button" class="refund-method-btn" data-method="Cash"
+                            onclick="setRefundMethod('Cash', this)"
+                            style="padding: 10px; border: 2px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i
+                                class="fas fa-money-bill-wave"></i><br>Cash</button>
+                        <button type="button" class="refund-method-btn" data-method="Card"
+                            onclick="setRefundMethod('Card', this)"
+                            style="padding: 10px; border: 2px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i
+                                class="fas fa-credit-card"></i><br>Card</button>
+                        <button type="button" class="refund-method-btn" data-method="Bank"
+                            onclick="setRefundMethod('Bank', this)"
+                            style="padding: 10px; border: 2px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i
+                                class="fas fa-university"></i><br>Bank</button>
                     </div>
                 </div>
                 <div style="margin-bottom: 12px;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--gray-700);">
-                        <input type="checkbox" id="refundUpdateInventory" style="width: 18px; height: 18px; accent-color: var(--light-blue, #3b82f6);" onchange="document.getElementById('refundBranchWrap').style.display = this.checked ? 'block' : 'none';">
+                    <label
+                        style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--gray-700);">
+                        <input type="checkbox" id="refundUpdateInventory"
+                            style="width: 18px; height: 18px; accent-color: var(--light-blue, #3b82f6);"
+                            onchange="document.getElementById('refundBranchWrap').style.display = this.checked ? 'block' : 'none';">
                         <span>Update inventory with this return</span>
                     </label>
-                    <p style="font-size: 12px; color: var(--gray-500); margin: 4px 0 0 28px;">Returned items will be added back to your assigned branch.</p>
+                    <p style="font-size: 12px; color: var(--gray-500); margin: 4px 0 0 28px;">Returned items will be added
+                        back to your assigned branch.</p>
                 </div>
                 <div id="refundBranchWrap" style="display: none; margin-bottom: 14px;">
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Branch (for inventory) <span style="color: var(--danger);">*</span></label>
-                    <input type="text" id="refundBranchDisplay" value="{{ $inventoryBranchName ?? '' }}" readonly style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #f8fafc; color: var(--gray-700);">
+                    <label
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Branch
+                        (for inventory) <span style="color: var(--danger);">*</span></label>
+                    <input type="text" id="refundBranchDisplay" value="{{ $inventoryBranchName ?? '' }}" readonly
+                        style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #f8fafc; color: var(--gray-700);">
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Reason (optional)</label>
-                    <textarea id="refundReason" placeholder="Reason for refund..." rows="2" style="width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px; resize: none; box-sizing: border-box;"></textarea>
+                    <label
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Reason
+                        (optional)</label>
+                    <textarea id="refundReason" placeholder="Reason for refund..." rows="2"
+                        style="width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px; resize: none; box-sizing: border-box;"></textarea>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <button type="button" class="qty-btn" style="height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;" onclick="closeRefundModal()">Cancel</button>
-                    <button type="button" class="btn-pay" style="height: 48px; padding: 0; font-size: 14px; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);" id="processRefundBtn" onclick="processRefund()">Process Refund</button>
+                    <button type="button" class="qty-btn"
+                        style="height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;"
+                        onclick="closeRefundModal()">Cancel</button>
+                    <button type="button" class="btn-pay"
+                        style="height: 48px; padding: 0; font-size: 14px; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);"
+                        id="processRefundBtn" onclick="processRefund()">Process Refund</button>
                 </div>
             </div>
         </div>
@@ -1411,7 +2350,7 @@
                 return `<tr><td style="padding:10px 12px;"><kbd class="shortcut-kbd" style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-size:12px;">${key}</kbd></td><td style="padding:10px 12px;">${r.label}</td><td style="padding:10px 12px;"><button type="button" class="btn-change-key" data-action="${r.id}" style="padding:4px 10px;font-size:11px;border:1px solid var(--gray-300);border-radius:6px;background:white;cursor:pointer;">Change</button></td></tr>`;
             }).join('');
             tbody.querySelectorAll('.btn-change-key').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const actionId = this.dataset.action;
                     const kbd = this.closest('tr').querySelector('.shortcut-kbd');
                     kbd.textContent = 'Press key...';
@@ -1533,14 +2472,14 @@
             if (held.length === 0) { el.innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">No held bills</div>'; }
             else {
                 el.innerHTML = held.map((h, i) => `
-                    <div style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;" onclick="recallHeldBill(${i}); document.getElementById('heldBillsDropdown').style.display='none';">
-                        <div style="min-width: 0;">
-                            <div style="font-weight: 600; font-size: 12px; color: var(--gray-900);">${h.invoiceNo}</div>
-                            <div style="font-size: 11px; color: var(--gray-500);">${h.itemCount} items · ${currencySymbol} ${(h.total || 0).toFixed(2)}</div>
-                        </div>
-                        <button type="button" onclick="event.stopPropagation(); removeHeldBill(${i});" style="padding: 4px 8px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; font-size: 11px; cursor: pointer;">Remove</button>
-                    </div>
-                `).join('');
+                                                <div style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;" onclick="recallHeldBill(${i}); document.getElementById('heldBillsDropdown').style.display='none';">
+                                                    <div style="min-width: 0;">
+                                                        <div style="font-weight: 600; font-size: 12px; color: var(--gray-900);">${h.invoiceNo}</div>
+                                                        <div style="font-size: 11px; color: var(--gray-500);">${h.itemCount} items · ${currencySymbol} ${(h.total || 0).toFixed(2)}</div>
+                                                    </div>
+                                                    <button type="button" onclick="event.stopPropagation(); removeHeldBill(${i});" style="padding: 4px 8px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; font-size: 11px; cursor: pointer;">Remove</button>
+                                                </div>
+                                            `).join('');
             }
             el.style.display = 'block';
         }
@@ -1684,7 +2623,7 @@
             });
             const refundSearchEl = document.getElementById('refundInvoiceSearch');
             if (refundSearchEl) refundSearchEl.addEventListener('input', searchRefundInvoices);
-            if (refundSearchEl) refundSearchEl.addEventListener('focus', function() { if (this.value.trim()) searchRefundInvoices(); });
+            if (refundSearchEl) refundSearchEl.addEventListener('focus', function () { if (this.value.trim()) searchRefundInvoices(); });
         }
         document.addEventListener('click', (e) => {
             const dd = document.getElementById('refundInvoiceResults');
@@ -1757,16 +2696,16 @@
                 return;
             }
             grid.innerHTML = filtered.map(p => `
-                <div class="product-card ${p.stock <= 0 ? 'out-of-stock' : ''}" onclick="${p.stock > 0 ? `handleProductClick(${p.id})` : ''}">
-                    <span class="p-unit">${p.unit || 'unit'}</span>
-                    <div class="p-stock">${p.stock > 0 ? 'In Stock: ' + parseInt(p.stock) : 'Out of Stock'}</div>
-                    <div class="product-image-wrap">
-                        ${p.image ? `<img src="${p.image}" class="product-image" alt="${p.name}">` : `<div class="product-image-placeholder"><i class="fas fa-box"></i></div>`}
-                    </div>
-                    <div class="p-name">${p.name}</div>
-                    <div class="p-price">${currencySymbol} ${parseFloat(p.price).toFixed(2)}</div>
-                </div>
-            `).join('');
+                                            <div class="product-card ${p.stock <= 0 ? 'out-of-stock' : ''}" onclick="${p.stock > 0 ? `handleProductClick(${p.id})` : ''}">
+                                                <span class="p-unit">${p.unit || 'unit'}</span>
+                                                <div class="p-stock">${p.stock > 0 ? 'In Stock: ' + parseInt(p.stock) : 'Out of Stock'}</div>
+                                                <div class="product-image-wrap">
+                                                    ${p.image ? `<img src="${p.image}" class="product-image" alt="${p.name}">` : `<div class="product-image-placeholder"><i class="fas fa-box"></i></div>`}
+                                                </div>
+                                                <div class="p-name">${p.name}</div>
+                                                <div class="p-price">${currencySymbol} ${parseFloat(p.price).toFixed(2)}</div>
+                                            </div>
+                                        `).join('');
         }
 
         function handleProductClick(productId) {
@@ -1868,20 +2807,20 @@
                         ? (item.discount_type === 'flat' ? ` (${item.qty} × ${currencySymbol} ${parseFloat(item.discount_value).toFixed(2)} off)` : ` (${parseFloat(item.discount_value).toFixed(0)}% off)`)
                         : '';
                     return `
-                    <div class="cart-row">
-                        <div class="item-info">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-price">${currencySymbol} ${parseFloat(item.price).toFixed(2)}${discountLabel}</span>
-                        </div>
-                        <div class="qty-controls">
-                            <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
-                            <input type="number" class="qty-input" value="${item.qty}" onchange="var val = Math.max(1, parseFloat(this.value)); if(val > ${item.maxStock}) { alert('Stock limit'); val = ${item.maxStock}; } cart[${i}].qty = val; renderCart();">
-                            <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
-                        </div>
-                        <div class="item-total">${currencySymbol} ${total.toFixed(2)}</div>
-                        <div class="item-remove" onclick="removeFromCart(${i})"><i class="fas fa-trash-alt"></i></div>
-                    </div>
-                `;
+                                                <div class="cart-row">
+                                                    <div class="item-info">
+                                                        <span class="item-name">${item.name}</span>
+                                                        <span class="item-price">${currencySymbol} ${parseFloat(item.price).toFixed(2)}${discountLabel}</span>
+                                                    </div>
+                                                    <div class="qty-controls">
+                                                        <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
+                                                        <input type="number" class="qty-input" value="${item.qty}" onchange="var val = Math.max(1, parseFloat(this.value)); if(val > ${item.maxStock}) { alert('Stock limit'); val = ${item.maxStock}; } cart[${i}].qty = val; renderCart();">
+                                                        <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
+                                                    </div>
+                                                    <div class="item-total">${currencySymbol} ${total.toFixed(2)}</div>
+                                                    <div class="item-remove" onclick="removeFromCart(${i})"><i class="fas fa-trash-alt"></i></div>
+                                                </div>
+                                            `;
                 }).join('');
             }
             updateTotals();
@@ -1991,11 +2930,11 @@
                 el.innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">No invoices found.</div>';
             } else {
                 el.innerHTML = refundSearchResults.map((s, i) => `
-                    <div onclick="selectRefundInvoice(refundSearchResults[${i}])" style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 13px;">
-                        <div style="font-weight: 600; color: var(--gray-900);">${s.invoiceNo}</div>
-                        <div style="color: var(--gray-500); font-size: 12px;">${s.customerName || '—'} · ${(s.items || []).length} items · ${currencySymbol} ${(s.total || 0).toFixed(2)}</div>
-                    </div>
-                `).join('');
+                                                <div onclick="selectRefundInvoice(refundSearchResults[${i}])" style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 13px;">
+                                                    <div style="font-weight: 600; color: var(--gray-900);">${s.invoiceNo}</div>
+                                                    <div style="color: var(--gray-500); font-size: 12px;">${s.customerName || '—'} · ${(s.items || []).length} items · ${currencySymbol} ${(s.total || 0).toFixed(2)}</div>
+                                                </div>
+                                            `).join('');
             }
             el.style.display = 'block';
         }
@@ -2061,19 +3000,19 @@
             if (typeof extraMessage === 'undefined') extraMessage = '';
             const slip = document.getElementById('receipt-print');
             slip.innerHTML = `
-                <div class="receipt-paper">
-                    <div class="receipt-store">${storeName}</div>
-                    <hr class="receipt-divider">
-                    <div class="receipt-badge" style="color: #b91c1c;">REFUND</div>
-                    <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
-                    ${reference ? '<div class="receipt-meta"><strong>Invoice:</strong> ' + reference + '</div>' : ''}
-                    <div class="receipt-meta"><strong>Method:</strong> ${refundMethod}</div>
-                    <div class="receipt-amount" style="color: #b91c1c;">${currencySymbol} ${amount.toFixed(2)}</div>
-                    ${reason ? '<div class="receipt-meta" style="margin-top: 8px;">Reason: ' + reason + '</div>' : ''}
-                    <hr class="receipt-divider">
-                    <div class="receipt-thanks">Thank you</div>
-                </div>
-            `;
+                                            <div class="receipt-paper">
+                                                <div class="receipt-store">${storeName}</div>
+                                                <hr class="receipt-divider">
+                                                <div class="receipt-badge" style="color: #b91c1c;">REFUND</div>
+                                                <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
+                                                ${reference ? '<div class="receipt-meta"><strong>Invoice:</strong> ' + reference + '</div>' : ''}
+                                                <div class="receipt-meta"><strong>Method:</strong> ${refundMethod}</div>
+                                                <div class="receipt-amount" style="color: #b91c1c;">${currencySymbol} ${amount.toFixed(2)}</div>
+                                                ${reason ? '<div class="receipt-meta" style="margin-top: 8px;">Reason: ' + reason + '</div>' : ''}
+                                                <hr class="receipt-divider">
+                                                <div class="receipt-thanks">Thank you</div>
+                                            </div>
+                                        `;
             window.print();
             closeRefundModal();
             alert('Refund of ' + currencySymbol + ' ' + amount.toFixed(2) + ' (' + refundMethod + ') processed.' + extraMessage);
@@ -2090,11 +3029,11 @@
                     const results = document.getElementById('loyaltySearchResults');
                     if (data.length > 0) {
                         results.innerHTML = data.map(c => `
-                            <div onclick='selectCustomer(${JSON.stringify(c).replace(/'/g, "&#39;")})' style="padding: 10px; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
-                                <div style="font-weight: 600; color: var(--gray-900);">${c.name}</div>
-                                <div style="font-size: 12px; color: var(--gray-500);">${c.phone} | Pts: ${parseFloat(c.loyalty_points || 0).toFixed(2)}</div>
-                            </div>
-                        `).join('');
+                                                        <div onclick='selectCustomer(${JSON.stringify(c).replace(/'/g, "&#39;")})' style="padding: 10px; border-bottom: 1px solid #f1f5f9; cursor: pointer;">
+                                                            <div style="font-weight: 600; color: var(--gray-900);">${c.name}</div>
+                                                            <div style="font-size: 12px; color: var(--gray-500);">${c.phone} | Pts: ${parseFloat(c.loyalty_points || 0).toFixed(2)}</div>
+                                                        </div>
+                                                    `).join('');
                         results.style.display = 'block';
                     } else {
                         results.innerHTML = '<div style="padding: 10px; color: var(--gray-400); text-align: center;">No customers found</div>';
@@ -2146,39 +3085,39 @@
             const customerName = selectedCustomer ? selectedCustomer.name : (document.getElementById('customerName').value || 'Walking Customer');
             const date = new Date().toLocaleString();
             const itemsHtml = cart.map((item, i) => `
-                <tr>
-                    <td>${i + 1}. ${item.name}</td>
-                    <td>${item.qty}</td>
-                    <td>${currencySymbol} ${lineTotal(item).toFixed(2)}</td>
-                </tr>
-            `).join('');
+                                            <tr>
+                                                <td>${i + 1}. ${item.name}</td>
+                                                <td>${item.qty}</td>
+                                                <td>${currencySymbol} ${lineTotal(item).toFixed(2)}</td>
+                                            </tr>
+                                        `).join('');
             const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
             const receipt = document.getElementById('receipt-print');
             receipt.innerHTML = `
-                <div class="receipt-paper">
-                    <div class="receipt-store">${storeName}</div>
-                    <div class="receipt-badge">BILL</div>
-                    <div class="receipt-meta"><strong>Bill No:</strong> ${invoiceNo}</div>
-                    <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
-                    <div class="receipt-meta"><strong>Customer:</strong> ${customerName}</div>
-                    <hr class="receipt-line">
-                    <table>
-                        <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
-                        <tbody>${itemsHtml}</tbody>
-                    </table>
-                    <div class="receipt-total-row">
-                        <span>Total</span>
-                        <span>${currencySymbol} ${finalTotal.toFixed(2)}</span>
-                    </div>
-                    ${paymentMethod === 'Cash' ? `
-                    <div class="receipt-sub-row"><span>Cash received</span><span>${currencySymbol} ${cashReceived.toFixed(2)}</span></div>
-                    <div class="receipt-sub-row"><span>Change</span><span>${currencySymbol} ${changeAmount.toFixed(2)}</span></div>
-                    ` : ''}
-                    <div class="receipt-sub-row"><span>Payment</span><span>${paymentMethod}</span></div>
-                    <hr class="receipt-divider">
-                    <div class="receipt-thanks">Thank you!</div>
-                </div>
-            `;
+                                            <div class="receipt-paper">
+                                                <div class="receipt-store">${storeName}</div>
+                                                <div class="receipt-badge">BILL</div>
+                                                <div class="receipt-meta"><strong>Bill No:</strong> ${invoiceNo}</div>
+                                                <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
+                                                <div class="receipt-meta"><strong>Customer:</strong> ${customerName}</div>
+                                                <hr class="receipt-line">
+                                                <table>
+                                                    <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+                                                    <tbody>${itemsHtml}</tbody>
+                                                </table>
+                                                <div class="receipt-total-row">
+                                                    <span>Total</span>
+                                                    <span>${currencySymbol} ${finalTotal.toFixed(2)}</span>
+                                                </div>
+                                                ${paymentMethod === 'Cash' ? `
+                                                <div class="receipt-sub-row"><span>Cash received</span><span>${currencySymbol} ${cashReceived.toFixed(2)}</span></div>
+                                                <div class="receipt-sub-row"><span>Change</span><span>${currencySymbol} ${changeAmount.toFixed(2)}</span></div>
+                                                ` : ''}
+                                                <div class="receipt-sub-row"><span>Payment</span><span>${paymentMethod}</span></div>
+                                                <hr class="receipt-divider">
+                                                <div class="receipt-thanks">Thank you!</div>
+                                            </div>
+                                        `;
             window.print();
             saveCompletedSale({
                 invoiceNo,

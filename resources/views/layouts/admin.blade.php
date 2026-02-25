@@ -476,6 +476,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -604,16 +605,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            padding: 8px 12px;
+            width: 32px;
+            height: 32px;
             background: rgba(74, 158, 255, 0.12);
             border: 1px solid rgba(74, 158, 255, 0.25);
             border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 600;
+            font-size: 0.9rem;
             color: var(--light-blue);
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s ease;
             flex-shrink: 0;
         }
 
@@ -752,6 +752,7 @@
 
         /* Print: hide nav and header so only bill/receipt prints */
         @media print {
+
             .sidebar,
             header,
             .sidebar-show-btn,
@@ -759,11 +760,13 @@
             .sidebar-toggle {
                 display: none !important;
             }
+
             .main-content {
                 margin-left: 0 !important;
                 margin-top: 0 !important;
                 padding: 0 !important;
             }
+
             body {
                 background: #fff !important;
             }
@@ -780,13 +783,31 @@
         $accentColor = $businessSettings?->accent_color ?? '#00C9B7';
     @endphp
     @if ($businessSettings && ($primaryColor || $secondaryColor || $accentColor))
-    <style>
-        :root {
-            @if ($primaryColor) --light-blue: {{ $primaryColor }}; --light-blue-light: {{ $primaryColor }}; @endif
-            @if ($secondaryColor) --navy-dark: {{ $secondaryColor }}; --navy-medium: {{ $secondaryColor }}; @endif
-            @if ($accentColor) --accent-teal: {{ $accentColor }}; @endif
-        }
-    </style>
+        <style>
+            :root {
+                @if ($primaryColor)
+                    --light-blue:
+                        {{ $primaryColor }}
+                    ;
+                    --light-blue-light:
+                        {{ $primaryColor }}
+                    ;
+                @endif
+                @if ($secondaryColor)
+                    --navy-dark:
+                    {{ $secondaryColor }}
+                    ;
+                    --navy-medium:
+                        {{ $secondaryColor }}
+                    ;
+                @endif
+                @if ($accentColor)
+                    --accent-teal:
+                    {{ $accentColor }}
+                    ;
+                @endif
+            }
+        </style>
     @endif
 </head>
 
@@ -796,15 +817,16 @@
             <div class="sidebar-header-row">
                 <div class="sidebar-logo">
                     @if ($businessLogo ?? null)
-                        <img src="{{ $businessLogo }}" alt="" style="height: 48px; width: auto; max-width: 180px; object-fit: contain;">
+                        <img src="{{ $businessLogo }}" alt=""
+                            style="height: 48px; width: auto; max-width: 180px; object-fit: contain;">
                     @else
                         <i class="fas fa-chart-line"></i>
                     @endif
                     <span>{{ $businessName }}</span>
                 </div>
-                <button type="button" class="sidebar-hide-btn" id="sidebarHideBtn" title="Hide menu">
+                <button type="button" class="sidebar-hide-btn" id="sidebarHideBtn" title="Hide menu"
+                    aria-label="Hide menu">
                     <i class="fas fa-chevron-left"></i>
-                    <span>Hide menu</span>
                 </button>
             </div>
         </div>
@@ -838,14 +860,16 @@
                     <i class="fas fa-shield-alt"></i> <span>Roles & Permissions</span>
                 </a>
                 @hasrole('business_owner|system_owner')
-                <a href="{{ route('business-settings.edit') }}" class="nav-item {{ request()->is('business-settings*') ? 'active' : '' }}">
+                <a href="{{ route('business-settings.edit') }}"
+                    class="nav-item {{ request()->is('business-settings*') ? 'active' : '' }}">
                     <i class="fas fa-cog"></i> <span>Business Settings</span>
                 </a>
                 @endhasrole
                 @can('view activity log')
-                <a href="{{ route('activity-logs.index') }}" class="nav-item {{ request()->is('activity-logs*') ? 'active' : '' }}">
-                    <i class="fas fa-history"></i> <span>Activity Log</span>
-                </a>
+                    <a href="{{ route('activity-logs.index') }}"
+                        class="nav-item {{ request()->is('activity-logs*') ? 'active' : '' }}">
+                        <i class="fas fa-history"></i> <span>Activity Log</span>
+                    </a>
                 @endcan
             </div>
 
@@ -865,8 +889,7 @@
                     class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
                     <i class="fas fa-tags"></i> <span>Categories</span>
                 </a>
-                <a href="{{ route('units.index') }}"
-                    class="nav-item {{ request()->is('units*') ? 'active' : '' }}">
+                <a href="{{ route('units.index') }}" class="nav-item {{ request()->is('units*') ? 'active' : '' }}">
                     <i class="fas fa-balance-scale"></i> <span>Units</span>
                 </a>
                 <a href="{{ route('suppliers.index') }}"
@@ -900,7 +923,8 @@
                 <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
                 <div class="logo-text" style="display: flex; align-items: center; gap: 10px;">
                     @if ($businessLogo ?? null)
-                        <img src="{{ $businessLogo }}" alt="" style="height: 40px; width: auto; max-width: 200px; object-fit: contain;">
+                        <img src="{{ $businessLogo }}" alt=""
+                            style="height: 40px; width: auto; max-width: 200px; object-fit: contain;">
                     @else
                         <i class="fas fa-chart-line"></i>
                     @endif
@@ -915,7 +939,8 @@
                 </div>
                 <i class="fas fa-bell bell-icon"></i>
                 <div class="user-dropdown" id="userAccountDropdown">
-                    <button type="button" class="user-dropdown-trigger user-section" id="userAccountTrigger" aria-expanded="false" aria-haspopup="true">
+                    <button type="button" class="user-dropdown-trigger user-section" id="userAccountTrigger"
+                        aria-expanded="false" aria-haspopup="true">
                         <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                         <div style="text-align: right;">
                             <div style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">
@@ -926,11 +951,13 @@
                         <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--gray-400);"></i>
                     </button>
                     <div class="user-dropdown-menu" id="userAccountMenu" role="menu">
-                        <a href="{{ route('profile.edit') }}" role="menuitem"><i class="fas fa-user-cog"></i> Profile</a>
+                        <a href="{{ route('profile.edit') }}" role="menuitem"><i class="fas fa-user-cog"></i>
+                            Profile</a>
                         <div class="dropdown-divider"></div>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
-                            <button type="submit" class="logout-item" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                            <button type="submit" class="logout-item" role="menuitem"><i
+                                    class="fas fa-sign-out-alt"></i> Logout</button>
                         </form>
                     </div>
                 </div>
