@@ -44,4 +44,9 @@ class Tenant extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function businessSetting()
+    {
+        return $this->hasOne(BusinessSetting::class);
+    }
 }

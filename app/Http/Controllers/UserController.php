@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Branch;
 use App\Models\Tenant;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -63,6 +64,8 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
+        ActivityLogService::log('user_created', "User created: {$user->name} ({$user->email})", ['user_id' => $user->id], User::class, $user->id);
+
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
@@ -107,6 +110,8 @@ class UserController extends Controller
 
         $user->syncRoles([$request->role]);
 
+        ActivityLogService::log('user_updated', "User updated: {$user->name} ({$user->email})", ['user_id' => $user->id], User::class, $user->id);
+
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
@@ -119,7 +124,13 @@ class UserController extends Controller
             abort(403);
         }
 
+        $name = $user->name;
+        $email = $user->email;
+        $userId = $user->id;
         $user->delete();
+
+        ActivityLogService::log('user_deleted', "User deleted: {$name} ({$email})", ['user_id' => $userId]);
+
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }

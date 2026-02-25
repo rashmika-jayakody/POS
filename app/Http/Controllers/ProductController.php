@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Unit;
 use App\Models\Branch;
 use App\Models\Stock;
+use App\Services\ActivityLogService;
 
 class ProductController extends Controller
 {
@@ -54,14 +55,23 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
+        $hasPrices = false;
         foreach ($request->input('prices', []) as $p) {
-            if (!empty($p['label']) && isset($p['price']) && is_numeric($p['price']) && (float) $p['price'] >= 0) {
+            if (! empty($p['label']) && isset($p['price']) && is_numeric($p['price']) && (float) $p['price'] >= 0) {
                 ProductPrice::create([
                     'product_id' => $product->id,
                     'label' => $p['label'],
                     'price' => (float) $p['price'],
                 ]);
+                $hasPrices = true;
             }
+        }
+        if (! $hasPrices) {
+            ProductPrice::create([
+                'product_id' => $product->id,
+                'label' => 'Selling price',
+                'price' => (float) $product->selling_price,
+            ]);
         }
 
         $branches = Branch::all();
@@ -73,6 +83,8 @@ class ProductController extends Controller
                 'low_stock_threshold' => 10,
             ]);
         }
+
+        ActivityLogService::log('product_created', "Product created: {$product->name}", ['product_id' => $product->id, 'code' => $product->code], Product::class, $product->id);
 
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
@@ -122,15 +134,26 @@ class ProductController extends Controller
         $product->update($validated);
 
         $product->productPrices()->delete();
+        $hasPrices = false;
         foreach ($request->input('prices', []) as $p) {
-            if (!empty($p['label']) && isset($p['price']) && is_numeric($p['price']) && (float) $p['price'] >= 0) {
+            if (! empty($p['label']) && isset($p['price']) && is_numeric($p['price']) && (float) $p['price'] >= 0) {
                 ProductPrice::create([
                     'product_id' => $product->id,
                     'label' => $p['label'],
                     'price' => (float) $p['price'],
                 ]);
+                $hasPrices = true;
             }
         }
+        if (! $hasPrices) {
+            ProductPrice::create([
+                'product_id' => $product->id,
+                'label' => 'Selling price',
+                'price' => (float) $product->selling_price,
+            ]);
+        }
+
+        ActivityLogService::log('product_updated', "Product updated: {$product->name}", ['product_id' => $product->id], Product::class, $product->id);
 
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
@@ -141,9 +164,12 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
+        $name = $product->name;
         $product->productPrices()->delete();
         $product->stocks()->delete();
         $product->delete();
+
+        ActivityLogService::log('product_deleted', "Product deleted: {$name}", ['product_id' => (int) $id]);
 
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }

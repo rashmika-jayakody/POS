@@ -12,6 +12,12 @@ class GrnItem extends Model
         'quantity',
         'unit_price',
         'subtotal',
+        'batch_number',
+        'expiry_date',
+    ];
+
+    protected $casts = [
+        'expiry_date' => 'date',
     ];
 
     public function grn()

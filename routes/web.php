@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CashDrawerController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\OnboardingWizardController;
 use App\Http\Controllers\StoreLandingController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
 
     // Cash Drawer / POS
     Route::get('/cash-drawer', [CashDrawerController::class, 'index'])->name('cash-drawer.index');
+    Route::patch('/cash-drawer/shortcuts', [CashDrawerController::class, 'updateShortcuts'])->name('cash-drawer.shortcuts.update');
     Route::get('/customers/search', function (\Illuminate\Http\Request $r) {
         return response()->json([]);
     })->name('customers.search');
@@ -41,10 +43,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/cash-drawer/status', [CashDrawerController::class, 'status'])->name('cash-drawer.status');
     Route::post('/cash-drawer/process-return', [CashDrawerController::class, 'processReturn'])->name('cash-drawer.process-return');
 
+    // Business settings (business owner / system owner)
+    Route::get('/business-settings', [\App\Http\Controllers\BusinessSettingsController::class, 'edit'])->name('business-settings.edit');
+    Route::patch('/business-settings', [\App\Http\Controllers\BusinessSettingsController::class, 'update'])->name('business-settings.update');
+
+    // Activity log (permission: view activity log)
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index')->middleware('permission:view activity log');
+
     // Management
     Route::resource('users', \App\Http\Controllers\UserController::class);
     Route::resource('branches', \App\Http\Controllers\BranchController::class);
-    Route::resource('roles', \App\Http\Controllers\RoleController::class)->only(['index', 'edit', 'update']);
+    Route::resource('roles', \App\Http\Controllers\RoleController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
     // Product & Stock Management
     Route::resource('products', \App\Http\Controllers\ProductController::class);

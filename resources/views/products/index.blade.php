@@ -56,9 +56,9 @@
                                 <div style="font-size: 0.75rem; color: var(--gray-500); margin-bottom: 2px;">Selling Price:
                                 </div>
                                 <span
-                                    style="font-family: monospace; font-weight: 700; color: var(--accent-teal); font-size: 1.1rem;">${{ number_format($product->selling_price, 2) }}</span>
+                                    style="font-family: monospace; font-weight: 700; color: var(--accent-teal); font-size: 1.1rem;">{{ $currencySymbol ?? 'Rs' }}{{ number_format($product->selling_price, 2) }}</span>
                                 <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 2px;">Cost:
-                                    ${{ number_format($product->cost_price, 2) }}</div>
+                                    {{ $currencySymbol ?? 'Rs' }}{{ number_format($product->cost_price, 2) }}</div>
                             </td>
                             <td>
                                 <div

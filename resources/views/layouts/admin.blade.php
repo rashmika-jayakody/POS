@@ -771,6 +771,23 @@
 
         @stack('styles')
     </style>
+    @php
+        $businessSettings = auth()->user()->tenant?->businessSetting;
+        $businessName = $businessSettings?->display_name ?? optional(auth()->user()->tenant)->name ?? config('app.name');
+        $businessLogo = $businessSettings?->logo_path ? asset('storage/' . $businessSettings->logo_path) : null;
+        $primaryColor = $businessSettings?->primary_color ?? '#4A9EFF';
+        $secondaryColor = $businessSettings?->secondary_color ?? '#0A1A3D';
+        $accentColor = $businessSettings?->accent_color ?? '#00C9B7';
+    @endphp
+    @if ($businessSettings && ($primaryColor || $secondaryColor || $accentColor))
+    <style>
+        :root {
+            @if ($primaryColor) --light-blue: {{ $primaryColor }}; --light-blue-light: {{ $primaryColor }}; @endif
+            @if ($secondaryColor) --navy-dark: {{ $secondaryColor }}; --navy-medium: {{ $secondaryColor }}; @endif
+            @if ($accentColor) --accent-teal: {{ $accentColor }}; @endif
+        }
+    </style>
+    @endif
 </head>
 
 <body>
@@ -778,8 +795,12 @@
         <div class="sidebar-header">
             <div class="sidebar-header-row">
                 <div class="sidebar-logo">
-                    <i class="fas fa-chart-line"></i>
-                    <span>POS Pro</span>
+                    @if ($businessLogo ?? null)
+                        <img src="{{ $businessLogo }}" alt="" style="height: 48px; width: auto; max-width: 180px; object-fit: contain;">
+                    @else
+                        <i class="fas fa-chart-line"></i>
+                    @endif
+                    <span>{{ $businessName }}</span>
                 </div>
                 <button type="button" class="sidebar-hide-btn" id="sidebarHideBtn" title="Hide menu">
                     <i class="fas fa-chevron-left"></i>
@@ -816,6 +837,16 @@
                 <a href="{{ route('roles.index') }}" class="nav-item {{ request()->is('roles*') ? 'active' : '' }}">
                     <i class="fas fa-shield-alt"></i> <span>Roles & Permissions</span>
                 </a>
+                @hasrole('business_owner|system_owner')
+                <a href="{{ route('business-settings.edit') }}" class="nav-item {{ request()->is('business-settings*') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i> <span>Business Settings</span>
+                </a>
+                @endhasrole
+                @can('view activity log')
+                <a href="{{ route('activity-logs.index') }}" class="nav-item {{ request()->is('activity-logs*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i> <span>Activity Log</span>
+                </a>
+                @endcan
             </div>
 
             <div class="nav-section">
@@ -867,7 +898,14 @@
         <div class="header-content">
             <div class="header-left">
                 <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-                <div class="logo-text"><i class="fas fa-chart-line"></i> POS Dashboard</div>
+                <div class="logo-text" style="display: flex; align-items: center; gap: 10px;">
+                    @if ($businessLogo ?? null)
+                        <img src="{{ $businessLogo }}" alt="" style="height: 40px; width: auto; max-width: 200px; object-fit: contain;">
+                    @else
+                        <i class="fas fa-chart-line"></i>
+                    @endif
+                    <span>{{ $businessName }}</span>
+                </div>
             </div>
 
             <div class="header-right">

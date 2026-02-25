@@ -50,7 +50,7 @@
                             <td>{{ $grn->branch->name }}</td>
                             <td>{{ $grn->received_date }}</td>
                             <td style="font-family: monospace; font-weight: 700; color: var(--gray-900);">
-                                ${{ number_format($grn->total_amount, 2) }}</td>
+                                {{ $currencySymbol ?? 'Rs' }}{{ number_format($grn->total_amount, 2) }}</td>
                             <td>
                                 <span
                                     class="status-badge {{ $grn->status == 'received' ? 'active' : ($grn->status == 'draft' ? 'pending' : 'inactive') }}">

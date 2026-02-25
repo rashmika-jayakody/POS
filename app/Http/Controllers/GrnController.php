@@ -10,6 +10,9 @@ use App\Models\Supplier;
 use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\StockBatch;
+use App\Services\FifoStockService;
+use App\Services\ActivityLogService;
 use Illuminate\Support\Facades\DB;
 
 class GrnController extends Controller
@@ -39,9 +42,12 @@ class GrnController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.batch_number' => 'nullable|string|max:100',
+            'items.*.expiry_date' => 'nullable|date',
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $grn = null;
+        DB::transaction(function () use ($validated, &$grn) {
             $totalAmount = 0;
             foreach ($validated['items'] as $item) {
                 $totalAmount += $item['quantity'] * $item['unit_price'];
@@ -65,9 +71,15 @@ class GrnController extends Controller
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'subtotal' => $item['quantity'] * $item['unit_price'],
+                    'batch_number' => $item['batch_number'] ?? null,
+                    'expiry_date' => $item['expiry_date'] ?? null,
                 ]);
             }
         });
+
+        if ($grn) {
+            ActivityLogService::log('grn_created', "GRN created: {$grn->grn_number} (draft)", ['grn_id' => $grn->id, 'grn_number' => $grn->grn_number], Grn::class, $grn->id);
+        }
 
         return redirect()->route('grns.index')->with('success', 'GRN created as draft.');
     }
@@ -86,6 +98,20 @@ class GrnController extends Controller
 
         DB::transaction(function () use ($grn) {
             foreach ($grn->items as $item) {
+                $batchNumber = $item->batch_number ?? $grn->grn_number . '-' . $item->id;
+                $receivedAt = $grn->received_date;
+
+                StockBatch::create([
+                    'tenant_id' => $grn->tenant_id,
+                    'product_id' => $item->product_id,
+                    'branch_id' => $grn->branch_id,
+                    'batch_number' => $batchNumber,
+                    'quantity' => $item->quantity,
+                    'received_at' => $receivedAt,
+                    'expiry_date' => $item->expiry_date,
+                    'grn_item_id' => $item->id,
+                ]);
+
                 $stock = Stock::firstOrCreate(
                     [
                         'product_id' => $item->product_id,
@@ -97,12 +123,13 @@ class GrnController extends Controller
                         'low_stock_threshold' => 10,
                     ]
                 );
-
                 $stock->increment('quantity', $item->quantity);
             }
 
             $grn->update(['status' => 'received']);
         });
+
+        ActivityLogService::log('grn_received', "GRN received: {$grn->grn_number}", ['grn_id' => $grn->id, 'grn_number' => $grn->grn_number], Grn::class, $grn->id);
 
         return redirect()->route('grns.index')->with('success', 'GRN received and stock updated.');
     }
@@ -113,8 +140,12 @@ class GrnController extends Controller
             return back()->with('error', 'Cannot delete a received GRN.');
         }
 
+        $grnNumber = $grn->grn_number;
+        $grnId = $grn->id;
         $grn->items()->delete();
         $grn->delete();
+
+        ActivityLogService::log('grn_deleted', "GRN deleted: {$grnNumber}", ['grn_id' => $grnId]);
 
         return redirect()->route('grns.index')->with('success', 'GRN deleted.');
     }

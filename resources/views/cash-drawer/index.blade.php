@@ -488,8 +488,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.5);
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -504,7 +503,13 @@
             max-width: 440px;
             padding: 24px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: modalPop 0.18s ease-out forwards;
+        }
+
+        #priceModal .modal-card {
+            max-width: 820px;
+            min-width: 420px;
+            padding: 36px;
         }
 
         @keyframes modalPop {
@@ -537,6 +542,17 @@
 
         .price-option .label { font-weight: 600; color: #334155; }
         .price-option .amount { font-weight: 700; color: var(--success, #10b981); font-size: 16px; }
+
+        #priceModalTable { width: 100%; border-collapse: collapse; margin: 0; }
+        #priceModalTable thead th { text-align: left; padding: 10px 14px; background: var(--light-blue-bg, #eff6ff); color: var(--gray-600); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--gray-200); }
+        #priceModalTable tbody tr { cursor: pointer; transition: background 0.15s, border-color 0.15s; border-left: 3px solid transparent; }
+        #priceModalTable tbody tr:hover { background: #f8fafc; }
+        #priceModalTable tbody tr.price-row-selected { background: #eff6ff; border-left-color: var(--light-blue, #3b82f6); }
+        #priceModalTable tbody td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+        #priceModalTable tbody td:first-child { font-weight: 600; color: var(--navy-dark); font-size: 13px; }
+        #priceModalTable tbody td:last-child { font-weight: 700; color: var(--success, #10b981); text-align: right; font-family: monospace; font-size: 15px; }
+        #priceModal .modal-footer-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+        #priceModal .modal-footer-btns button { height: 34px; padding: 0 18px; font-size: 12px; font-weight: 600; border-radius: 8px; }
 
         .numpad-section {
             padding: 12px 20px;
@@ -1049,13 +1065,28 @@
         .receipt-paper .receipt-thanks { text-align: center; margin-top: 24px; padding-top: 12px; font-size: 13px; font-weight: 600; color: #333; border-top: 1px dashed #333; }
         .receipt-paper .receipt-badge { text-align: center; font-size: 14px; font-weight: 800; letter-spacing: 0.08em; padding: 8px 0; margin: 12px 0; border-top: 2px solid #333; border-bottom: 2px solid #333; }
         .receipt-paper .receipt-amount { font-size: 20px; font-weight: 800; padding: 12px 0; margin: 12px 0; border-top: 2px solid #333; border-bottom: 2px solid #333; text-align: center; }
+
+        .pos-shortcuts-bar {
+            grid-column: 1 / -1;
+            display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 14px;
+            padding: 8px 16px; background: var(--navy-dark, #0f172a); color: rgba(255,255,255,0.9);
+            font-size: 11px; font-weight: 500; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .pos-shortcuts-bar kbd { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 2px; }
+        .pos-shortcuts-bar span { color: rgba(255,255,255,0.7); }
+        .shortcut-hint { font-size: 10px; color: var(--gray-500); margin-left: 4px; font-weight: 600; }
+        .shortcut-hint kbd { background: var(--gray-100); padding: 1px 4px; border-radius: 3px; font-size: 9px; }
     </style>
 
     <div class="pos-wrapper">
         <div class="pos-container no-print">
             <div class="left-catalog">
-                <div class="search-wrap">
-                    <input type="text" id="productSearch" placeholder="Search by name, code, barcode or category..." autocomplete="off">
+                <div class="search-wrap" style="display: flex; gap: 8px; align-items: center;">
+                    <div style="flex: 1; position: relative;">
+                        <input type="text" id="productSearch" placeholder="Search by name, code, barcode or category..." autocomplete="off" style="width: 100%;">
+                        <span class="shortcut-hint" data-shortcut-action="search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><kbd>{{ $posShortcuts['search'] ?? 'F2' }}</kbd></span>
+                    </div>
+                    <button type="button" id="shortcutsHelpBtn" onclick="toggleShortcutsHelp()" title="Keyboard shortcuts" style="flex-shrink: 0; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; color: var(--gray-600); cursor: pointer; font-size: 14px;"><i class="fas fa-keyboard"></i> <span class="shortcut-hint" data-shortcut-action="help"><kbd>{{ $posShortcuts['help'] ?? 'F1' }}</kbd></span></button>
                 </div>
                 <div class="category-bar" id="categoryBar">
                     <div class="category-item active" data-category-id="all">All Items</div>
@@ -1086,7 +1117,7 @@
                             <input type="text" id="customerPhone" placeholder="Phone" style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
                         </div>
                         <button onclick="openLoyaltyModal()" id="loyaltyPlaceholderBtn" style="width: 100%; padding: 8px; border: 1px dashed var(--gray-300); background: var(--gray-light); border-radius: 8px; color: var(--gray-500); font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-search" style="margin-right: 6px;"></i> Loyalty Search
+                            <i class="fas fa-search" style="margin-right: 6px;"></i> Loyalty Search <span class="shortcut-hint" data-shortcut-action="loyalty"><kbd>{{ $posShortcuts['loyalty'] ?? 'F3' }}</kbd></span>
                         </button>
                         <div id="selectedCustomerDisplay" style="display: none; margin-top: 8px; padding: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1134,13 +1165,13 @@
                     <div class="summary-line" id="row-change" style="font-weight: bold;"><span>Change</span><span id="summaryChange">0.00</span></div>
                 </div>
                 <div class="checkout-actions" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <button type="button" class="btn-clear" onclick="clearCart()">Clear</button>
-                    <button type="button" class="btn-hold" onclick="holdBill()" style="padding: 16px; border: 2px solid var(--gray-400); color: var(--gray-700); background: white; border-radius: var(--radius-md, 12px); font-weight: 700; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pause-circle" style="margin-right: 4px;"></i>Hold</button>
-                    <button class="btn-pay" onclick="processPayment()">Pay & Print</button>
+                    <button type="button" class="btn-clear" onclick="clearCart()">Clear <span class="shortcut-hint" data-shortcut-action="clear"><kbd>{{ $posShortcuts['clear'] ?? 'F9' }}</kbd></span></button>
+                    <button type="button" class="btn-hold" onclick="holdBill()" style="padding: 16px; border: 2px solid var(--gray-400); color: var(--gray-700); background: white; border-radius: var(--radius-md, 12px); font-weight: 700; cursor: pointer; transition: all 0.2s;"><i class="fas fa-pause-circle" style="margin-right: 4px;"></i>Hold <span class="shortcut-hint" data-shortcut-action="hold"><kbd>{{ $posShortcuts['hold'] ?? 'F5' }}</kbd></span></button>
+                    <button class="btn-pay" onclick="processPayment()">Pay & Print <span class="shortcut-hint" data-shortcut-action="pay" style="color: rgba(255,255,255,0.9);"><kbd style="background: rgba(255,255,255,0.25);">{{ $posShortcuts['pay'] ?? 'F8' }}</kbd></span></button>
                 </div>
                 <div style="padding: 0 20px 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" onclick="newBill()" style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: var(--gray-light, #f8fafc); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i class="fas fa-file-invoice" style="margin-right: 4px;"></i>New Bill</button>
-                    <button type="button" onclick="openRefundModal()" style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: #fef2f2; font-size: 13px; font-weight: 600; color: var(--danger, #dc2626); cursor: pointer;"><i class="fas fa-undo" style="margin-right: 4px;"></i>Return / Refund</button>
+                    <button type="button" onclick="newBill()" style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: var(--gray-light, #f8fafc); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i class="fas fa-file-invoice" style="margin-right: 4px;"></i>New Bill <span class="shortcut-hint" data-shortcut-action="newBill"><kbd>{{ $posShortcuts['newBill'] ?? 'F4' }}</kbd></span></button>
+                    <button type="button" onclick="openRefundModal()" style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: #fef2f2; font-size: 13px; font-weight: 600; color: var(--danger, #dc2626); cursor: pointer;"><i class="fas fa-undo" style="margin-right: 4px;"></i>Return / Refund <span class="shortcut-hint" data-shortcut-action="refund" style="color: var(--danger);"><kbd>{{ $posShortcuts['refund'] ?? 'F6' }}</kbd></span></button>
                 </div>
                 <div class="numpad-section">
                     <div class="numpad-grid">
@@ -1159,16 +1190,48 @@
                     </div>
                 </div>
             </div>
+            <div id="posShortcutsBar" class="pos-shortcuts-bar no-print"></div>
         </div>
 
-        <div id="priceModal" class="modal-overlay">
+        <div id="shortcutsHelpModal" class="modal-overlay" role="dialog" aria-label="Keyboard shortcuts" onclick="if(event.target===this)toggleShortcutsHelp()">
+            <div class="modal-card" style="max-width: 520px;" onclick="event.stopPropagation()">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 style="margin: 0; font-size: 18px;"><i class="fas fa-keyboard" style="margin-right: 8px;"></i>Keyboard shortcuts</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" onclick="resetShortcutsToDefaults()" style="padding: 6px 12px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; cursor: pointer; font-size: 12px;">Reset to defaults</button>
+                        <button type="button" onclick="toggleShortcutsHelp()" style="padding: 6px 10px; border: none; background: var(--gray-100); border-radius: 6px; cursor: pointer; font-size: 14px;"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px;">Click <strong>Change</strong> then press the key you want. Esc and Enter are fixed.</p>
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--gray-200);">
+                            <th style="text-align: left; padding: 8px 12px;">Key</th>
+                            <th style="text-align: left; padding: 8px 12px;">Action</th>
+                            <th style="text-align: right; padding: 8px 12px; width: 80px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="shortcutsModalTbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="priceModal" class="modal-overlay" role="dialog" aria-modal="true">
             <div class="modal-card">
-                <h2 style="margin-top: 0; font-size: 18px;">Select Price</h2>
-                <p style="color: var(--gray-500); font-size: 14px; margin-bottom: 20px;">Product: <strong id="priceModalProductName">-</strong></p>
-                <div id="priceModalOptions"></div>
-                <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <button class="qty-btn" style="width: 100%; height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;" onclick="closePriceModal()">Cancel</button>
-                    <button class="btn-pay" style="width: 100%; height: 48px; padding: 0; font-size: 14px;" id="confirmPriceBtn">Confirm</button>
+                <div class="table-wrapper" style="max-height: 400px; overflow-y: auto; margin-bottom: 24px; border: 1px solid var(--gray-200); border-radius: 8px;">
+                    <table id="priceModalTable">
+                        <thead>
+                            <tr>
+                                <th>Price level</th>
+                                <th style="text-align: right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priceModalOptions"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer-btns">
+                    <button type="button" class="qty-btn" style="background: #f1f5f9; border: none;" onclick="closePriceModal()">Cancel</button>
+                    <button type="button" class="btn-pay" style="padding: 0;" id="confirmPriceBtn">Add with selected price</button>
                 </div>
             </div>
         </div>
@@ -1197,11 +1260,11 @@
                 </div>
                 <div id="refundSelectedInvoice" style="display: none; margin-bottom: 12px; padding: 12px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; font-size: 13px;">
                     <div style="font-weight: 700; color: var(--gray-900); margin-bottom: 4px;"><span id="refundSelInvoiceNo"></span> · <span id="refundSelCustomer"></span></div>
-                    <div style="color: var(--gray-600);"><span id="refundSelItems"></span> · Total Rs <span id="refundSelTotal"></span></div>
+                    <div style="color: var(--gray-600);"><span id="refundSelItems"></span> · Total <span id="refundCurrencyLabel">{{ $currencySymbol ?? 'Rs' }}</span> <span id="refundSelTotal"></span></div>
                     <button type="button" onclick="clearRefundSelection()" style="margin-top: 6px; padding: 4px 8px; font-size: 11px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; cursor: pointer;">Change invoice</button>
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Refund amount (Rs) <span style="color: var(--danger);">*</span></label>
+                    <label style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Refund amount ({{ $currencySymbol ?? 'Rs' }}) <span style="color: var(--danger);">*</span></label>
                     <input type="text" inputmode="decimal" id="refundAmount" placeholder="0.00" value="" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 16px; font-weight: 600; box-sizing: border-box;" oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
                 </div>
                 <div style="margin-bottom: 14px;">
@@ -1241,7 +1304,131 @@
         const products = @json($productsJson);
         const categoryNames = @json($categories->pluck('name', 'id'));
         const storeName = @json($storeName);
+        const currencySymbol = @json($currencySymbol ?? 'Rs');
         const HELD_STORAGE_KEY = 'pos_held_bills';
+        const SHORTCUTS_UPDATE_URL = @json(route('cash-drawer.shortcuts.update'));
+        const CSRF_TOKEN = @json(csrf_token());
+
+        const SHORTCUT_DEFAULTS = {
+            help: 'F1', search: 'F2', loyalty: 'F3', newBill: 'F4', hold: 'F5', refund: 'F6', pay: 'F8', clear: 'F9',
+            newBill2: 'Ctrl+N', pay2: 'Ctrl+P'
+        };
+        let posShortcutsConfig = { ...SHORTCUT_DEFAULTS, ...@json($posShortcuts ?? []) };
+        const SHORTCUT_LABELS = {
+            help: 'Shortcuts help', search: 'Search', loyalty: 'Loyalty', newBill: 'New bill', hold: 'Hold', refund: 'Refund', pay: 'Pay & Print', clear: 'Clear cart',
+            newBill2: 'New bill', pay2: 'Pay & Print'
+        };
+        const SHORTCUT_CONFIG_KEYS = ['help', 'search', 'loyalty', 'newBill', 'hold', 'refund', 'pay', 'clear', 'newBill2', 'pay2'];
+
+        function getShortcutsConfig() {
+            return { ...SHORTCUT_DEFAULTS, ...posShortcutsConfig };
+        }
+        function saveShortcutsConfig(config) {
+            fetch(SHORTCUTS_UPDATE_URL, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ shortcuts: config })
+            }).then(r => r.json()).then(data => {
+                if (data.success && data.shortcuts) posShortcutsConfig = data.shortcuts;
+                buildShortcutKeyToAction();
+                renderShortcutsBar();
+                updateShortcutHints();
+                if (document.getElementById('shortcutsHelpModal').classList.contains('show')) renderShortcutsModalTable();
+            }).catch(() => {
+                buildShortcutKeyToAction();
+                renderShortcutsBar();
+                updateShortcutHints();
+            });
+        }
+        function updateShortcutHints() {
+            const config = getShortcutsConfig();
+            document.querySelectorAll('.shortcut-hint[data-shortcut-action]').forEach(el => {
+                const kbd = el.querySelector('kbd');
+                const key = config[el.dataset.shortcutAction];
+                if (kbd && key) kbd.textContent = key;
+            });
+        }
+        function getShortcutKey(e) {
+            if (e.key === 'Escape') return 'Esc';
+            const pre = (e.ctrlKey ? 'Ctrl+' : '') + (e.metaKey ? 'Meta+' : '') + (e.altKey ? 'Alt+' : '');
+            const k = e.key.length === 1 ? e.key.toUpperCase() : e.key;
+            return pre + k;
+        }
+        let shortcutKeyToAction = {};
+        function buildShortcutKeyToAction() {
+            const config = getShortcutsConfig();
+            const actionMap = { help: 'help', search: 'search', loyalty: 'loyalty', newBill: 'newBill', hold: 'hold', refund: 'refund', pay: 'pay', clear: 'clear', newBill2: 'newBill', pay2: 'pay' };
+            shortcutKeyToAction = {};
+            SHORTCUT_CONFIG_KEYS.forEach(id => {
+                const key = config[id];
+                if (key) shortcutKeyToAction[key] = actionMap[id] || id;
+            });
+        }
+        function runShortcutAction(actionId) {
+            const actions = {
+                help: toggleShortcutsHelp,
+                search: () => document.getElementById('productSearch').focus(),
+                loyalty: openLoyaltyModal,
+                newBill: newBill,
+                hold: holdBill,
+                refund: openRefundModal,
+                pay: processPayment,
+                clear: clearCart
+            };
+            if (actions[actionId]) actions[actionId]();
+        }
+        function renderShortcutsBar() {
+            const config = getShortcutsConfig();
+            const bar = document.getElementById('posShortcutsBar');
+            if (!bar) return;
+            const parts = [
+                [config.help, 'Help'], [config.search, 'Search'], [config.loyalty, 'Loyalty'], [config.newBill, 'New'], [config.hold, 'Hold'],
+                [config.refund, 'Refund'], [config.pay, 'Pay'], [config.clear, 'Clear']
+            ];
+            bar.innerHTML = parts.map(([key, label]) => `<kbd>${key}</kbd><span>${label}</span>`).join('<span style="opacity:0.4;">|</span>');
+        }
+        function renderShortcutsModalTable() {
+            const config = getShortcutsConfig();
+            const rows = [
+                { id: 'help', label: 'Shortcuts help' },
+                { id: 'search', label: 'Focus product search' },
+                { id: 'loyalty', label: 'Loyalty customer search' },
+                { id: 'newBill', label: 'New bill' },
+                { id: 'hold', label: 'Hold current bill' },
+                { id: 'refund', label: 'Return / Refund' },
+                { id: 'pay', label: 'Pay & Print' },
+                { id: 'clear', label: 'Clear cart' },
+                { id: 'newBill2', label: 'New bill' },
+                { id: 'pay2', label: 'Pay & Print' },
+                { fixed: true, key: 'Esc', label: 'Close modal' },
+                { fixed: true, key: 'Enter', label: 'Confirm (price modal)' }
+            ];
+            const tbody = document.getElementById('shortcutsModalTbody');
+            if (!tbody) return;
+            tbody.innerHTML = rows.map(r => {
+                if (r.fixed) return `<tr><td style="padding:10px 12px;"><kbd style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-size:12px;">${r.key}</kbd></td><td style="padding:10px 12px;">${r.label}</td><td></td></tr>`;
+                const key = config[r.id] || '';
+                return `<tr><td style="padding:10px 12px;"><kbd class="shortcut-kbd" style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-size:12px;">${key}</kbd></td><td style="padding:10px 12px;">${r.label}</td><td style="padding:10px 12px;"><button type="button" class="btn-change-key" data-action="${r.id}" style="padding:4px 10px;font-size:11px;border:1px solid var(--gray-300);border-radius:6px;background:white;cursor:pointer;">Change</button></td></tr>`;
+            }).join('');
+            tbody.querySelectorAll('.btn-change-key').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const actionId = this.dataset.action;
+                    const kbd = this.closest('tr').querySelector('.shortcut-kbd');
+                    kbd.textContent = 'Press key...';
+                    const once = (e) => {
+                        e.preventDefault();
+                        document.removeEventListener('keydown', once);
+                        const keyStr = getShortcutKey(e);
+                        if (keyStr === 'Esc') { kbd.textContent = getShortcutsConfig()[actionId] || ''; return; }
+                        const cfg = getShortcutsConfig();
+                        cfg[actionId] = keyStr;
+                        saveShortcutsConfig(cfg);
+                        kbd.textContent = keyStr;
+                    };
+                    document.addEventListener('keydown', once);
+                });
+            });
+        }
         const COMPLETED_SALES_KEY = 'pos_completed_sales';
         const MAX_COMPLETED_SALES = 100;
         const INVOICE_DATE_KEY = 'pos_invoice_date';
@@ -1349,7 +1536,7 @@
                     <div style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;" onclick="recallHeldBill(${i}); document.getElementById('heldBillsDropdown').style.display='none';">
                         <div style="min-width: 0;">
                             <div style="font-weight: 600; font-size: 12px; color: var(--gray-900);">${h.invoiceNo}</div>
-                            <div style="font-size: 11px; color: var(--gray-500);">${h.itemCount} items · Rs ${(h.total || 0).toFixed(2)}</div>
+                            <div style="font-size: 11px; color: var(--gray-500);">${h.itemCount} items · ${currencySymbol} ${(h.total || 0).toFixed(2)}</div>
                         </div>
                         <button type="button" onclick="event.stopPropagation(); removeHeldBill(${i});" style="padding: 4px 8px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; font-size: 11px; cursor: pointer;">Remove</button>
                     </div>
@@ -1449,10 +1636,44 @@
                     document.getElementById('productSearch').focus();
                 }
             });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'F2') { document.getElementById('productSearch').focus(); e.preventDefault(); }
-                if (e.ctrlKey && e.key === 'p') { processPayment(); e.preventDefault(); }
-                if (e.key === 'Escape') { closePriceModal(); closeLoyaltyModal(); closeRefundModal(); }
+            buildShortcutKeyToAction();
+            renderShortcutsBar();
+            updateShortcutHints();
+            document.addEventListener('keydown', function posShortcuts(e) {
+                const priceOpen = document.getElementById('priceModal').classList.contains('show');
+                const loyaltyOpen = document.getElementById('loyaltyModal').classList.contains('show');
+                const refundOpen = document.getElementById('refundModal').classList.contains('show');
+                const shortcutsOpen = document.getElementById('shortcutsHelpModal').classList.contains('show');
+                const inInput = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName) && !document.activeElement.getAttribute('data-shortcut-ok');
+                const keyStr = getShortcutKey(e);
+
+                if (keyStr === 'Esc') {
+                    if (shortcutsOpen) { toggleShortcutsHelp(); e.preventDefault(); return; }
+                    closePriceModal(); closeLoyaltyModal(); closeRefundModal();
+                    e.preventDefault();
+                    return;
+                }
+                if (priceOpen && e.key === 'Enter') {
+                    const sel = document.getElementById('priceModalOptions')?.querySelector('tr.price-row-selected');
+                    if (sel) { addToCart(activeProduct, parseFloat(sel.dataset.price)); closePriceModal(); }
+                    e.preventDefault();
+                    return;
+                }
+                if (priceOpen || loyaltyOpen || refundOpen) return;
+
+                if (shortcutsOpen) {
+                    if (shortcutKeyToAction[keyStr] === 'help') { toggleShortcutsHelp(); e.preventDefault(); }
+                    return;
+                }
+                if (inInput) {
+                    const config = getShortcutsConfig();
+                    if (keyStr !== config.help && keyStr !== config.search) return;
+                }
+                const action = shortcutKeyToAction[keyStr] || (keyStr === '?' ? 'help' : null);
+                if (action) {
+                    runShortcutAction(action);
+                    e.preventDefault();
+                }
             });
             document.addEventListener('focusin', (e) => {
                 if (e.target.tagName === 'INPUT') activeInput = e.target;
@@ -1543,7 +1764,7 @@
                         ${p.image ? `<img src="${p.image}" class="product-image" alt="${p.name}">` : `<div class="product-image-placeholder"><i class="fas fa-box"></i></div>`}
                     </div>
                     <div class="p-name">${p.name}</div>
-                    <div class="p-price">Rs ${parseFloat(p.price).toFixed(2)}</div>
+                    <div class="p-price">${currencySymbol} ${parseFloat(p.price).toFixed(2)}</div>
                 </div>
             `).join('');
         }
@@ -1551,10 +1772,10 @@
         function handleProductClick(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
-            if (product.prices && product.prices.length > 1) openPriceModal(product);
-            else {
-                const price = product.prices && product.prices.length === 1 ? product.prices[0].price : product.price;
-                addToCart(product, price);
+            if (product.prices && product.prices.length >= 1) {
+                openPriceModal(product);
+            } else {
+                addToCart(product, product.price);
             }
         }
 
@@ -1644,20 +1865,20 @@
                 container.innerHTML = cart.map((item, i) => {
                     const total = lineTotal(item);
                     const discountLabel = (item.discount_type && (parseFloat(item.discount_value) || 0) > 0)
-                        ? (item.discount_type === 'flat' ? ` (${item.qty} × Rs ${parseFloat(item.discount_value).toFixed(2)} off)` : ` (${parseFloat(item.discount_value).toFixed(0)}% off)`)
+                        ? (item.discount_type === 'flat' ? ` (${item.qty} × ${currencySymbol} ${parseFloat(item.discount_value).toFixed(2)} off)` : ` (${parseFloat(item.discount_value).toFixed(0)}% off)`)
                         : '';
                     return `
                     <div class="cart-row">
                         <div class="item-info">
                             <span class="item-name">${item.name}</span>
-                            <span class="item-price">Rs ${parseFloat(item.price).toFixed(2)}${discountLabel}</span>
+                            <span class="item-price">${currencySymbol} ${parseFloat(item.price).toFixed(2)}${discountLabel}</span>
                         </div>
                         <div class="qty-controls">
                             <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
                             <input type="number" class="qty-input" value="${item.qty}" onchange="var val = Math.max(1, parseFloat(this.value)); if(val > ${item.maxStock}) { alert('Stock limit'); val = ${item.maxStock}; } cart[${i}].qty = val; renderCart();">
                             <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
                         </div>
-                        <div class="item-total">Rs ${total.toFixed(2)}</div>
+                        <div class="item-total">${currencySymbol} ${total.toFixed(2)}</div>
                         <div class="item-remove" onclick="removeFromCart(${i})"><i class="fas fa-trash-alt"></i></div>
                     </div>
                 `;
@@ -1681,31 +1902,41 @@
         let activeProduct = null;
         function openPriceModal(product) {
             activeProduct = product;
-            document.getElementById('priceModalProductName').textContent = product.name;
-            const options = document.getElementById('priceModalOptions');
-            options.innerHTML = product.prices.map((p, i) => `
-                <div class="price-option ${i === 0 ? 'selected' : ''}" data-price="${p.price}" onclick="selectPriceOption(this, ${p.price})">
-                    <span class="label">${p.label}</span>
-                    <span class="amount">Rs ${parseFloat(p.price).toFixed(2)}</span>
-                </div>
-            `).join('');
+            const priceModalEl = document.getElementById('priceModal');
+            const tbody = document.getElementById('priceModalOptions');
+            const rowsHtml = product.prices.map((p, i) =>
+                `<tr class="price-row ${i === 0 ? 'price-row-selected' : ''}" data-price="${p.price}" onclick="selectPriceRow(this)"><td>${p.label}</td><td>${currencySymbol} ${parseFloat(p.price).toFixed(2)}</td></tr>`
+            ).join('');
+            priceModalEl.classList.add('show');
+            tbody.innerHTML = rowsHtml;
             document.getElementById('confirmPriceBtn').onclick = () => {
-                const selected = options.querySelector('.price-option.selected');
-                const price = parseFloat(selected.dataset.price);
-                addToCart(activeProduct, price);
-                closePriceModal();
+                const selected = tbody.querySelector('tr.price-row-selected');
+                if (selected) {
+                    addToCart(activeProduct, parseFloat(selected.dataset.price));
+                    closePriceModal();
+                }
             };
-            document.getElementById('priceModal').classList.add('show');
         }
 
-        function selectPriceOption(el, price) {
-            document.querySelectorAll('.price-option').forEach(opt => opt.classList.remove('selected'));
-            el.classList.add('selected');
+        function selectPriceRow(rowEl) {
+            const tbody = document.getElementById('priceModalOptions');
+            if (!tbody) return;
+            tbody.querySelectorAll('tr.price-row').forEach(tr => tr.classList.remove('price-row-selected'));
+            rowEl.classList.add('price-row-selected');
         }
 
         function closePriceModal() {
             document.getElementById('priceModal').classList.remove('show');
             activeProduct = null;
+        }
+
+        function toggleShortcutsHelp() {
+            const el = document.getElementById('shortcutsHelpModal');
+            el.classList.toggle('show');
+            if (el.classList.contains('show')) renderShortcutsModalTable();
+        }
+        function resetShortcutsToDefaults() {
+            saveShortcutsConfig({ ...SHORTCUT_DEFAULTS });
         }
 
         function openLoyaltyModal() {
@@ -1762,7 +1993,7 @@
                 el.innerHTML = refundSearchResults.map((s, i) => `
                     <div onclick="selectRefundInvoice(refundSearchResults[${i}])" style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 13px;">
                         <div style="font-weight: 600; color: var(--gray-900);">${s.invoiceNo}</div>
-                        <div style="color: var(--gray-500); font-size: 12px;">${s.customerName || '—'} · ${(s.items || []).length} items · Rs ${(s.total || 0).toFixed(2)}</div>
+                        <div style="color: var(--gray-500); font-size: 12px;">${s.customerName || '—'} · ${(s.items || []).length} items · ${currencySymbol} ${(s.total || 0).toFixed(2)}</div>
                     </div>
                 `).join('');
             }
@@ -1837,7 +2068,7 @@
                     <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
                     ${reference ? '<div class="receipt-meta"><strong>Invoice:</strong> ' + reference + '</div>' : ''}
                     <div class="receipt-meta"><strong>Method:</strong> ${refundMethod}</div>
-                    <div class="receipt-amount" style="color: #b91c1c;">Rs ${amount.toFixed(2)}</div>
+                    <div class="receipt-amount" style="color: #b91c1c;">${currencySymbol} ${amount.toFixed(2)}</div>
                     ${reason ? '<div class="receipt-meta" style="margin-top: 8px;">Reason: ' + reason + '</div>' : ''}
                     <hr class="receipt-divider">
                     <div class="receipt-thanks">Thank you</div>
@@ -1845,7 +2076,7 @@
             `;
             window.print();
             closeRefundModal();
-            alert('Refund of Rs ' + amount.toFixed(2) + ' (' + refundMethod + ') processed.' + extraMessage);
+            alert('Refund of ' + currencySymbol + ' ' + amount.toFixed(2) + ' (' + refundMethod + ') processed.' + extraMessage);
         }
 
         function searchLoyaltyCustomers(query) {
@@ -1905,7 +2136,7 @@
                 cashReceived = parseFloat(document.getElementById('receivedAmount').value) || 0;
                 const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
                 if (finalTotal > 0 && cashReceived < finalTotal) {
-                    alert('Insufficient cash! Need Rs ' + (finalTotal - cashReceived).toFixed(2) + ' more.');
+                    alert('Insufficient cash! Need ' + currencySymbol + ' ' + (finalTotal - cashReceived).toFixed(2) + ' more.');
                     document.getElementById('receivedAmount').focus();
                     return;
                 }
@@ -1918,7 +2149,7 @@
                 <tr>
                     <td>${i + 1}. ${item.name}</td>
                     <td>${item.qty}</td>
-                    <td>Rs ${lineTotal(item).toFixed(2)}</td>
+                    <td>${currencySymbol} ${lineTotal(item).toFixed(2)}</td>
                 </tr>
             `).join('');
             const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
@@ -1937,11 +2168,11 @@
                     </table>
                     <div class="receipt-total-row">
                         <span>Total</span>
-                        <span>Rs ${finalTotal.toFixed(2)}</span>
+                        <span>${currencySymbol} ${finalTotal.toFixed(2)}</span>
                     </div>
                     ${paymentMethod === 'Cash' ? `
-                    <div class="receipt-sub-row"><span>Cash received</span><span>Rs ${cashReceived.toFixed(2)}</span></div>
-                    <div class="receipt-sub-row"><span>Change</span><span>Rs ${changeAmount.toFixed(2)}</span></div>
+                    <div class="receipt-sub-row"><span>Cash received</span><span>${currencySymbol} ${cashReceived.toFixed(2)}</span></div>
+                    <div class="receipt-sub-row"><span>Change</span><span>${currencySymbol} ${changeAmount.toFixed(2)}</span></div>
                     ` : ''}
                     <div class="receipt-sub-row"><span>Payment</span><span>${paymentMethod}</span></div>
                     <hr class="receipt-divider">

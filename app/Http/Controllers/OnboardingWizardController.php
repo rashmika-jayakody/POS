@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use App\Models\BusinessSetting;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -63,6 +64,15 @@ class OnboardingWizardController extends Controller
                 'name' => 'Main Branch',
                 'address' => $validated['address'],
                 'phone' => $validated['phone'],
+            ]);
+
+            BusinessSetting::create([
+                'tenant_id' => $tenant->id,
+                'business_name' => $validated['company_name'],
+                'address' => $validated['address'],
+                'phone' => $validated['phone'],
+                'currency_code' => 'LKR',
+                'currency_symbol' => 'Rs',
             ]);
 
             $user = User::create([

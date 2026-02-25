@@ -17,7 +17,7 @@
         <div class="stat-card blue">
             <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
             <div class="stat-label">Total Sales</div>
-            <div class="stat-value">$24,500</div>
+            <div class="stat-value">{{ $currencySymbol ?? 'Rs' }}{{ number_format(24500) }}</div>
             <div class="stat-change positive"><i class="fas fa-arrow-up"></i> 12.5% from last week</div>
         </div>
 
@@ -62,7 +62,7 @@
                     <tr>
                         <td>#TXN-001024</td>
                         <td>John Anderson</td>
-                        <td>$125.50</td>
+                        <td>{{ $currencySymbol ?? 'Rs' }}{{ number_format(125.50, 2) }}</td>
                         <td>Feb 4, 2:15 PM</td>
                         <td><span class="status-badge active"><span class="status-dot"></span>Completed</span></td>
                         <td>Main Store</td>
@@ -70,7 +70,7 @@
                     <tr>
                         <td>#TXN-001023</td>
                         <td>Sarah Mitchell</td>
-                        <td>$89.99</td>
+                        <td>{{ $currencySymbol ?? 'Rs' }}{{ number_format(89.99, 2) }}</td>
                         <td>Feb 4, 1:45 PM</td>
                         <td><span class="status-badge active"><span class="status-dot"></span>Completed</span></td>
                         <td>Downtown</td>

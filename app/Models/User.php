@@ -27,6 +27,7 @@ class User extends Authenticatable
         'tenant_id',
         'branch_id',
         'is_active',
+        'pos_shortcuts',
     ];
 
     public function tenant()
@@ -59,6 +60,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'pos_shortcuts' => 'array',
         ];
     }
 }

@@ -93,15 +93,15 @@
                     </div>
 
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Additional prices (optional)</label>
-                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 10px;">Add more price options (e.g. Wholesale, Tier 2) for this product. Selling and cost price above are always available.</p>
+                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Price levels (optional)</label>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 10px;">Add extra price levels (e.g. Retail, Wholesale). At POS, the cashier will see a popup to select which price to use. Selling price is always available as the first option.</p>
                         <div id="extraPrices"></div>
                         <button type="button" id="addPriceRow" class="btn btn-secondary" style="margin-top: 8px;"><i class="fas fa-plus"></i> Add another price</button>
                     </div>
 
                     <div style="margin-bottom: 20px;">
                         <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Item discount (optional)</label>
-                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 10px;">Default discount for this product at POS: flat amount (Rs) or percentage.</p>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 10px;">Default discount for this product at POS: flat amount ({{ $currencySymbol ?? 'Rs' }}) or percentage.</p>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div>
                                 <label style="display: block; font-size: 0.85rem; color: var(--gray-600); margin-bottom: 4px;">Type</label>

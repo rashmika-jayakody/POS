@@ -3,12 +3,17 @@
 @section('title', 'Roles & Permissions')
 
 @section('content')
-    <div class="page-header animate-in">
-        <div class="page-title">
-            <i class="fas fa-shield-alt"></i>
-            Roles & Permissions
+    <div class="page-header animate-in" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+        <div>
+            <div class="page-title">
+                <i class="fas fa-shield-alt"></i>
+                Roles & Permissions
+            </div>
+            <div class="page-subtitle">Manage system access levels and assigned permissions.</div>
         </div>
-        <div class="page-subtitle">Manage system access levels and assigned permissions.</div>
+        <a href="{{ route('roles.create') }}" class="btn btn-primary" style="white-space: nowrap;">
+            <i class="fas fa-plus"></i> Add Role
+        </a>
     </div>
 
     @if(session('success'))

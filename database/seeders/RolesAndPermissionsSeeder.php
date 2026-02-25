@@ -29,7 +29,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'view invoice',
             'view reports',
             'schedule maintenance',
-            'view maintenance'
+            'view maintenance',
+            'view activity log',
         ];
 
         foreach ($permissions as $permission) {
@@ -44,7 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $cashier->givePermissionTo(['create sale', 'view sale', 'create invoice', 'view invoice']);
 
         $branch_admin = Role::firstOrCreate(['name' => 'branch_admin']);
-        $branch_admin->givePermissionTo(['view reports', 'schedule maintenance', 'view maintenance', 'view product']);
+        $branch_admin->givePermissionTo(['view reports', 'schedule maintenance', 'view maintenance', 'view product', 'view activity log']);
 
         $system_owner = Role::firstOrCreate(['name' => 'system_owner']);
         $system_owner->givePermissionTo(Permission::all());

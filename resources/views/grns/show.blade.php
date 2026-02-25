@@ -43,6 +43,8 @@
                             <th>Product</th>
                             <th style="text-align: center;">Quantity</th>
                             <th style="text-align: right;">Unit Price</th>
+                            <th>Batch / Lot</th>
+                            <th>Expiry</th>
                             <th style="text-align: right;">Subtotal</th>
                         </tr>
                     </thead>
@@ -54,23 +56,25 @@
                                     <div style="font-size: 0.75rem; color: var(--gray-500);">{{ $item->product->barcode }}</div>
                                 </td>
                                 <td style="text-align: center; font-weight: 700;">{{ number_format($item->quantity, 2) }}
-                                    {{ $item->product->unit->short_code }}</td>
+                                    {{ $item->product->unit->short_code ?? '' }}</td>
                                 <td style="text-align: right; font-family: monospace;">
-                                    ${{ number_format($item->unit_price, 2) }}</td>
+                                    {{ $currencySymbol ?? 'Rs' }}{{ number_format($item->unit_price, 2) }}</td>
+                                <td style="font-size: 0.85rem;">{{ $item->batch_number ?? '—' }}</td>
+                                <td style="font-size: 0.85rem;">{{ $item->expiry_date?->format('Y-m-d') ?? '—' }}</td>
                                 <td
                                     style="text-align: right; font-family: monospace; font-weight: 700; color: var(--navy-dark);">
-                                    ${{ number_format($item->subtotal, 2) }}</td>
+                                    {{ $currencySymbol ?? 'Rs' }}{{ number_format($item->subtotal, 2) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="3"
+                            <td colspan="5"
                                 style="text-align: right; padding: 20px; font-weight: 800; border-top: 2px solid var(--gray-100);">
                                 TOTAL AMOUNT:</td>
                             <td
                                 style="text-align: right; padding: 20px; font-weight: 800; border-top: 2px solid var(--gray-100); font-size: 1.2rem; color: var(--light-blue); font-family: monospace;">
-                                ${{ number_format($grn->total_amount, 2) }}
+                                {{ $currencySymbol ?? 'Rs' }}{{ number_format($grn->total_amount, 2) }}
                             </td>
                         </tr>
                     </tfoot>

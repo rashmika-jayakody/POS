@@ -74,10 +74,12 @@
                     <table class="table" id="items-table">
                         <thead>
                             <tr>
-                                <th style="width: 40%;">Product</th>
-                                <th style="width: 20%;">Quantity</th>
-                                <th style="width: 20%;">Unit Cost ($)</th>
-                                <th style="width: 15%;">Subtotal</th>
+                                <th style="width: 28%;">Product</th>
+                                <th style="width: 10%;">Quantity</th>
+                                <th style="width: 14%;">Unit Cost ({{ $currencySymbol ?? 'Rs' }})</th>
+                                <th style="width: 14%;">Batch / Lot #</th>
+                                <th style="width: 12%;">Expiry Date</th>
+                                <th style="width: 12%;">Subtotal</th>
                                 <th style="width: 5%;"></th>
                             </tr>
                         </thead>
@@ -86,11 +88,11 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" style="text-align: right; font-weight: 800; padding: 20px;">TOTAL AMOUNT:
+                                <td colspan="5" style="text-align: right; font-weight: 800; padding: 20px;">TOTAL AMOUNT:
                                 </td>
                                 <td id="total-amount"
                                     style="font-weight: 800; padding: 20px; font-size: 1.2rem; color: var(--light-blue); font-family: monospace;">
-                                    $0.00</td>
+                                    {{ $currencySymbol ?? 'Rs' }}0.00</td>
                                 <td></td>
                             </tr>
                         </tfoot>
@@ -113,13 +115,14 @@
                     let itemIndex = 0;
 
                     const products = @json($products);
+                    const currencySymbol = @json($currencySymbol ?? 'Rs');
 
                     function calculateTotals() {
                         let grandTotal = 0;
                         document.querySelectorAll('.subtotal-input').forEach(input => {
                             grandTotal += parseFloat(input.value || 0);
                         });
-                        totalDisplay.textContent = '$' + grandTotal.toFixed(2);
+                        totalDisplay.textContent = currencySymbol + grandTotal.toFixed(2);
                     }
 
                     function addItemRow() {
@@ -137,8 +140,14 @@
                                     <td>
                                         <input type="number" step="0.01" name="items[${itemIndex}][unit_price]" class="price-input" required min="0" value="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
                                     </td>
+                                    <td>
+                                        <input type="text" name="items[${itemIndex}][batch_number]" placeholder="Optional" maxlength="100" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                    </td>
+                                    <td>
+                                        <input type="date" name="items[${itemIndex}][expiry_date]" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                    </td>
                                     <td style="font-family: monospace; font-weight: 700;">
-                                        $<input type="number" class="subtotal-input" readonly value="0.00" style="border: none; background: transparent; width: 80px; font-weight: 700; color: var(--navy-dark); outline: none;">
+                                        <span class="subtotal-prefix">{{ $currencySymbol ?? 'Rs' }}</span><input type="number" class="subtotal-input" readonly value="0.00" style="border: none; background: transparent; width: 80px; font-weight: 700; color: var(--navy-dark); outline: none;">
                                     </td>
                                     <td>
                                         <button type="button" class="remove-item" style="color: var(--danger); background: none; border: none; cursor: pointer;"><i class="fas fa-times"></i></button>

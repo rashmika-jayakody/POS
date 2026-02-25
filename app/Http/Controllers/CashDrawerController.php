@@ -6,10 +6,25 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Models\Branch;
+use App\Services\FifoStockService;
+use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
 
 class CashDrawerController extends Controller
 {
+    public const POS_SHORTCUT_DEFAULTS = [
+        'help' => 'F1',
+        'search' => 'F2',
+        'loyalty' => 'F3',
+        'newBill' => 'F4',
+        'hold' => 'F5',
+        'refund' => 'F6',
+        'pay' => 'F8',
+        'clear' => 'F9',
+        'newBill2' => 'Ctrl+N',
+        'pay2' => 'Ctrl+P',
+    ];
+
     /**
      * Display the cash drawer / POS page with products for selection.
      */
@@ -18,9 +33,12 @@ class CashDrawerController extends Controller
         $categories = Category::orderBy('name')->get();
         $products = Product::with(['unit', 'productPrices', 'stocks'])->where('is_active', true)->orderBy('name')->get();
         $productsJson = $products->map(function ($p) {
-            $prices = $p->productPrices->isNotEmpty()
-                ? $p->productPrices->map(fn ($pp) => ['label' => $pp->label, 'price' => (float) $pp->price])->values()->all()
-                : [['label' => 'Selling price', 'price' => (float) $p->selling_price]];
+            $prices = [['label' => 'Selling price', 'price' => (float) $p->selling_price]];
+            foreach ($p->productPrices as $pp) {
+                if ($pp->label !== 'Selling price') {
+                    $prices[] = ['label' => $pp->label, 'price' => (float) $pp->price];
+                }
+            }
             $stock = (float) $p->stocks->sum('quantity');
             return [
                 'id' => $p->id,
@@ -38,13 +56,45 @@ class CashDrawerController extends Controller
             ];
         });
         $invoiceNo = 'INV-' . now()->format('Ymd') . '-' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-        $storeName = optional(auth()->user()->tenant)->name ?? config('app.name');
+        $settings = auth()->user()->tenant?->businessSetting;
+        $storeName = $settings?->display_name ?? optional(auth()->user()->tenant)->name ?? config('app.name');
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        $taxRate = $settings ? (float) $settings->tax_rate : 0;
+        $taxLabel = $settings?->tax_label ?? 'Tax';
         $user = auth()->user();
         $inventoryBranch = $user->branch_id
             ? Branch::find($user->branch_id)
             : Branch::where('tenant_id', $user->tenant_id)->first();
         $inventoryBranchName = $inventoryBranch ? $inventoryBranch->name : null;
-        return view('cash-drawer.index', compact('categories', 'productsJson', 'invoiceNo', 'storeName', 'inventoryBranchName'));
+        $posShortcuts = $user->pos_shortcuts ?? self::POS_SHORTCUT_DEFAULTS;
+        $posShortcuts = array_merge(self::POS_SHORTCUT_DEFAULTS, is_array($posShortcuts) ? $posShortcuts : []);
+
+        return view('cash-drawer.index', compact('categories', 'productsJson', 'invoiceNo', 'storeName', 'currencySymbol', 'taxRate', 'taxLabel', 'inventoryBranchName', 'posShortcuts'));
+    }
+
+    /**
+     * Update the logged-in user's POS keyboard shortcuts.
+     */
+    public function updateShortcuts(Request $request)
+    {
+        $validated = $request->validate([
+            'shortcuts' => 'required|array',
+            'shortcuts.help' => 'nullable|string|max:30',
+            'shortcuts.search' => 'nullable|string|max:30',
+            'shortcuts.loyalty' => 'nullable|string|max:30',
+            'shortcuts.newBill' => 'nullable|string|max:30',
+            'shortcuts.hold' => 'nullable|string|max:30',
+            'shortcuts.refund' => 'nullable|string|max:30',
+            'shortcuts.pay' => 'nullable|string|max:30',
+            'shortcuts.clear' => 'nullable|string|max:30',
+            'shortcuts.newBill2' => 'nullable|string|max:30',
+            'shortcuts.pay2' => 'nullable|string|max:30',
+        ]);
+
+        $shortcuts = array_merge(self::POS_SHORTCUT_DEFAULTS, array_filter($validated['shortcuts']));
+        $request->user()->update(['pos_shortcuts' => $shortcuts]);
+
+        return response()->json(['success' => true, 'shortcuts' => $shortcuts]);
     }
 
     /**
@@ -52,7 +102,7 @@ class CashDrawerController extends Controller
      */
     public function open(Request $request)
     {
-        // Logic to open cash drawer
+        ActivityLogService::log('cash_drawer_open', 'Cash drawer opened');
         return response()->json(['success' => true, 'message' => 'Cash drawer opened']);
     }
 
@@ -61,7 +111,7 @@ class CashDrawerController extends Controller
      */
     public function close(Request $request)
     {
-        // Logic to close cash drawer
+        ActivityLogService::log('cash_drawer_close', 'Cash drawer closed');
         return response()->json(['success' => true, 'message' => 'Cash drawer closed']);
     }
 
@@ -99,18 +149,33 @@ class CashDrawerController extends Controller
                 $branch = Branch::where('tenant_id', $user->tenant_id)->first();
                 $branchId = $branch ? $branch->id : null;
             }
-            if ($branchId) {
+            if ($branchId && $user->tenant_id) {
+                $fifo = app(FifoStockService::class);
                 foreach ($validated['items'] as $item) {
-                    $stock = Stock::where('product_id', $item['product_id'])
-                        ->where('branch_id', $branchId)
-                        ->first();
-                    if ($stock) {
-                        $stock->increment('quantity', (float) $item['qty']);
+                    $qty = (float) $item['qty'];
+                    if ($qty <= 0) {
+                        continue;
                     }
+                    $fifo->addBatch(
+                        (int) $user->tenant_id,
+                        (int) $item['product_id'],
+                        (int) $branchId,
+                        $qty,
+                        'RET-' . now()->format('Ymd-His') . '-' . substr(uniqid(), -4),
+                        null,
+                        null
+                    );
                 }
                 $inventoryUpdated = true;
             }
         }
+
+        $invoiceNo = $validated['invoice_no'] ?? null;
+        ActivityLogService::log('refund_processed', 'Refund processed' . ($invoiceNo ? " (Invoice: {$invoiceNo})" : ''), [
+            'invoice_no' => $invoiceNo,
+            'items_count' => count($validated['items']),
+            'inventory_updated' => $inventoryUpdated,
+        ]);
 
         return response()->json([
             'success' => true,
