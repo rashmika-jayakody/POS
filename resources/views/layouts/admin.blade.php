@@ -88,6 +88,13 @@
             border-bottom: 1px solid rgba(74, 158, 255, 0.1);
         }
 
+        .sidebar-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
         .sidebar-logo {
             display: flex;
             align-items: center;
@@ -592,14 +599,95 @@
             border: 1px solid var(--light-blue);
         }
 
-        /* Mobile Responsive */
+        /* Sidebar hide button - top of side nav */
+        .sidebar-hide-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(74, 158, 255, 0.12);
+            border: 1px solid rgba(74, 158, 255, 0.25);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--light-blue);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .sidebar-hide-btn:hover {
+            background: rgba(74, 158, 255, 0.2);
+            color: var(--navy-dark);
+        }
+
+        /* Show menu button - fixed on left edge when sidebar is hidden (desktop only) */
+        .sidebar-show-btn {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            width: 40px;
+            height: 80px;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-blue);
+            color: white;
+            border: none;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            box-shadow: 2px 0 12px rgba(74, 158, 255, 0.4);
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: background 0.2s, width 0.2s;
+        }
+
+        .sidebar-show-btn:hover {
+            background: var(--navy-medium, #1A2B4D);
+            width: 44px;
+        }
+
+        body.sidebar-hidden .sidebar-show-btn {
+            display: flex;
+        }
+
+        /* Header hamburger - mobile only */
         .sidebar-toggle {
             display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
             background: none;
             border: none;
-            font-size: 1.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 1.25rem;
             cursor: pointer;
             color: var(--navy-dark);
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--gray-100);
+            color: var(--light-blue);
+        }
+
+        /* When user hides sidebar - full width content */
+        body.sidebar-hidden .sidebar {
+            transform: translateX(-100%);
+        }
+
+        body.sidebar-hidden header {
+            left: 0;
+        }
+
+        body.sidebar-hidden .main-content {
+            margin-left: 0;
+        }
+
+        .sidebar {
+            transition: transform 0.3s ease;
         }
 
         @media (max-width: 1024px) {
@@ -618,10 +706,11 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-280px);
+                transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
 
+            body.sidebar-hidden .sidebar,
             .sidebar.active {
                 transform: translateX(0);
             }
@@ -635,7 +724,15 @@
             }
 
             .sidebar-toggle {
-                display: block;
+                display: flex;
+            }
+
+            .sidebar-show-btn {
+                display: none !important;
+            }
+
+            .sidebar-hide-btn {
+                display: none;
             }
         }
 
@@ -653,6 +750,25 @@
             animation: fadeIn 0.3s ease-in;
         }
 
+        /* Print: hide nav and header so only bill/receipt prints */
+        @media print {
+            .sidebar,
+            header,
+            .sidebar-show-btn,
+            .sidebar-hide-btn,
+            .sidebar-toggle {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+            }
+            body {
+                background: #fff !important;
+            }
+        }
+
         @stack('styles')
     </style>
 </head>
@@ -660,9 +776,15 @@
 <body>
     <aside class="sidebar animate-fade" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <i class="fas fa-chart-line"></i>
-                <span>POS Pro</span>
+            <div class="sidebar-header-row">
+                <div class="sidebar-logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>POS Pro</span>
+                </div>
+                <button type="button" class="sidebar-hide-btn" id="sidebarHideBtn" title="Hide menu">
+                    <i class="fas fa-chevron-left"></i>
+                    <span>Hide menu</span>
+                </button>
             </div>
         </div>
 
@@ -737,6 +859,10 @@
         </div>
     </aside>
 
+    <button type="button" class="sidebar-show-btn" id="sidebarShowBtn" title="Show menu" aria-label="Show menu">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
     <header class="animate-fade">
         <div class="header-content">
             <div class="header-left">
@@ -781,9 +907,21 @@
     <script>
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');
+        const sidebarHideBtn = document.getElementById('sidebarHideBtn');
+        const sidebarShowBtn = document.getElementById('sidebarShowBtn');
+
+        sidebarHideBtn?.addEventListener('click', () => {
+            document.body.classList.add('sidebar-hidden');
+        });
+
+        sidebarShowBtn?.addEventListener('click', () => {
+            document.body.classList.remove('sidebar-hidden');
+        });
 
         sidebarToggle?.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('active');
+            }
         });
 
         document.querySelectorAll('.nav-item').forEach(item => {

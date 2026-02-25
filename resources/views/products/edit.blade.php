@@ -114,6 +114,25 @@
                     </div>
 
                     <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Item discount (optional)</label>
+                        <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 10px;">Default discount for this product at POS: flat amount (Rs) or percentage.</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; color: var(--gray-600); margin-bottom: 4px;">Type</label>
+                                <select name="discount_type" id="editDiscountType" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                                    <option value="">None</option>
+                                    <option value="flat" {{ old('discount_type', $product->discount_type) === 'flat' ? 'selected' : '' }}>Flat (Rs)</option>
+                                    <option value="percent" {{ old('discount_type', $product->discount_type) === 'percent' ? 'selected' : '' }}>Percentage (%)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; color: var(--gray-600); margin-bottom: 4px;">Value</label>
+                                <input type="number" step="0.01" min="0" name="discount_value" value="{{ old('discount_value', $product->discount_value ?? 0) }}" placeholder="0.00" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
                         <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Description</label>
                         <textarea name="description" rows="4" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; resize: none;">{{ old('description', $product->description ?? '') }}</textarea>
                     </div>

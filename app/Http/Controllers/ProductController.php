@@ -45,8 +45,12 @@ class ProductController extends Controller
             'barcode' => 'nullable|string|unique:products,barcode',
             'cost_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
+            'discount_type' => 'nullable|string|in:flat,percent',
+            'discount_value' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
+        $validated['discount_type'] = $validated['discount_type'] ?? null;
+        $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;
 
         $product = Product::create($validated);
 
@@ -108,8 +112,12 @@ class ProductController extends Controller
             'barcode' => 'nullable|string|unique:products,barcode,' . $id,
             'cost_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
+            'discount_type' => 'nullable|string|in:flat,percent',
+            'discount_value' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
+        $validated['discount_type'] = $validated['discount_type'] ?? null;
+        $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;
 
         $product->update($validated);
 

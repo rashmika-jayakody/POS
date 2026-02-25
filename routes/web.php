@@ -31,11 +31,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Cash Drawer Routes
+    // Cash Drawer / POS
     Route::get('/cash-drawer', [CashDrawerController::class, 'index'])->name('cash-drawer.index');
+    Route::get('/customers/search', function (\Illuminate\Http\Request $r) {
+        return response()->json([]);
+    })->name('customers.search');
     Route::post('/cash-drawer/open', [CashDrawerController::class, 'open'])->name('cash-drawer.open');
     Route::post('/cash-drawer/close', [CashDrawerController::class, 'close'])->name('cash-drawer.close');
     Route::get('/cash-drawer/status', [CashDrawerController::class, 'status'])->name('cash-drawer.status');
+    Route::post('/cash-drawer/process-return', [CashDrawerController::class, 'processReturn'])->name('cash-drawer.process-return');
 
     // Management
     Route::resource('users', \App\Http\Controllers\UserController::class);

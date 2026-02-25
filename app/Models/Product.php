@@ -19,8 +19,14 @@ class Product extends Model
         'barcode',
         'cost_price',
         'selling_price',
+        'discount_type',
+        'discount_value',
         'image_url',
         'is_active',
+    ];
+
+    protected $casts = [
+        'discount_value' => 'decimal:2',
     ];
 
     public function productPrices()
