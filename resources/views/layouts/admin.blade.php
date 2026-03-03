@@ -76,14 +76,16 @@
             top: 0;
             width: 280px;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
             background: linear-gradient(180deg, var(--white) 0%, rgba(240, 248, 255, 0.8) 100%);
             border-right: 1px solid rgba(74, 158, 255, 0.15);
-            overflow-y: auto;
             z-index: 1000;
             box-shadow: 2px 0 12px rgba(10, 26, 61, 0.08);
         }
 
         .sidebar-header {
+            flex-shrink: 0;
             padding: 24px;
             border-bottom: 1px solid rgba(74, 158, 255, 0.1);
         }
@@ -108,7 +110,10 @@
         }
 
         .sidebar-nav {
-            padding: 24px 0 140px 0;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 24px 0;
         }
 
         .nav-section {
@@ -153,29 +158,45 @@
         }
 
         .sidebar-footer {
-            position: absolute;
-            bottom: 0;
+            flex-shrink: 0;
             width: 100%;
-            padding: 20px 24px;
+            padding: 16px 24px 24px;
             border-top: 1px solid var(--gray-100);
             background: var(--white);
+            box-sizing: border-box;
+        }
+
+        .sidebar-footer form {
+            margin: 0;
+            width: 100%;
         }
 
         .logout-btn {
             width: 100%;
-            padding: 10px 14px;
-            background: rgba(255, 107, 130, 0.1);
+            box-sizing: border-box;
+            padding: 12px 24px;
+            background: rgba(255, 107, 130, 0.08);
             color: var(--accent-coral);
             border: 1px solid rgba(255, 107, 130, 0.2);
             border-radius: var(--radius-md);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
             justify-content: center;
-            font-size: 0.9rem;
+            gap: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 107, 130, 0.15);
+            border-color: rgba(255, 107, 130, 0.35);
+        }
+
+        .logout-btn i {
+            font-size: 1rem;
         }
 
         /* Header */
@@ -875,6 +896,12 @@
                 </a>
                 <a href="{{ route('grns.index') }}" class="nav-item {{ request()->is('grns*') ? 'active' : '' }}">
                     <i class="fas fa-file-invoice"></i> <span>GRN (Goods Received)</span>
+                </a>
+                <a href="{{ route('company-other-expenses.index') }}" class="nav-item {{ request()->is('company-other-expenses*') ? 'active' : '' }}">
+                    <i class="fas fa-receipt"></i> <span>Other Expenses</span>
+                </a>
+                <a href="{{ route('reports.index') }}" class="nav-item {{ request()->is('reports*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i> <span>Reports</span>
                 </a>
                 <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>Payments</span></a>
             </div>

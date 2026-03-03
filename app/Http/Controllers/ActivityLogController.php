@@ -8,14 +8,9 @@ use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('permission:view activity log')->only(['index']);
-    }
-
     /**
      * Display activity logs with optional filters (user, date range, log type).
+     * Access controlled by route middleware: auth + permission:view activity log
      */
     public function index(Request $request)
     {

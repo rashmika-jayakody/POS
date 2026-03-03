@@ -5,6 +5,7 @@ use App\Http\Controllers\CashDrawerController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\OnboardingWizardController;
 use App\Http\Controllers\StoreLandingController;
+use App\Http\Controllers\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -18,9 +19,7 @@ Route::post('/onboarding', [OnboardingWizardController::class, 'store'])->name('
 // Store landing by slug (path-based tenancy): /app/acme → sign in to that store
 Route::get('/app/{tenant:slug}', [StoreLandingController::class, 'show'])->name('store.landing');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // SaaS Platform Management (System Owner only)
 Route::middleware(['auth', 'role:system_owner'])->group(function () {
@@ -64,6 +63,21 @@ Route::middleware('auth')->group(function () {
     Route::resource('suppliers', \App\Http\Controllers\SupplierController::class);
     Route::resource('grns', \App\Http\Controllers\GrnController::class);
     Route::post('/grns/{grn}/receive', [\App\Http\Controllers\GrnController::class, 'receive'])->name('grns.receive');
+
+    // Company Other Expenses
+    Route::resource('company-other-expenses', \App\Http\Controllers\CompanyOtherExpenseController::class)->except(['show']);
+
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportsController::class, 'index'])->name('index');
+        Route::get('/sales-summary', [ReportsController::class, 'salesSummary'])->name('sales-summary');
+        Route::get('/profit-loss', [ReportsController::class, 'profitLoss'])->name('profit-loss');
+        Route::get('/itemwise-sales', [ReportsController::class, 'itemwiseSales'])->name('itemwise-sales');
+        Route::get('/categorywise-sales', [ReportsController::class, 'categorywiseSales'])->name('categorywise-sales');
+        Route::get('/cash-summary', [ReportsController::class, 'cashSummary'])->name('cash-summary');
+        Route::get('/expiry-tracking', [ReportsController::class, 'expiryTracking'])->name('expiry-tracking');
+        Route::get('/stock-valuation', [ReportsController::class, 'stockValuation'])->name('stock-valuation');
+    });
 });
 
 
