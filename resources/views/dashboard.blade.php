@@ -101,7 +101,14 @@
     <div class="section animate-in">
         <h2 class="section-title"><i class="fas fa-bolt"></i> Quick Actions</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;">
+            @php
+                $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+            @endphp
+            @if($posType === 'restaurant')
+            <a href="{{ route('restaurant-cash-drawer.index') }}" class="btn btn-primary" style="justify-content: center;"><i class="fas fa-utensils"></i> Restaurant POS</a>
+            @else
             <a href="{{ route('cash-drawer.index') }}" class="btn btn-primary" style="justify-content: center;"><i class="fas fa-cash-register"></i> Cash Drawer</a>
+            @endif
             <a href="{{ route('reports.index') }}" class="btn btn-primary" style="justify-content: center;"><i class="fas fa-chart-line"></i> Reports</a>
             <a href="{{ route('users.create') }}" class="btn btn-secondary" style="justify-content: center;"><i class="fas fa-user-plus"></i> Add User</a>
             <a href="{{ route('products.index') }}" class="btn btn-secondary" style="justify-content: center;"><i class="fas fa-box-open"></i> Products</a>

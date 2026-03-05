@@ -94,14 +94,58 @@
         .wizard-step.active { display: block; }
         a.back-link { color: var(--light-blue); text-decoration: none; font-size: 0.9rem; }
         a.back-link:hover { text-decoration: underline; }
+        .pos-type-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .pos-type-card {
+            padding: 24px;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--white);
+            text-align: center;
+        }
+        .pos-type-card:hover {
+            border-color: var(--light-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.15);
+        }
+        .pos-type-card.selected {
+            border-color: var(--light-blue);
+            background: var(--light-blue-bg);
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
+        }
+        .pos-type-card i {
+            font-size: 2.5rem;
+            color: var(--light-blue);
+            margin-bottom: 12px;
+        }
+        .pos-type-card h3 {
+            font-size: 1.1rem;
+            color: var(--navy-dark);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .pos-type-card p {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        input[type="radio"][name="pos_type"] {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="wizard-container">
         <div class="wizard-card">
             <div class="step-indicator">
-                <span class="step-dot {{ $step ?? 1 === 1 ? 'active' : 'done' }}" id="dot1"></span>
+                <span class="step-dot {{ ($step ?? 1) === 1 ? 'active' : (($step ?? 1) > 1 ? 'done' : '') }}" id="dot1"></span>
                 <span class="step-dot {{ ($step ?? 1) === 2 ? 'active' : (($step ?? 1) > 2 ? 'done' : '') }}" id="dot2"></span>
+                <span class="step-dot {{ ($step ?? 1) === 3 ? 'active' : (($step ?? 1) > 3 ? 'done' : '') }}" id="dot3"></span>
             </div>
 
             <div class="plan-badge">
@@ -113,6 +157,34 @@
                 <input type="hidden" name="plan" value="{{ $plan }}">
 
                 <div class="wizard-step active" data-step="1">
+                    <h1>Choose your POS type</h1>
+                    <p class="subtitle">Select the type of business you're setting up.</p>
+
+                    <div class="pos-type-options">
+                        <label class="pos-type-card" for="pos_type_retail">
+                            <input type="radio" id="pos_type_retail" name="pos_type" value="retail" {{ old('pos_type', 'retail') === 'retail' ? 'checked' : '' }} required>
+                            <i class="fas fa-store"></i>
+                            <h3>Retail POS</h3>
+                            <p>For retail stores, supermarkets, and shops</p>
+                        </label>
+                        <label class="pos-type-card" for="pos_type_restaurant">
+                            <input type="radio" id="pos_type_restaurant" name="pos_type" value="restaurant" {{ old('pos_type') === 'restaurant' ? 'checked' : '' }} required>
+                            <i class="fas fa-utensils"></i>
+                            <h3>Restaurant POS</h3>
+                            <p>For restaurants, cafes, and food service</p>
+                        </label>
+                    </div>
+                    @error('pos_type') <p class="error">{{ $message }}</p> @enderror
+
+                    <div class="wizard-actions">
+                        <button type="button" class="btn btn-primary" id="nextStep1">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <a href="{{ url('/') }}#packages" class="btn btn-secondary">Back to pricing</a>
+                    </div>
+                </div>
+
+                <div class="wizard-step" data-step="2">
                     <h1>Business information</h1>
                     <p class="subtitle">We'll create your store URL from your company name (e.g. my-store).</p>
 
@@ -134,14 +206,14 @@
                         @error('phone') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="wizard-actions">
-                        <button type="button" class="btn btn-primary" id="nextStep">
+                        <button type="button" class="btn btn-secondary" id="prevStep2"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button type="button" class="btn btn-primary" id="nextStep2">
                             Next <i class="fas fa-arrow-right"></i>
                         </button>
-                        <a href="{{ url('/') }}#packages" class="btn btn-secondary">Back to pricing</a>
                     </div>
                 </div>
 
-                <div class="wizard-step" data-step="2">
+                <div class="wizard-step" data-step="3">
                     <h1>Your account</h1>
                     <p class="subtitle">You'll use this to sign in and manage your store.</p>
 
@@ -165,7 +237,7 @@
                         <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
                     </div>
                     <div class="wizard-actions">
-                        <button type="button" class="btn btn-secondary" id="prevStep"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button type="button" class="btn btn-secondary" id="prevStep3"><i class="fas fa-arrow-left"></i> Back</button>
                         <button type="submit" class="btn btn-primary">Create my store</button>
                     </div>
                 </div>
@@ -173,17 +245,58 @@
         </div>
     </div>
     <script>
-        document.getElementById('nextStep').addEventListener('click', function() {
+        // POS type selection
+        document.querySelectorAll('input[name="pos_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.pos-type-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                if (this.checked) {
+                    this.closest('.pos-type-card').classList.add('selected');
+                }
+            });
+        });
+        // Initialize selected state
+        document.querySelectorAll('input[name="pos_type"]:checked').forEach(radio => {
+            radio.closest('.pos-type-card').classList.add('selected');
+        });
+
+        // Step navigation
+        document.getElementById('nextStep1').addEventListener('click', function() {
+            const selected = document.querySelector('input[name="pos_type"]:checked');
+            if (!selected) {
+                alert('Please select a POS type');
+                return;
+            }
             document.querySelector('.wizard-step[data-step="1"]').classList.remove('active');
             document.querySelector('.wizard-step[data-step="2"]').classList.add('active');
-            document.getElementById('dot1').classList.remove('active'); document.getElementById('dot1').classList.add('done');
+            document.getElementById('dot1').classList.remove('active');
+            document.getElementById('dot1').classList.add('done');
             document.getElementById('dot2').classList.add('active');
         });
-        document.getElementById('prevStep').addEventListener('click', function() {
+
+        document.getElementById('nextStep2').addEventListener('click', function() {
+            document.querySelector('.wizard-step[data-step="2"]').classList.remove('active');
+            document.querySelector('.wizard-step[data-step="3"]').classList.add('active');
+            document.getElementById('dot2').classList.remove('active');
+            document.getElementById('dot2').classList.add('done');
+            document.getElementById('dot3').classList.add('active');
+        });
+
+        document.getElementById('prevStep2').addEventListener('click', function() {
             document.querySelector('.wizard-step[data-step="2"]').classList.remove('active');
             document.querySelector('.wizard-step[data-step="1"]').classList.add('active');
             document.getElementById('dot2').classList.remove('active');
-            document.getElementById('dot1').classList.add('active'); document.getElementById('dot1').classList.remove('done');
+            document.getElementById('dot1').classList.add('active');
+            document.getElementById('dot1').classList.remove('done');
+        });
+
+        document.getElementById('prevStep3').addEventListener('click', function() {
+            document.querySelector('.wizard-step[data-step="3"]').classList.remove('active');
+            document.querySelector('.wizard-step[data-step="2"]').classList.add('active');
+            document.getElementById('dot3').classList.remove('active');
+            document.getElementById('dot2').classList.add('active');
+            document.getElementById('dot2').classList.remove('done');
         });
         function slugify(s) {
             return s.toString().toLowerCase().trim()

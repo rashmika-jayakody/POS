@@ -38,6 +38,7 @@ class OnboardingWizardController extends Controller
     {
         $validated = $request->validate([
             'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
+            'pos_type' => ['required', 'string', 'in:retail,restaurant'],
             'company_name' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
             'phone' => ['nullable', 'string', 'max:20'],
@@ -57,6 +58,7 @@ class OnboardingWizardController extends Controller
                 'address' => $validated['address'],
                 'status' => 'active',
                 'plan' => $validated['plan'],
+                'pos_type' => $validated['pos_type'],
             ]);
 
             $branch = Branch::create([

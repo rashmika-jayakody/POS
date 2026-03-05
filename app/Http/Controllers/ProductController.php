@@ -20,7 +20,10 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['category', 'unit', 'stocks.branch'])->get();
-        return view('products.index', compact('products'));
+        $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+        $settings = auth()->user()->tenant?->businessSetting;
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        return view('products.index', compact('products', 'posType', 'currencySymbol'));
     }
 
     /**
@@ -74,14 +77,18 @@ class ProductController extends Controller
             ]);
         }
 
-        $branches = Branch::all();
-        foreach ($branches as $branch) {
-            Stock::create([
-                'product_id' => $product->id,
-                'branch_id' => $branch->id,
-                'quantity' => 0,
-                'low_stock_threshold' => 10,
-            ]);
+        // Only create stock records for retail POS (restaurants don't track menu item stock)
+        $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+        if ($posType === 'retail') {
+            $branches = Branch::all();
+            foreach ($branches as $branch) {
+                Stock::create([
+                    'product_id' => $product->id,
+                    'branch_id' => $branch->id,
+                    'quantity' => 0,
+                    'low_stock_threshold' => 10,
+                ]);
+            }
         }
 
         ActivityLogService::log('product_created', "Product created: {$product->name}", ['product_id' => $product->id, 'code' => $product->code], Product::class, $product->id);
@@ -106,7 +113,8 @@ class ProductController extends Controller
         $product = Product::with('productPrices')->findOrFail($id);
         $categories = Category::all();
         $units = Unit::all();
-        return view('products.edit', compact('product', 'categories', 'units'));
+        $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+        return view('products.edit', compact('product', 'categories', 'units', 'posType'));
     }
 
     /**

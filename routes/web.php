@@ -2,6 +2,12 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CashDrawerController;
+use App\Http\Controllers\RestaurantCashDrawerController;
+use App\Http\Controllers\RestaurantTableController;
+use App\Http\Controllers\RestaurantOrderController;
+use App\Http\Controllers\KitchenDisplayController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\OnboardingWizardController;
 use App\Http\Controllers\StoreLandingController;
@@ -31,16 +37,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Cash Drawer / POS
+    // Cash Drawer / POS (Retail)
     Route::get('/cash-drawer', [CashDrawerController::class, 'index'])->name('cash-drawer.index');
     Route::patch('/cash-drawer/shortcuts', [CashDrawerController::class, 'updateShortcuts'])->name('cash-drawer.shortcuts.update');
-    Route::get('/customers/search', function (\Illuminate\Http\Request $r) {
-        return response()->json([]);
-    })->name('customers.search');
     Route::post('/cash-drawer/open', [CashDrawerController::class, 'open'])->name('cash-drawer.open');
     Route::post('/cash-drawer/close', [CashDrawerController::class, 'close'])->name('cash-drawer.close');
     Route::get('/cash-drawer/status', [CashDrawerController::class, 'status'])->name('cash-drawer.status');
     Route::post('/cash-drawer/process-return', [CashDrawerController::class, 'processReturn'])->name('cash-drawer.process-return');
+
+    // Restaurant Cash Drawer / POS
+    Route::get('/restaurant-cash-drawer', [RestaurantCashDrawerController::class, 'index'])->name('restaurant-cash-drawer.index');
+    Route::patch('/restaurant-cash-drawer/shortcuts', [RestaurantCashDrawerController::class, 'updateShortcuts'])->name('restaurant-cash-drawer.shortcuts.update');
+    Route::post('/restaurant-cash-drawer/open', [RestaurantCashDrawerController::class, 'open'])->name('restaurant-cash-drawer.open');
+    Route::post('/restaurant-cash-drawer/close', [RestaurantCashDrawerController::class, 'close'])->name('restaurant-cash-drawer.close');
+    Route::get('/restaurant-cash-drawer/status', [RestaurantCashDrawerController::class, 'status'])->name('restaurant-cash-drawer.status');
+    Route::post('/restaurant-cash-drawer/process-return', [RestaurantCashDrawerController::class, 'processReturn'])->name('restaurant-cash-drawer.process-return');
+
+    Route::get('/customers/search', function (\Illuminate\Http\Request $r) {
+        return response()->json([]);
+    })->name('customers.search');
 
     // Business settings (business owner / system owner)
     Route::get('/business-settings', [\App\Http\Controllers\BusinessSettingsController::class, 'edit'])->name('business-settings.edit');
@@ -66,6 +81,18 @@ Route::middleware('auth')->group(function () {
 
     // Company Other Expenses
     Route::resource('company-other-expenses', \App\Http\Controllers\CompanyOtherExpenseController::class)->except(['show']);
+
+    // Restaurant Features
+    Route::prefix('restaurant')->name('restaurant.')->group(function () {
+        Route::resource('tables', RestaurantTableController::class);
+        Route::resource('orders', RestaurantOrderController::class);
+        Route::resource('reservations', ReservationController::class);
+        Route::resource('customers', CustomerController::class);
+        Route::get('/kitchen', [KitchenDisplayController::class, 'index'])->name('kitchen.index');
+        Route::post('/orders/{order}/update-status', [RestaurantOrderController::class, 'updateStatus'])->name('orders.update-status');
+        Route::post('/orders/{order}/pay', [RestaurantOrderController::class, 'pay'])->name('orders.pay');
+        Route::post('/orders/{order}/split', [RestaurantOrderController::class, 'splitBill'])->name('orders.split');
+    });
 
     // Reports
     Route::prefix('reports')->name('reports.')->group(function () {

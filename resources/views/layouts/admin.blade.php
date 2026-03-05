@@ -831,6 +831,9 @@
         </div>
 
         <nav class="sidebar-nav">
+            @php
+                $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+            @endphp
             <div class="nav-section">
                 <div class="nav-section-title">Main</div>
                 <a href="{{ route('dashboard') }}"
@@ -872,38 +875,91 @@
 
             <div class="nav-section">
                 <div class="nav-section-title">Operations</div>
-                @unlessrole('business_owner|system_owner')
-                <a href="{{ route('cash-drawer.index') }}"
-                    class="nav-item {{ request()->is('cash-drawer*') ? 'active' : '' }}">
-                    <i class="fas fa-cash-register"></i> <span>POS Terminal</span>
-                </a>
-                @endunlessrole
-                <a href="{{ route('products.index') }}"
-                    class="nav-item {{ request()->is('products*') ? 'active' : '' }}">
-                    <i class="fas fa-box"></i> <span>Products & Stock</span>
-                </a>
-                <a href="{{ route('categories.index') }}"
-                    class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
-                    <i class="fas fa-tags"></i> <span>Categories</span>
-                </a>
-                <a href="{{ route('units.index') }}"
-                    class="nav-item {{ request()->is('units*') ? 'active' : '' }}">
-                    <i class="fas fa-balance-scale"></i> <span>Units</span>
-                </a>
-                <a href="{{ route('suppliers.index') }}"
-                    class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
-                    <i class="fas fa-truck"></i> <span>Suppliers</span>
-                </a>
-                <a href="{{ route('grns.index') }}" class="nav-item {{ request()->is('grns*') ? 'active' : '' }}">
-                    <i class="fas fa-file-invoice"></i> <span>GRN (Goods Received)</span>
-                </a>
-                <a href="{{ route('company-other-expenses.index') }}" class="nav-item {{ request()->is('company-other-expenses*') ? 'active' : '' }}">
-                    <i class="fas fa-receipt"></i> <span>Other Expenses</span>
-                </a>
-                <a href="{{ route('reports.index') }}" class="nav-item {{ request()->is('reports*') ? 'active' : '' }}">
-                    <i class="fas fa-chart-line"></i> <span>Reports</span>
-                </a>
-                <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>Payments</span></a>
+                @php
+                    $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+                    // Debug: Uncomment to see pos_type value
+                    // dd('POS Type: ' . $posType, 'Tenant: ' . auth()->user()->tenant?->name, 'Tenant ID: ' . auth()->user()->tenant_id);
+                @endphp
+                @if($posType === 'restaurant')
+                    {{-- Restaurant-specific menu --}}
+                    @unlessrole('business_owner|system_owner')
+                    <a href="{{ route('restaurant-cash-drawer.index') }}"
+                        class="nav-item {{ request()->is('restaurant-cash-drawer*') ? 'active' : '' }}">
+                        <i class="fas fa-utensils"></i> <span>Restaurant POS</span>
+                    </a>
+                    @endunlessrole
+                    <a href="{{ route('restaurant.tables.index') }}" class="nav-item {{ request()->is('restaurant/tables*') ? 'active' : '' }}">
+                        <i class="fas fa-chair"></i> <span>Table Management</span>
+                    </a>
+                    <a href="{{ route('restaurant.orders.index') }}" class="nav-item {{ request()->is('restaurant/orders*') ? 'active' : '' }}">
+                        <i class="fas fa-clipboard-list"></i> <span>Orders</span>
+                    </a>
+                    <a href="{{ route('restaurant.kitchen.index') }}" class="nav-item {{ request()->is('restaurant/kitchen*') ? 'active' : '' }}">
+                        <i class="fas fa-tv"></i> <span>Kitchen Display (KDS)</span>
+                    </a>
+                    <a href="{{ route('restaurant.reservations.index') }}" class="nav-item {{ request()->is('restaurant/reservations*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-check"></i> <span>Reservations</span>
+                    </a>
+                    <a href="{{ route('restaurant.customers.index') }}" class="nav-item {{ request()->is('restaurant/customers*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i> <span>Customers</span>
+                    </a>
+                    <a href="{{ route('products.index') }}"
+                        class="nav-item {{ request()->is('products*') ? 'active' : '' }}">
+                        <i class="fas fa-book"></i> <span>Menu Management</span>
+                    </a>
+                    <a href="{{ route('categories.index') }}"
+                        class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i> <span>Menu Categories</span>
+                    </a>
+                    <a href="{{ route('suppliers.index') }}"
+                        class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
+                        <i class="fas fa-truck"></i> <span>Suppliers</span>
+                    </a>
+                    <a href="{{ route('grns.index') }}" class="nav-item {{ request()->is('grns*') ? 'active' : '' }}">
+                        <i class="fas fa-boxes"></i> <span>Ingredient Inventory</span>
+                    </a>
+                    <a href="{{ route('reports.stock-valuation') }}" class="nav-item {{ request()->is('reports/stock-valuation*') ? 'active' : '' }}">
+                        <i class="fas fa-exclamation-triangle"></i> <span>Low Stock Alerts</span>
+                    </a>
+                    <a href="{{ route('reports.index') }}" class="nav-item {{ request()->is('reports*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-line"></i> <span>Reports & Analytics</span>
+                    </a>
+                    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>Payments</span></a>
+                @else
+                    {{-- Retail menu --}}
+                    @unlessrole('business_owner|system_owner')
+                    <a href="{{ route('cash-drawer.index') }}"
+                        class="nav-item {{ request()->is('cash-drawer*') ? 'active' : '' }}">
+                        <i class="fas fa-cash-register"></i> <span>POS Terminal</span>
+                    </a>
+                    @endunlessrole
+                    <a href="{{ route('products.index') }}"
+                        class="nav-item {{ request()->is('products*') ? 'active' : '' }}">
+                        <i class="fas fa-box"></i> <span>Products & Stock</span>
+                    </a>
+                    <a href="{{ route('categories.index') }}"
+                        class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i> <span>Categories</span>
+                    </a>
+                    <a href="{{ route('units.index') }}"
+                        class="nav-item {{ request()->is('units*') ? 'active' : '' }}">
+                        <i class="fas fa-balance-scale"></i> <span>Units</span>
+                    </a>
+                    <a href="{{ route('suppliers.index') }}"
+                        class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
+                        <i class="fas fa-truck"></i> <span>Suppliers</span>
+                    </a>
+                    <a href="{{ route('grns.index') }}" class="nav-item {{ request()->is('grns*') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice"></i> <span>GRN (Goods Received)</span>
+                    </a>
+                    <a href="{{ route('company-other-expenses.index') }}" class="nav-item {{ request()->is('company-other-expenses*') ? 'active' : '' }}">
+                        <i class="fas fa-receipt"></i> <span>Other Expenses</span>
+                    </a>
+                    <a href="{{ route('reports.index') }}" class="nav-item {{ request()->is('reports*') ? 'active' : '' }}">
+                        <i class="fas fa-chart-line"></i> <span>Reports</span>
+                    </a>
+                    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>Payments</span></a>
+                @endif
             </div>
         </nav>
 
