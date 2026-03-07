@@ -107,6 +107,7 @@ class GrnController extends Controller
                     'branch_id' => $grn->branch_id,
                     'batch_number' => $batchNumber,
                     'quantity' => $item->quantity,
+                    'purchase_price' => $item->unit_price, // Store actual purchase cost from GRN
                     'received_at' => $receivedAt,
                     'expiry_date' => $item->expiry_date,
                     'grn_item_id' => $item->id,

@@ -15,6 +15,7 @@ class StockBatch extends Model
         'branch_id',
         'batch_number',
         'quantity',
+        'purchase_price',
         'received_at',
         'expiry_date',
         'grn_item_id',
@@ -22,6 +23,7 @@ class StockBatch extends Model
 
     protected $casts = [
         'quantity' => 'decimal:3',
+        'purchase_price' => 'decimal:2',
         'received_at' => 'date',
         'expiry_date' => 'date',
     ];

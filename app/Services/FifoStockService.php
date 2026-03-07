@@ -16,9 +16,9 @@ class FifoStockService
      * Deduct quantity from stock using FIFO: oldest batches first.
      * Updates both stock_batches and the aggregate stocks table.
      *
-     * @return bool True if deduction succeeded (enough stock), false otherwise
+     * @return array|bool Returns array with 'success' => true and 'cost' => total cost, or false if insufficient stock
      */
-    public function deduct(int $tenantId, int $productId, int $branchId, float $quantity): bool
+    public function deduct(int $tenantId, int $productId, int $branchId, float $quantity)
     {
         $remaining = (float) $quantity;
         $batches = StockBatch::where('tenant_id', $tenantId)
@@ -33,29 +33,39 @@ class FifoStockService
         $totalAvailable = $batches->sum('quantity');
 
         // Legacy: no batches yet (pre-FIFO data) — deduct from aggregate Stock only
+        // Use product cost_price as fallback (not ideal, but handles legacy data)
         if ($batches->isEmpty()) {
             $stock = Stock::where('tenant_id', $tenantId)
                 ->where('product_id', $productId)
                 ->where('branch_id', $branchId)
+                ->with('product')
                 ->first();
             if (! $stock || (float) $stock->quantity < $quantity) {
                 return false;
             }
             $stock->decrement('quantity', $quantity);
-            return true;
+            // Return cost using product cost_price as fallback
+            $fallbackCost = (float) ($stock->product->cost_price ?? 0);
+            return [
+                'success' => true,
+                'cost' => $fallbackCost * $quantity,
+            ];
         }
 
         if ($totalAvailable < $remaining) {
             return false;
         }
 
+        $totalCost = 0.0;
         $remaining = (float) $quantity;
-        DB::transaction(function () use ($batches, $quantity, $tenantId, $productId, $branchId, &$remaining) {
+        DB::transaction(function () use ($batches, $quantity, $tenantId, $productId, $branchId, &$remaining, &$totalCost) {
             foreach ($batches as $batch) {
                 if ($remaining <= 0) {
                     break;
                 }
                 $deduct = min($remaining, (float) $batch->quantity);
+                $batchCost = (float) ($batch->purchase_price ?? 0);
+                $totalCost += $batchCost * $deduct;
                 $batch->decrement('quantity', $deduct);
                 $remaining -= $deduct;
             }
@@ -71,7 +81,10 @@ class FifoStockService
             }
         });
 
-        return true;
+        return [
+            'success' => true,
+            'cost' => $totalCost,
+        ];
     }
 
     /**
@@ -85,15 +98,23 @@ class FifoStockService
         float $quantity,
         string $batchNumber,
         ?\DateTimeInterface $expiryDate = null,
-        ?int $grnItemId = null
+        ?int $grnItemId = null,
+        ?float $purchasePrice = null
     ): StockBatch {
-        return DB::transaction(function () use ($tenantId, $productId, $branchId, $quantity, $batchNumber, $expiryDate, $grnItemId) {
+        return DB::transaction(function () use ($tenantId, $productId, $branchId, $quantity, $batchNumber, $expiryDate, $grnItemId, $purchasePrice) {
+            // If purchase price not provided, use product cost_price as fallback
+            if ($purchasePrice === null) {
+                $product = \App\Models\Product::find($productId);
+                $purchasePrice = $product ? (float) ($product->cost_price ?? 0) : 0;
+            }
+            
             $batch = StockBatch::create([
                 'tenant_id' => $tenantId,
                 'product_id' => $productId,
                 'branch_id' => $branchId,
                 'batch_number' => $batchNumber,
                 'quantity' => $quantity,
+                'purchase_price' => $purchasePrice,
                 'received_at' => now(),
                 'expiry_date' => $expiryDate,
                 'grn_item_id' => $grnItemId,

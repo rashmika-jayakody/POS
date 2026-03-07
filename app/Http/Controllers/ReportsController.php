@@ -288,14 +288,32 @@ class ReportsController extends Controller
         }
         $rows = $query->get()->map(function ($stock) {
             $qty = (float) $stock->quantity;
-            $cost = (float) ($stock->product->cost_price ?? 0);
             $selling = (float) ($stock->product->selling_price ?? 0);
+            
+            // Calculate cost using FIFO batch costs (correct method)
+            $batches = \App\Models\StockBatch::where('tenant_id', $stock->tenant_id)
+                ->where('product_id', $stock->product_id)
+                ->where('branch_id', $stock->branch_id)
+                ->where('quantity', '>', 0)
+                ->get();
+            
+            $costValue = 0.0;
+            if ($batches->isNotEmpty()) {
+                // Use actual batch purchase prices
+                $costValue = $batches->sum(function ($batch) {
+                    return (float) $batch->quantity * (float) ($batch->purchase_price ?? 0);
+                });
+            } else {
+                // Fallback to product cost_price for legacy data (pre-FIFO)
+                $costValue = $qty * (float) ($stock->product->cost_price ?? 0);
+            }
+            
             return [
                 'stock' => $stock,
                 'product' => $stock->product,
                 'branch' => $stock->branch,
                 'qty' => $qty,
-                'cost_value' => $qty * $cost,
+                'cost_value' => $costValue,
                 'retail_value' => $qty * $selling,
             ];
         })->filter(fn ($r) => $r['qty'] > 0)->sortByDesc('cost_value')->values();
