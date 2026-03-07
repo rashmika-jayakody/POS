@@ -460,10 +460,10 @@
                     </div>
 
                     <!-- Action Bar -->
-                    <div style="background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); padding: 20px 32px; display: flex; gap: 16px; justify-content: flex-end; align-items: center; margin-bottom: 40px;">
+                    <div style="background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); padding: 20px 32px; display: flex; gap: 16px; justify-content: flex-end; align-items: center; margin-bottom: 40px; position: sticky; bottom: 0; z-index: 10;">
                         <span style="color: var(--gray-500); font-size: 0.85rem; margin-right: auto;"><i class="fas fa-info-circle"></i> Unsaved changes will be lost</span>
                         <a href="{{ route('dashboard') }}" class="btn btn-secondary" style="padding: 12px 24px;">Discard</a>
-                        <button type="submit" class="btn btn-primary" style="padding: 12px 28px; box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);"><i class="fas fa-check"></i> Save Changes</button>
+                        <button type="submit" id="saveSettingsBtn" class="btn btn-primary" style="padding: 12px 28px; box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);"><i class="fas fa-check"></i> Save Changes</button>
                     </div>
 
                 </div>
@@ -488,14 +488,102 @@
                     document.getElementById(tabId).classList.add('active');
                 });
             });
+            
+            // Color picker synchronization
             document.querySelectorAll('input[type="color"]').forEach(function (colorInput) {
                 var textId = colorInput.id + '_text';
                 var textEl = document.getElementById(textId);
                 if (textEl) {
-                    colorInput.addEventListener('input', function () { textEl.value = this.value; });
-                    textEl.addEventListener('input', function () { colorInput.value = this.value; });
+                    colorInput.addEventListener('input', function () { 
+                        textEl.value = this.value; 
+                    });
+                    textEl.addEventListener('input', function () { 
+                        // Validate hex color format
+                        var value = this.value.trim();
+                        if (/^#[0-9A-F]{6}$/i.test(value)) {
+                            colorInput.value = value;
+                        }
+                    });
+                    textEl.addEventListener('blur', function () {
+                        // Sync on blur to ensure color input is updated
+                        var value = this.value.trim();
+                        if (/^#[0-9A-F]{6}$/i.test(value)) {
+                            colorInput.value = value;
+                        } else {
+                            // If invalid, restore from color input
+                            this.value = colorInput.value;
+                        }
+                    });
                 }
             });
+            
+            // Ensure color values are synced before form submission
+            const form = document.querySelector('form[action="{{ route("business-settings.update") }}"]');
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            
+            if (form) {
+                // Sync color inputs before form submission
+                form.addEventListener('submit', function(e) {
+                    // Sync all color text inputs to color inputs before submission
+                    document.querySelectorAll('input[type="color"]').forEach(function (colorInput) {
+                        var textId = colorInput.id + '_text';
+                        var textEl = document.getElementById(textId);
+                        if (textEl) {
+                            var value = textEl.value.trim();
+                            // Ensure value starts with #
+                            if (!value.startsWith('#')) {
+                                value = '#' + value;
+                            }
+                            // Validate and sync hex color
+                            if (/^#[0-9A-F]{6}$/i.test(value)) {
+                                colorInput.value = value.toUpperCase();
+                                textEl.value = value.toUpperCase();
+                            } else {
+                                // If invalid, keep current color input value
+                                textEl.value = colorInput.value;
+                            }
+                        }
+                    });
+                    // Form will submit normally after sync - don't prevent default
+                });
+                
+                // Also sync on text input blur to ensure values are always in sync
+                document.querySelectorAll('input[id$="_text"]').forEach(function(textInput) {
+                    textInput.addEventListener('blur', function() {
+                        var colorId = this.id.replace('_text', '');
+                        var colorInput = document.getElementById(colorId);
+                        if (colorInput) {
+                            var value = this.value.trim();
+                            if (!value.startsWith('#')) {
+                                value = '#' + value;
+                            }
+                            if (/^#[0-9A-F]{6}$/i.test(value)) {
+                                colorInput.value = value.toUpperCase();
+                                this.value = value.toUpperCase();
+                            } else {
+                                this.value = colorInput.value;
+                            }
+                        }
+                    });
+                });
+                
+                // Ensure save button is clickable and not disabled
+                if (saveBtn) {
+                    saveBtn.addEventListener('click', function(e) {
+                        // Ensure button is not disabled
+                        if (this.disabled) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        // Trigger form submission if not already submitting
+                        if (!form.checkValidity()) {
+                            form.reportValidity();
+                            e.preventDefault();
+                            return false;
+                        }
+                    });
+                }
+            }
             
             // Logo preview functionality
             const logoUpload = document.getElementById('logo-upload');
