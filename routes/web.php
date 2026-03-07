@@ -22,6 +22,7 @@ Route::get('/', function () {
 Route::get('/onboarding', [OnboardingWizardController::class, 'index'])->name('onboarding.index');
 Route::post('/onboarding', [OnboardingWizardController::class, 'store'])->name('onboarding.store');
 Route::post('/onboarding/validate-step', [OnboardingWizardController::class, 'validateStep'])->name('onboarding.validate-step');
+Route::post('/onboarding/resend-code', [OnboardingWizardController::class, 'resendCode'])->name('onboarding.resend-code');
 
 // Store landing by slug (path-based tenancy): /app/acme → sign in to that store
 Route::get('/app/{tenant:slug}', [StoreLandingController::class, 'show'])->name('store.landing');

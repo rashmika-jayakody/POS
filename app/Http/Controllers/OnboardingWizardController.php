@@ -6,10 +6,12 @@ use App\Models\Branch;
 use App\Models\BusinessSetting;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\EmailVerificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -41,7 +43,16 @@ class OnboardingWizardController extends Controller
                 $step = 2;
             } elseif ($errors->has('name') || $errors->has('email') || $errors->has('password')) {
                 $step = 3;
+            } elseif ($errors->has('verification_code')) {
+                $step = 4;
             }
+        }
+
+        // Get email from session if on verification step
+        $email = null;
+        if ($step === 4) {
+            $onboardingData = Session::get('onboarding_data');
+            $email = $onboardingData['email'] ?? null;
         }
         
         return view('onboarding.wizard', [
@@ -49,11 +60,54 @@ class OnboardingWizardController extends Controller
             'planInfo' => self::PLANS[$plan],
             'plans' => self::PLANS,
             'step' => $step,
+            'email' => $email,
         ]);
     }
 
     public function store(Request $request): RedirectResponse|View
     {
+        // Check if this is just moving to verification step (no verification code yet)
+        if (!$request->has('verification_code') || !$request->filled('verification_code')) {
+            // Validate all form data first
+            try {
+                $validated = $request->validate([
+                    'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
+                    'pos_type' => ['required', 'string', 'in:retail,restaurant'],
+                    'company_name' => ['required', 'string', 'max:255'],
+                    'address' => ['required', 'string', 'max:500'],
+                    'phone' => ['nullable', 'string', 'max:20'],
+                    'name' => ['required', 'string', 'max:255'],
+                    'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                ]);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                // Determine which step has errors
+                $errors = $e->errors();
+                $step = 1;
+                if (isset($errors['pos_type'])) {
+                    $step = 1;
+                } elseif (isset($errors['company_name']) || isset($errors['address']) || isset($errors['phone'])) {
+                    $step = 2;
+                } elseif (isset($errors['name']) || isset($errors['email']) || isset($errors['password'])) {
+                    $step = 3;
+                }
+                
+                return redirect()->route('onboarding.index', ['plan' => $request->input('plan', 'professional'), 'step' => $step])
+                    ->withErrors($e->errors())
+                    ->withInput();
+            }
+
+            // Store form data in session and send verification code
+            Session::put('onboarding_data', $validated);
+            EmailVerificationService::sendCode($validated['email'], 'registration');
+            
+            return redirect()->route('onboarding.index', [
+                'plan' => $request->input('plan', 'professional'),
+                'step' => 4
+            ])->with('success', 'Verification code has been sent to your email. Please check your inbox.');
+        }
+
+        // Verification code is provided, validate everything including the code
         try {
             $validated = $request->validate([
                 'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
@@ -64,6 +118,7 @@ class OnboardingWizardController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'verification_code' => ['required', 'string', 'size:6'],
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Determine which step has errors
@@ -75,11 +130,21 @@ class OnboardingWizardController extends Controller
                 $step = 2;
             } elseif (isset($errors['name']) || isset($errors['email']) || isset($errors['password'])) {
                 $step = 3;
+            } elseif (isset($errors['verification_code'])) {
+                $step = 4;
             }
             
             return redirect()->route('onboarding.index', ['plan' => $request->input('plan', 'professional'), 'step' => $step])
                 ->withErrors($e->errors())
                 ->withInput();
+        }
+
+        // Verify the code
+        if (!EmailVerificationService::verify($validated['email'], $validated['verification_code'], 'registration')) {
+            return redirect()->route('onboarding.index', [
+                'plan' => $request->input('plan', 'professional'),
+                'step' => 4
+            ])->withErrors(['verification_code' => 'Invalid or expired verification code.'])->withInput();
         }
 
         $slug = Tenant::generateUniqueSlug($validated['company_name']);
@@ -128,8 +193,32 @@ class OnboardingWizardController extends Controller
         event(new \Illuminate\Auth\Events\Registered($user));
         Auth::login($user);
 
+        // Clear onboarding session data
+        Session::forget('onboarding_data');
+
         return redirect()->route('dashboard')
             ->with('success', 'Welcome! Your store is ready. Your store link: ' . route('store.landing', ['tenant' => $slug]));
+    }
+
+    /**
+     * Resend verification code
+     */
+    public function resendCode(Request $request): RedirectResponse
+    {
+        $email = $request->input('email');
+        
+        if (!$email) {
+            $onboardingData = Session::get('onboarding_data');
+            $email = $onboardingData['email'] ?? null;
+        }
+
+        if (!$email) {
+            return back()->withErrors(['email' => 'Email address is required.']);
+        }
+
+        EmailVerificationService::sendCode($email, 'registration');
+
+        return back()->with('success', 'Verification code has been resent to your email.');
     }
 
     public function validateStep(Request $request)
@@ -158,6 +247,11 @@ class OnboardingWizardController extends Controller
                     'name' => ['required', 'string', 'max:255'],
                     'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
                     'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                ];
+                break;
+            case 4:
+                $rules = [
+                    'verification_code' => ['required', 'string', 'size:6'],
                 ];
                 break;
         }

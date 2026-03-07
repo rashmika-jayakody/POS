@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Branch;
 use App\Models\Tenant;
 use App\Services\ActivityLogService;
+use App\Services\EmailVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -66,9 +67,17 @@ class UserController extends Controller
 
         $user->assignRole($request->role);
 
+        // Send email verification code to the new staff member
+        try {
+            EmailVerificationService::sendCode($request->email, 'staff');
+        } catch (\Exception $e) {
+            // Log error but don't fail user creation
+            \Log::error('Failed to send verification code to staff: ' . $e->getMessage());
+        }
+
         ActivityLogService::log('user_created', "User created: {$user->name} ({$user->email})", ['user_id' => $user->id], User::class, $user->id);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        return redirect()->route('users.index')->with('success', 'User created successfully. A verification code has been sent to their email address.');
     }
 
     public function edit(User $user)

@@ -4,6 +4,7 @@
             <span class="step-dot {{ ($step ?? 1) === 1 ? 'active' : (($step ?? 1) > 1 ? 'done' : '') }}" id="dot1"></span>
             <span class="step-dot {{ ($step ?? 1) === 2 ? 'active' : (($step ?? 1) > 2 ? 'done' : '') }}" id="dot2"></span>
             <span class="step-dot {{ ($step ?? 1) === 3 ? 'active' : (($step ?? 1) > 3 ? 'done' : '') }}" id="dot3"></span>
+            <span class="step-dot {{ ($step ?? 1) === 4 ? 'active' : (($step ?? 1) > 4 ? 'done' : '') }}" id="dot4"></span>
         </div>
         
         @if ($errors->any())
@@ -19,6 +20,19 @@
             <form action="{{ route('onboarding.store') }}" method="POST" id="wizardForm">
                 @csrf
                 <input type="hidden" name="plan" value="{{ $plan }}">
+                @php
+                    $onboardingData = session('onboarding_data', []);
+                @endphp
+                @if(!empty($onboardingData))
+                    <input type="hidden" name="pos_type" value="{{ $onboardingData['pos_type'] ?? '' }}">
+                    <input type="hidden" name="company_name" value="{{ $onboardingData['company_name'] ?? '' }}">
+                    <input type="hidden" name="address" value="{{ $onboardingData['address'] ?? '' }}">
+                    <input type="hidden" name="phone" value="{{ $onboardingData['phone'] ?? '' }}">
+                    <input type="hidden" name="name" value="{{ $onboardingData['name'] ?? '' }}">
+                    <input type="hidden" name="email" value="{{ $onboardingData['email'] ?? '' }}">
+                    <input type="hidden" name="password" value="{{ $onboardingData['password'] ?? '' }}">
+                    <input type="hidden" name="password_confirmation" value="{{ $onboardingData['password_confirmation'] ?? '' }}">
+                @endif
 
                 <div class="wizard-step {{ ($step ?? 1) === 1 ? 'active' : '' }}" data-step="1">
                     <h2 class="auth-heading">Choose your POS type</h2>
@@ -119,8 +133,47 @@
                         <button type="button" id="prevStep3" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
+                        <button type="button" class="auth-btn" id="nextStep3" style="width: auto; flex: 1; min-width: 120px;">
+                            Next <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="wizard-step {{ ($step ?? 1) === 4 ? 'active' : '' }}" data-step="4">
+                    <h2 class="auth-heading">Verify your email</h2>
+                    <p class="auth-subheading">We've sent a verification code to <strong>{{ $email ?? old('email') }}</strong></p>
+                    
+                    @if(session('success'))
+                        <div style="background: #d1fae5; border: 1px solid #86efac; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;">
+                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <div class="form-group">
+                        <label for="verification_code">Verification Code *</label>
+                        <input type="text" id="verification_code" name="verification_code" value="{{ old('verification_code') }}" 
+                               required maxlength="6" pattern="[0-9]{6}" placeholder="000000"
+                               style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+                        <p class="hint" style="text-align: center; margin-top: 8px;">Enter the 6-digit code sent to your email</p>
+                        @error('verification_code') <p class="error">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div style="text-align: center; margin: 20px 0;">
+                        <form action="{{ route('onboarding.resend-code') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
+                            <button type="submit" style="background: none; border: none; color: #4A9EFF; cursor: pointer; text-decoration: underline; font-size: 0.9rem;">
+                                <i class="fas fa-redo"></i> Resend code
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
+                        <button type="button" id="prevStep4" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
                         <button type="submit" class="auth-btn" style="width: auto; flex: 1; min-width: 120px;">
-                            <i class="fas fa-check" style="margin-right: 8px;"></i> Create my store
+                            <i class="fas fa-check" style="margin-right: 8px;"></i> Verify & Create Store
                         </button>
                     </div>
                 </div>
@@ -341,6 +394,33 @@
             document.getElementById('dot3').classList.add('active');
         });
 
+        document.getElementById('nextStep3')?.addEventListener('click', async function() {
+            const isValid = await validateStep(3);
+            if (!isValid) return;
+
+            // Submit form to trigger email verification code sending
+            const form = document.getElementById('wizardForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('{{ route("onboarding.store") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    redirect: 'follow'
+                });
+
+                // If redirected, follow the redirect
+                if (response.redirected || response.ok) {
+                    window.location.href = response.url || window.location.href;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
         document.getElementById('prevStep2').addEventListener('click', function() {
             document.querySelector('.wizard-step[data-step="2"]').classList.remove('active');
             document.querySelector('.wizard-step[data-step="1"]').classList.add('active');
@@ -356,6 +436,14 @@
             document.getElementById('dot2').classList.add('active');
             document.getElementById('dot2').classList.remove('done');
         });
+
+        document.getElementById('prevStep4')?.addEventListener('click', function() {
+            document.querySelector('.wizard-step[data-step="4"]').classList.remove('active');
+            document.querySelector('.wizard-step[data-step="3"]').classList.add('active');
+            document.getElementById('dot4').classList.remove('active');
+            document.getElementById('dot3').classList.add('active');
+            document.getElementById('dot3').classList.remove('done');
+        });
         function slugify(s) {
             return s.toString().toLowerCase().trim()
                 .replace(/\s+/g, '-')
@@ -366,4 +454,17 @@
         document.getElementById('company_name').addEventListener('input', function() {
             document.getElementById('slugPreview').textContent = slugify(this.value) || 'store';
         });
+
+        // Auto-format verification code input
+        const verificationCodeInput = document.getElementById('verification_code');
+        if (verificationCodeInput) {
+            verificationCodeInput.addEventListener('input', function(e) {
+                // Only allow numbers
+                this.value = this.value.replace(/[^0-9]/g, '');
+                // Limit to 6 digits
+                if (this.value.length > 6) {
+                    this.value = this.value.substring(0, 6);
+                }
+            });
+        }
     </script>
