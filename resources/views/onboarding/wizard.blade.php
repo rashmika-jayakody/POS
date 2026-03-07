@@ -23,15 +23,16 @@
                 @php
                     $onboardingData = session('onboarding_data', []);
                 @endphp
-                @if(!empty($onboardingData))
-                    <input type="hidden" name="pos_type" value="{{ $onboardingData['pos_type'] ?? '' }}">
-                    <input type="hidden" name="company_name" value="{{ $onboardingData['company_name'] ?? '' }}">
-                    <input type="hidden" name="address" value="{{ $onboardingData['address'] ?? '' }}">
-                    <input type="hidden" name="phone" value="{{ $onboardingData['phone'] ?? '' }}">
-                    <input type="hidden" name="name" value="{{ $onboardingData['name'] ?? '' }}">
-                    <input type="hidden" name="email" value="{{ $onboardingData['email'] ?? '' }}">
-                    <input type="hidden" name="password" value="{{ $onboardingData['password'] ?? '' }}">
-                    <input type="hidden" name="password_confirmation" value="{{ $onboardingData['password_confirmation'] ?? '' }}">
+                @if(!empty($onboardingData) && ($step ?? 1) === 4)
+                    {{-- Include all form data as hidden fields when on verification step --}}
+                    <input type="hidden" name="pos_type" value="{{ $onboardingData['pos_type'] ?? old('pos_type', '') }}">
+                    <input type="hidden" name="company_name" value="{{ $onboardingData['company_name'] ?? old('company_name', '') }}">
+                    <input type="hidden" name="address" value="{{ $onboardingData['address'] ?? old('address', '') }}">
+                    <input type="hidden" name="phone" value="{{ $onboardingData['phone'] ?? old('phone', '') }}">
+                    <input type="hidden" name="name" value="{{ $onboardingData['name'] ?? old('name', '') }}">
+                    <input type="hidden" name="email" value="{{ $onboardingData['email'] ?? old('email', '') }}">
+                    <input type="hidden" name="password" value="{{ $onboardingData['password'] ?? old('password', '') }}">
+                    <input type="hidden" name="password_confirmation" value="{{ $onboardingData['password_confirmation'] ?? old('password_confirmation', '') }}">
                 @endif
 
                 <div class="wizard-step {{ ($step ?? 1) === 1 ? 'active' : '' }}" data-step="1">

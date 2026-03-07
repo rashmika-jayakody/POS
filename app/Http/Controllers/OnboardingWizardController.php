@@ -107,9 +107,25 @@ class OnboardingWizardController extends Controller
             ])->with('success', 'Verification code has been sent to your email. Please check your inbox.');
         }
 
-        // Verification code is provided, validate everything including the code
+        // Verification code is provided, merge with session data if needed
+        $onboardingData = Session::get('onboarding_data', []);
+        
+        // Merge request data with session data (session data takes precedence for form fields, request for verification_code)
+        $formData = array_merge($onboardingData, [
+            'verification_code' => $request->input('verification_code'),
+            'plan' => $request->input('plan', $onboardingData['plan'] ?? 'professional'),
+        ]);
+        
+        // Merge all request data, but session data overrides
+        foreach (['pos_type', 'company_name', 'address', 'phone', 'name', 'email', 'password', 'password_confirmation'] as $field) {
+            if (!isset($formData[$field]) && $request->has($field)) {
+                $formData[$field] = $request->input($field);
+            }
+        }
+        
+        // Validate using merged data
         try {
-            $validated = $request->validate([
+            $validator = \Validator::make($formData, [
                 'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
                 'pos_type' => ['required', 'string', 'in:retail,restaurant'],
                 'company_name' => ['required', 'string', 'max:255'],
@@ -120,6 +136,26 @@ class OnboardingWizardController extends Controller
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
                 'verification_code' => ['required', 'string', 'size:6'],
             ]);
+            
+            if ($validator->fails()) {
+                $errors = $validator->errors();
+                $step = 1;
+                if ($errors->has('pos_type')) {
+                    $step = 1;
+                } elseif ($errors->has('company_name') || $errors->has('address') || $errors->has('phone')) {
+                    $step = 2;
+                } elseif ($errors->has('name') || $errors->has('email') || $errors->has('password')) {
+                    $step = 3;
+                } elseif ($errors->has('verification_code')) {
+                    $step = 4;
+                }
+                
+                return redirect()->route('onboarding.index', ['plan' => $formData['plan'] ?? 'professional', 'step' => $step])
+                    ->withErrors($errors)
+                    ->withInput();
+            }
+            
+            $validated = $validator->validated();
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Determine which step has errors
             $errors = $e->errors();
@@ -134,7 +170,7 @@ class OnboardingWizardController extends Controller
                 $step = 4;
             }
             
-            return redirect()->route('onboarding.index', ['plan' => $request->input('plan', 'professional'), 'step' => $step])
+            return redirect()->route('onboarding.index', ['plan' => $formData['plan'] ?? 'professional', 'step' => $step])
                 ->withErrors($e->errors())
                 ->withInput();
         }
@@ -142,7 +178,7 @@ class OnboardingWizardController extends Controller
         // Verify the code
         if (!EmailVerificationService::verify($validated['email'], $validated['verification_code'], 'registration')) {
             return redirect()->route('onboarding.index', [
-                'plan' => $request->input('plan', 'professional'),
+                'plan' => $validated['plan'] ?? 'professional',
                 'step' => 4
             ])->withErrors(['verification_code' => 'Invalid or expired verification code.'])->withInput();
         }
