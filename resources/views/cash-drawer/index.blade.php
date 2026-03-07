@@ -2246,7 +2246,9 @@
         const currencySymbol = @json($currencySymbol ?? 'Rs');
         const HELD_STORAGE_KEY = 'pos_held_bills';
         const SHORTCUTS_UPDATE_URL = @json(route('cash-drawer.shortcuts.update'));
+        const PROCESS_SALE_URL = @json(route('cash-drawer.process-sale'));
         const CSRF_TOKEN = @json(csrf_token());
+        const TAX_RATE = @json($taxRate ?? 0);
 
         const SHORTCUT_DEFAULTS = {
             help: 'F1', search: 'F2', loyalty: 'F3', newBill: 'F4', hold: 'F5', refund: 'F6', pay: 'F8', clear: 'F9',
@@ -3069,11 +3071,10 @@
 
         function processPayment() {
             if (cart.length === 0) return alert('Cart is empty!');
-            const total = cart.reduce((sum, item) => sum + lineTotal(item), 0);
+            const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
             let cashReceived = 0, changeAmount = 0;
             if (paymentMethod === 'Cash') {
                 cashReceived = parseFloat(document.getElementById('receivedAmount').value) || 0;
-                const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
                 if (finalTotal > 0 && cashReceived < finalTotal) {
                     alert('Insufficient cash! Need ' + currencySymbol + ' ' + (finalTotal - cashReceived).toFixed(2) + ' more.');
                     document.getElementById('receivedAmount').focus();
@@ -3081,19 +3082,75 @@
                 }
                 changeAmount = cashReceived - finalTotal;
             }
+
+            // Calculate totals
+            const subtotal = cart.reduce((sum, item) => sum + lineTotal(item), 0);
+            let discountAmount = discountType === 'fixed' ? discountValue : (subtotal * discountValue) / 100;
+            const taxTotal = TAX_RATE > 0 ? (subtotal - discountAmount) * (TAX_RATE / 100) : 0;
+            const grandTotal = Math.max(0, subtotal - discountAmount + taxTotal);
+
+            // Prepare items for API
+            const items = cart.map(item => {
+                const itemSubtotal = item.qty * item.price;
+                let itemDiscount = 0;
+                if (item.discount_type && parseFloat(item.discount_value) > 0) {
+                    if (item.discount_type === 'flat') {
+                        itemDiscount = parseFloat(item.discount_value) * item.qty;
+                    } else {
+                        itemDiscount = itemSubtotal * (parseFloat(item.discount_value) / 100);
+                    }
+                }
+                return {
+                    product_id: item.id,
+                    qty: parseFloat(item.qty),
+                    unit_price: parseFloat(item.price),
+                    discount_amount: itemDiscount
+                };
+            });
+
             const invoiceNo = document.getElementById('invoiceBadge').textContent;
             const customerName = selectedCustomer ? selectedCustomer.name : (document.getElementById('customerName').value || 'Walking Customer');
-            const date = new Date().toLocaleString();
-            const itemsHtml = cart.map((item, i) => `
+
+            // Save sale to database
+            fetch(PROCESS_SALE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    invoice_no: invoiceNo,
+                    items: items,
+                    subtotal: subtotal,
+                    discount_total: discountAmount,
+                    tax_total: taxTotal,
+                    grand_total: grandTotal,
+                    payment_method: paymentMethod
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert('Error processing sale: ' + (data.message || 'Unknown error'));
+                    if (data.errors && data.errors.length > 0) {
+                        alert('Errors:\n' + data.errors.join('\n'));
+                    }
+                    return;
+                }
+
+                // Sale processed successfully, now print receipt
+                const date = new Date().toLocaleString();
+                const itemsHtml = cart.map((item, i) => `
                                             <tr>
                                                 <td>${i + 1}. ${item.name}</td>
                                                 <td>${item.qty}</td>
                                                 <td>${currencySymbol} ${lineTotal(item).toFixed(2)}</td>
                                             </tr>
                                         `).join('');
-            const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
-            const receipt = document.getElementById('receipt-print');
-            receipt.innerHTML = `
+                const receipt = document.getElementById('receipt-print');
+                receipt.innerHTML = `
                                             <div class="receipt-paper">
                                                 <div class="receipt-store">${storeName}</div>
                                                 <div class="receipt-badge">BILL</div>
@@ -3107,7 +3164,7 @@
                                                 </table>
                                                 <div class="receipt-total-row">
                                                     <span>Total</span>
-                                                    <span>${currencySymbol} ${finalTotal.toFixed(2)}</span>
+                                                    <span>${currencySymbol} ${grandTotal.toFixed(2)}</span>
                                                 </div>
                                                 ${paymentMethod === 'Cash' ? `
                                                 <div class="receipt-sub-row"><span>Cash received</span><span>${currencySymbol} ${cashReceived.toFixed(2)}</span></div>
@@ -3118,30 +3175,38 @@
                                                 <div class="receipt-thanks">Thank you!</div>
                                             </div>
                                         `;
-            window.print();
-            saveCompletedSale({
-                invoiceNo,
-                date,
-                customerName,
-                total: finalTotal,
-                paymentMethod,
-                items: cart.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    qty: item.qty,
-                    discount_type: item.discount_type || null,
-                    discount_value: parseFloat(item.discount_value) || 0
-                }))
+                window.print();
+                
+                // Save to local storage for refund lookup
+                saveCompletedSale({
+                    invoiceNo,
+                    date,
+                    customerName,
+                    total: grandTotal,
+                    paymentMethod,
+                    items: cart.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        qty: item.qty,
+                        discount_type: item.discount_type || null,
+                        discount_value: parseFloat(item.discount_value) || 0
+                    }))
+                });
+
+                if (confirm('Order completed. Clear cart for next customer?')) {
+                    cart = [];
+                    discountValue = 0;
+                    document.getElementById('discountInput').value = '0.00';
+                    resetCustomer();
+                    renderCart();
+                    document.getElementById('productSearch').focus();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing sale. Please try again.');
             });
-            if (confirm('Order completed. Clear cart for next customer?')) {
-                cart = [];
-                discountValue = 0;
-                document.getElementById('discountInput').value = '0.00';
-                resetCustomer();
-                renderCart();
-                document.getElementById('productSearch').focus();
-            }
         }
     </script>
 @endsection

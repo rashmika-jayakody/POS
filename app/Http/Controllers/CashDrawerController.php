@@ -6,9 +6,12 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Models\Branch;
+use App\Models\Sale;
+use App\Models\SaleItem;
 use App\Services\FifoStockService;
 use App\Services\ActivityLogService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CashDrawerController extends Controller
 {
@@ -122,6 +125,155 @@ class CashDrawerController extends Controller
     {
         // Logic to get cash drawer status
         return response()->json(['status' => 'open']);
+    }
+
+    /**
+     * Process sale and deduct stock from inventory.
+     */
+    public function processSale(Request $request)
+    {
+        $validated = $request->validate([
+            'invoice_no' => 'required|string|max:60',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|integer|exists:products,id',
+            'items.*.qty' => 'required|numeric|min:0.001',
+            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.discount_amount' => 'nullable|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+            'discount_total' => 'nullable|numeric|min:0',
+            'tax_total' => 'nullable|numeric|min:0',
+            'grand_total' => 'required|numeric|min:0',
+            'payment_method' => 'nullable|string|max:40',
+        ]);
+
+        $user = $request->user();
+        $tenantId = $user->tenant_id;
+        $branchId = $user->branch_id;
+
+        if (!$branchId) {
+            $branch = Branch::where('tenant_id', $tenantId)->first();
+            $branchId = $branch ? $branch->id : null;
+        }
+
+        if (!$tenantId || !$branchId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid tenant or branch configuration.',
+            ], 400);
+        }
+
+        $fifo = app(FifoStockService::class);
+        $errors = [];
+
+        // Validate stock availability before processing
+        foreach ($validated['items'] as $item) {
+            $productId = (int) $item['product_id'];
+            $qty = (float) $item['qty'];
+            
+            // Check available stock
+            $availableStock = $fifo->getAvailableQuantity($productId, $branchId);
+            if ($availableStock < $qty) {
+                $product = Product::find($productId);
+                $errors[] = "Insufficient stock for {$product->name}. Available: {$availableStock}, Required: {$qty}";
+            }
+        }
+
+        if (!empty($errors)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stock validation failed.',
+                'errors' => $errors,
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Create sale record
+            $sale = Sale::create([
+                'tenant_id' => $tenantId,
+                'branch_id' => $branchId,
+                'user_id' => $user->id,
+                'invoice_no' => $validated['invoice_no'],
+                'sale_date' => now(),
+                'subtotal' => $validated['subtotal'],
+                'discount_total' => $validated['discount_total'] ?? 0,
+                'tax_total' => $validated['tax_total'] ?? 0,
+                'grand_total' => $validated['grand_total'],
+                'payment_method' => $validated['payment_method'] ?? 'Cash',
+            ]);
+
+            // Process each item: deduct stock and create sale item
+            // FIFO ensures oldest batches (lowest cost) are sold first
+            foreach ($validated['items'] as $item) {
+                $productId = (int) $item['product_id'];
+                $qty = (float) $item['qty'];
+                $unitPrice = (float) $item['unit_price'];
+                $discountAmount = (float) ($item['discount_amount'] ?? 0);
+                $lineTotal = ($qty * $unitPrice) - $discountAmount;
+
+                // Deduct stock using FIFO and get total cost
+                // Example: If selling 25 units and we have:
+                // - Batch 1: 20 units @ 100rs (received first)
+                // - Batch 2: 10 units @ 120rs (received later)
+                // FIFO will: sell 20 from batch 1 (2,000rs) + 5 from batch 2 (600rs) = 2,600rs total cost
+                $stockResult = $fifo->deduct($tenantId, $productId, $branchId, $qty);
+
+                if (!$stockResult || !$stockResult['success']) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Failed to deduct stock for product ID: {$productId}",
+                    ], 400);
+                }
+
+                // Calculate average cost per unit for reporting
+                // This represents the weighted average cost based on FIFO consumption
+                // Total cost from FIFO / quantity sold = average cost per unit
+                $totalCost = (float) $stockResult['cost'];
+                $costPerUnit = $qty > 0 ? ($totalCost / $qty) : 0;
+
+                // Create sale item with cost price
+                // cost_price_at_sale stores the average cost per unit for COGS calculation
+                SaleItem::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $productId,
+                    'qty' => $qty,
+                    'unit_price' => $unitPrice,
+                    'discount_amount' => $discountAmount,
+                    'line_total' => $lineTotal,
+                    'cost_price_at_sale' => $costPerUnit, // Average cost per unit (FIFO-based)
+                ]);
+            }
+
+            DB::commit();
+
+            // Log the sale
+            ActivityLogService::log('sale_completed', "Sale completed: {$validated['invoice_no']}", [
+                'sale_id' => $sale->id,
+                'invoice_no' => $validated['invoice_no'],
+                'grand_total' => $validated['grand_total'],
+                'items_count' => count($validated['items']),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Sale processed successfully.',
+                'sale_id' => $sale->id,
+                'invoice_no' => $sale->invoice_no,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error processing sale: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing sale: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

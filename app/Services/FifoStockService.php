@@ -13,20 +13,37 @@ use Illuminate\Support\Facades\DB;
 class FifoStockService
 {
     /**
-     * Deduct quantity from stock using FIFO: oldest batches first.
+     * Deduct quantity from stock using FIFO (First In, First Out): oldest batches first.
+     * 
+     * Example:
+     * - GRN 1: 20 units @ 100rs (received_at: 2024-01-01)
+     * - GRN 2: 10 units @ 120rs (received_at: 2024-01-05)
+     * 
+     * When selling 25 units:
+     * - First sells 20 units from GRN 1 @ 100rs = 2,000rs cost
+     * - Then sells 5 units from GRN 2 @ 120rs = 600rs cost
+     * - Total cost = 2,600rs
+     * 
      * Updates both stock_batches and the aggregate stocks table.
      *
+     * @param int $tenantId
+     * @param int $productId
+     * @param int $branchId
+     * @param float $quantity Quantity to deduct
      * @return array|bool Returns array with 'success' => true and 'cost' => total cost, or false if insufficient stock
      */
     public function deduct(int $tenantId, int $productId, int $branchId, float $quantity)
     {
-        $remaining = (float) $quantity;
+        $quantity = (float) $quantity;
+        
+        // Get batches ordered by received_at (oldest first), then by id (for batches received on same date)
+        // This ensures FIFO: first batch received is sold first
         $batches = StockBatch::where('tenant_id', $tenantId)
             ->where('product_id', $productId)
             ->where('branch_id', $branchId)
             ->where('quantity', '>', 0)
-            ->orderBy('received_at')
-            ->orderBy('id')
+            ->orderBy('received_at', 'asc')  // Oldest batches first
+            ->orderBy('id', 'asc')            // If same received_at, oldest ID first
             ->lockForUpdate()
             ->get();
 
@@ -39,6 +56,7 @@ class FifoStockService
                 ->where('product_id', $productId)
                 ->where('branch_id', $branchId)
                 ->with('product')
+                ->lockForUpdate()
                 ->first();
             if (! $stock || (float) $stock->quantity < $quantity) {
                 return false;
@@ -52,24 +70,34 @@ class FifoStockService
             ];
         }
 
-        if ($totalAvailable < $remaining) {
+        // Check if we have enough stock
+        if ($totalAvailable < $quantity) {
             return false;
         }
 
+        // Calculate total cost using FIFO: consume oldest batches first
         $totalCost = 0.0;
-        $remaining = (float) $quantity;
+        $remaining = $quantity;
+        
         DB::transaction(function () use ($batches, $quantity, $tenantId, $productId, $branchId, &$remaining, &$totalCost) {
             foreach ($batches as $batch) {
                 if ($remaining <= 0) {
                     break;
                 }
-                $deduct = min($remaining, (float) $batch->quantity);
+                
+                // Calculate how much to deduct from this batch
+                $deductFromBatch = min($remaining, (float) $batch->quantity);
+                
+                // Calculate cost for this portion: batch purchase_price * quantity deducted
                 $batchCost = (float) ($batch->purchase_price ?? 0);
-                $totalCost += $batchCost * $deduct;
-                $batch->decrement('quantity', $deduct);
-                $remaining -= $deduct;
+                $totalCost += $batchCost * $deductFromBatch;
+                
+                // Deduct from batch
+                $batch->decrement('quantity', $deductFromBatch);
+                $remaining -= $deductFromBatch;
             }
 
+            // Update aggregate stock table
             $stock = Stock::where('tenant_id', $tenantId)
                 ->where('product_id', $productId)
                 ->where('branch_id', $branchId)
@@ -77,13 +105,13 @@ class FifoStockService
                 ->first();
 
             if ($stock) {
-                $stock->decrement('quantity', (float) $quantity);
+                $stock->decrement('quantity', $quantity);
             }
         });
 
         return [
             'success' => true,
-            'cost' => $totalCost,
+            'cost' => $totalCost,  // Total cost = sum of (batch_purchase_price * quantity_from_each_batch)
         ];
     }
 

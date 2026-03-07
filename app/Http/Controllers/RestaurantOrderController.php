@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\RestaurantOrder;
 use App\Models\RestaurantOrderItem;
 use App\Models\RestaurantTable;
+use App\Models\Branch;
+use App\Services\FifoStockService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class RestaurantOrderController extends Controller
 {
@@ -97,6 +100,11 @@ class RestaurantOrderController extends Controller
                 'special_instructions' => $item['special_instructions'] ?? null,
                 'status' => $isPaid ? 'served' : 'pending', // pending if not paid yet
             ]);
+        }
+
+        // If order is paid, reduce stock
+        if ($isPaid) {
+            $this->reduceStockForOrder($order);
         }
 
         // Update table status if table is assigned
@@ -252,10 +260,14 @@ class RestaurantOrderController extends Controller
         $order->update([
             'status' => 'completed',
             'completed_at' => now(),
+            'payment_method' => $validated['payment_method'],
         ]);
 
         // Update order items to served
         $order->items()->update(['status' => 'served']);
+
+        // Reduce stock for completed order
+        $this->reduceStockForOrder($order);
 
         // Update table status if table is assigned
         if ($order->restaurant_table_id) {
@@ -269,5 +281,59 @@ class RestaurantOrderController extends Controller
             'success' => true,
             'message' => 'Order payment processed successfully',
         ]);
+    }
+
+    /**
+     * Reduce stock for restaurant order items using FIFO.
+     */
+    private function reduceStockForOrder(RestaurantOrder $order)
+    {
+        $tenantId = $order->tenant_id;
+        $branchId = $order->branch_id;
+
+        if (!$tenantId || !$branchId) {
+            \Log::warning('Cannot reduce stock: missing tenant_id or branch_id', [
+                'order_id' => $order->id,
+                'tenant_id' => $tenantId,
+                'branch_id' => $branchId,
+            ]);
+            return;
+        }
+
+        $fifo = app(FifoStockService::class);
+        $order->load('items');
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($order->items as $item) {
+                $productId = (int) $item->product_id;
+                $qty = (float) $item->qty;
+
+                if ($qty <= 0) {
+                    continue;
+                }
+
+                // Deduct stock using FIFO
+                $stockResult = $fifo->deduct($tenantId, $productId, $branchId, $qty);
+
+                if (!$stockResult || !$stockResult['success']) {
+                    \Log::warning('Failed to deduct stock for restaurant order item', [
+                        'order_id' => $order->id,
+                        'product_id' => $productId,
+                        'qty' => $qty,
+                    ]);
+                    // Continue with other items even if one fails
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error reducing stock for restaurant order: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
     }
 }
