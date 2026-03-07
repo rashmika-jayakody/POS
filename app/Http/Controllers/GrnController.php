@@ -125,6 +125,12 @@ class GrnController extends Controller
                     ]
                 );
                 $stock->increment('quantity', $item->quantity);
+                
+                // Update product cost_price with latest purchase price (for reference/display)
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->update(['cost_price' => $item->unit_price]);
+                }
             }
 
             $grn->update(['status' => 'received']);

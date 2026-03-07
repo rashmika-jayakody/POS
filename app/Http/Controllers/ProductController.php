@@ -33,7 +33,9 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $units = Unit::all();
-        return view('products.create', compact('categories', 'units'));
+        $settings = auth()->user()->tenant?->businessSetting;
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        return view('products.create', compact('categories', 'units', 'currencySymbol'));
     }
 
     /**
@@ -47,12 +49,15 @@ class ProductController extends Controller
             'unit_id' => 'required|exists:units,id',
             'code' => 'nullable|string|max:60',
             'barcode' => 'nullable|string|unique:products,barcode',
-            'cost_price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0', // Read-only, set from GRN
             'selling_price' => 'required|numeric|min:0',
             'discount_type' => 'nullable|string|in:flat,percent',
             'discount_value' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
+        
+        // Set default cost_price to 0 if not provided (will be updated when GRN is received)
+        $validated['cost_price'] = $validated['cost_price'] ?? 0;
         $validated['discount_type'] = $validated['discount_type'] ?? null;
         $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;
 
@@ -114,7 +119,21 @@ class ProductController extends Controller
         $categories = Category::all();
         $units = Unit::all();
         $posType = auth()->user()->tenant?->pos_type ?? 'retail';
-        return view('products.edit', compact('product', 'categories', 'units', 'posType'));
+        
+        // Get latest purchase price from GRN batches (FIFO)
+        $latestBatch = \App\Models\StockBatch::where('product_id', $product->id)
+            ->where('tenant_id', $product->tenant_id)
+            ->where('quantity', '>', 0)
+            ->orderBy('received_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        $latestPurchasePrice = $latestBatch ? (float) $latestBatch->purchase_price : (float) ($product->cost_price ?? 0);
+        
+        $settings = auth()->user()->tenant?->businessSetting;
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        
+        return view('products.edit', compact('product', 'categories', 'units', 'posType', 'latestPurchasePrice', 'currencySymbol'));
     }
 
     /**
@@ -130,12 +149,24 @@ class ProductController extends Controller
             'unit_id' => 'required|exists:units,id',
             'code' => 'nullable|string|max:60',
             'barcode' => 'nullable|string|unique:products,barcode,' . $id,
-            'cost_price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0', // Read-only, set from GRN
             'selling_price' => 'required|numeric|min:0',
             'discount_type' => 'nullable|string|in:flat,percent',
             'discount_value' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
+        
+        // Use latest purchase price from GRN if available, otherwise keep existing
+        if (!isset($validated['cost_price']) || $validated['cost_price'] == 0) {
+            $latestBatch = \App\Models\StockBatch::where('product_id', $product->id)
+                ->where('tenant_id', $product->tenant_id)
+                ->where('quantity', '>', 0)
+                ->orderBy('received_at', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+            
+            $validated['cost_price'] = $latestBatch ? (float) $latestBatch->purchase_price : $product->cost_price;
+        }
         $validated['discount_type'] = $validated['discount_type'] ?? null;
         $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;
 
