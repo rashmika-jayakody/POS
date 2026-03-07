@@ -22,15 +22,21 @@
                 <input type="hidden" name="plan" value="{{ $plan }}">
                 @php
                     $onboardingData = session('onboarding_data', []);
+                    $currentStep = $step ?? 1;
                 @endphp
-                @if(!empty($onboardingData) && ($step ?? 1) === 4)
-                    {{-- Include all form data as hidden fields when on verification step --}}
+                @if($currentStep === 4)
+                    {{-- Always include all form data as hidden fields when on verification step --}}
+                    @php
+                        $emailValue = $onboardingData['email'] ?? $email ?? old('email', '');
+                        // If email is still empty, try to get from the visible input via JavaScript
+                    @endphp
                     <input type="hidden" name="pos_type" value="{{ $onboardingData['pos_type'] ?? old('pos_type', '') }}">
                     <input type="hidden" name="company_name" value="{{ $onboardingData['company_name'] ?? old('company_name', '') }}">
                     <input type="hidden" name="address" value="{{ $onboardingData['address'] ?? old('address', '') }}">
                     <input type="hidden" name="phone" value="{{ $onboardingData['phone'] ?? old('phone', '') }}">
                     <input type="hidden" name="name" value="{{ $onboardingData['name'] ?? old('name', '') }}">
-                    <input type="hidden" name="email" value="{{ $onboardingData['email'] ?? old('email', '') }}">
+                    <input type="hidden" name="email" id="hidden_email" value="{{ $emailValue }}">
+                    <input type="hidden" name="email_backup" id="email_backup_hidden" value="{{ $emailValue }}">
                     <input type="hidden" name="password" value="{{ $onboardingData['password'] ?? old('password', '') }}">
                     <input type="hidden" name="password_confirmation" value="{{ $onboardingData['password_confirmation'] ?? old('password_confirmation', '') }}">
                 @endif
@@ -107,8 +113,10 @@
                     </div>
                     <div class="form-group">
                         <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+                        <input type="email" id="email" name="email" value="{{ old('email', session('onboarding_data.email', '')) }}" required autocomplete="email">
                         @error('email') <p class="error">{{ $message }}</p> @enderror
+                        {{-- Always include email as hidden field too for step 4 --}}
+                        <input type="hidden" name="email_backup" id="email_backup" value="{{ old('email', session('onboarding_data.email', '')) }}">
                     </div>
                     <div class="form-group">
                         <label for="password">Password *</label>
@@ -142,13 +150,19 @@
 
                 <div class="wizard-step {{ ($step ?? 1) === 4 ? 'active' : '' }}" data-step="4">
                     <h2 class="auth-heading">Verify your email</h2>
-                    <p class="auth-subheading">We've sent a verification code to <strong>{{ $email ?? old('email') }}</strong></p>
+                    <p class="auth-subheading">We've sent a verification code to <strong id="email-display">{{ $email ?? session('onboarding_data.email') ?? old('email') }}</strong></p>
                     
                     @if(session('success'))
                         <div style="background: #d1fae5; border: 1px solid #86efac; color: #065f46; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;">
                             <i class="fas fa-check-circle"></i> {{ session('success') }}
                         </div>
                     @endif
+
+                    {{-- CRITICAL: Always include email as hidden field on step 4 --}}
+                    @php
+                        $step4Email = $email ?? session('onboarding_data.email') ?? old('email', '');
+                    @endphp
+                    <input type="hidden" name="email" id="step4_email" value="{{ $step4Email }}" data-email="{{ $step4Email }}">
 
                     <div class="form-group">
                         <label for="verification_code">Verification Code *</label>
@@ -326,8 +340,60 @@
         // Real-time validation function
         async function validateStep(step) {
             const form = document.getElementById('wizardForm');
-            const formData = new FormData(form);
+            
+            // Build FormData manually to ensure all fields are captured
+            const formData = new FormData();
             formData.append('step', step);
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('input[name="_token"]');
+            if (csrfToken) formData.append('_token', csrfToken.value);
+            
+            // Get plan
+            const planInput = document.querySelector('input[name="plan"]');
+            if (planInput) formData.append('plan', planInput.value);
+            
+            // Step 1 fields
+            if (step === 1) {
+                const posTypeInput = document.querySelector('input[name="pos_type"]:checked');
+                if (posTypeInput) formData.append('pos_type', posTypeInput.value);
+            }
+            
+            // Step 2 fields
+            if (step === 2) {
+                const companyNameInput = document.getElementById('company_name');
+                const addressInput = document.getElementById('address');
+                const phoneInput = document.getElementById('phone');
+                if (companyNameInput) formData.append('company_name', companyNameInput.value);
+                if (addressInput) formData.append('address', addressInput.value);
+                if (phoneInput) formData.append('phone', phoneInput.value);
+            }
+            
+            // Step 3 fields
+            if (step === 3) {
+                const nameInput = document.getElementById('name');
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                const passwordConfirmationInput = document.getElementById('password_confirmation');
+                
+                if (nameInput) formData.append('name', nameInput.value);
+                if (emailInput) formData.append('email', emailInput.value.trim().toLowerCase());
+                if (passwordInput) formData.append('password', passwordInput.value);
+                if (passwordConfirmationInput) formData.append('password_confirmation', passwordConfirmationInput.value);
+                
+                // Also include step 1 and 2 fields for step 3 validation
+                const posTypeInput = document.querySelector('input[name="pos_type"]:checked');
+                const companyNameInput = document.getElementById('company_name');
+                const addressInput = document.getElementById('address');
+                const phoneInput = document.getElementById('phone');
+                
+                if (posTypeInput) formData.append('pos_type', posTypeInput.value);
+                if (companyNameInput) formData.append('company_name', companyNameInput.value);
+                if (addressInput) formData.append('address', addressInput.value);
+                if (phoneInput) formData.append('phone', phoneInput.value);
+                
+                console.log('Step 3 validation - Email value:', emailInput?.value);
+            }
 
             try {
                 const response = await fetch('{{ route("onboarding.validate-step") }}', {
@@ -348,7 +414,7 @@
                 if (!data.success) {
                     // Display errors
                     Object.keys(data.errors).forEach(field => {
-                        const input = form.querySelector(`[name="${field}"]`);
+                        const input = form.querySelector(`[name="${field}"], #${field}`);
                         if (input) {
                             input.classList.add('field-error');
                             const errorDiv = document.createElement('p');
@@ -395,13 +461,70 @@
             document.getElementById('dot3').classList.add('active');
         });
 
-        document.getElementById('nextStep3')?.addEventListener('click', async function() {
+        document.getElementById('nextStep3')?.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
             const isValid = await validateStep(3);
             if (!isValid) return;
 
-            // Submit form to trigger email verification code sending
+            // Get all form fields explicitly
             const form = document.getElementById('wizardForm');
-            const formData = new FormData(form);
+            const emailInput = document.getElementById('email');
+            const nameInput = document.getElementById('name');
+            const passwordInput = document.getElementById('password');
+            const passwordConfirmationInput = document.getElementById('password_confirmation');
+            const posTypeInput = document.querySelector('input[name="pos_type"]:checked');
+            const companyNameInput = document.getElementById('company_name');
+            const addressInput = document.getElementById('address');
+            const phoneInput = document.getElementById('phone');
+            const planInput = document.querySelector('input[name="plan"]');
+            
+            // Verify all required fields have values
+            if (!emailInput || !emailInput.value || emailInput.value.trim() === '') {
+                alert('Email is required. Please enter your email address.');
+                emailInput?.focus();
+                return;
+            }
+            
+            if (!nameInput || !nameInput.value || nameInput.value.trim() === '') {
+                alert('Name is required. Please enter your name.');
+                nameInput?.focus();
+                return;
+            }
+            
+            if (!passwordInput || !passwordInput.value) {
+                alert('Password is required. Please enter your password.');
+                passwordInput?.focus();
+                return;
+            }
+            
+            if (!passwordConfirmationInput || !passwordConfirmationInput.value) {
+                alert('Password confirmation is required. Please confirm your password.');
+                passwordConfirmationInput?.focus();
+                return;
+            }
+            
+            // Build FormData manually to ensure all fields are included
+            const formData = new FormData();
+            
+            // Add all fields explicitly
+            if (planInput) formData.append('plan', planInput.value);
+            if (posTypeInput) formData.append('pos_type', posTypeInput.value);
+            if (companyNameInput) formData.append('company_name', companyNameInput.value);
+            if (addressInput) formData.append('address', addressInput.value);
+            if (phoneInput) formData.append('phone', phoneInput.value);
+            if (nameInput) formData.append('name', nameInput.value);
+            if (emailInput) formData.append('email', emailInput.value.trim().toLowerCase());
+            if (passwordInput) formData.append('password', passwordInput.value);
+            if (passwordConfirmationInput) formData.append('password_confirmation', passwordConfirmationInput.value);
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('input[name="_token"]');
+            if (csrfToken) formData.append('_token', csrfToken.value);
+            
+            // Log form data for debugging
+            console.log('Submitting step 3 with email:', emailInput.value);
+            console.log('All FormData entries:', Array.from(formData.entries()));
             
             try {
                 const response = await fetch('{{ route("onboarding.store") }}', {
@@ -409,16 +532,85 @@
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
                     },
-                    redirect: 'follow'
+                    redirect: 'manual'
                 });
 
-                // If redirected, follow the redirect
-                if (response.redirected || response.ok) {
-                    window.location.href = response.url || window.location.href;
+                console.log('Response status:', response.status);
+                console.log('Response URL:', response.url);
+
+                // Check response status
+                if (response.status === 422) {
+                    // Validation error
+                    try {
+                        const data = await response.json();
+                        if (data.errors) {
+                            console.error('Validation errors:', data.errors);
+                            // Show errors on page
+                            Object.keys(data.errors).forEach(field => {
+                                const errorMsg = data.errors[field][0];
+                                const input = document.querySelector(`[name="${field}"], #${field}`);
+                                if (input) {
+                                    input.classList.add('field-error');
+                                    const errorDiv = document.createElement('p');
+                                    errorDiv.className = 'error';
+                                    errorDiv.textContent = errorMsg;
+                                    input.parentElement.appendChild(errorDiv);
+                                }
+                            });
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('Could not parse JSON error response');
+                        window.location.reload();
+                    }
+                } else if (response.status >= 300 && response.status < 400) {
+                    // Redirect response - get Location header
+                    const location = response.headers.get('Location');
+                    if (location) {
+                        console.log('Redirecting to:', location);
+                        window.location.href = location;
+                        return;
+                    }
+                } else if (response.ok) {
+                    // Success - should be JSON with redirect
+                    const contentType = response.headers.get('content-type') || '';
+                    console.log('Response content-type:', contentType);
+                    
+                    if (contentType.includes('application/json')) {
+                        try {
+                            const data = await response.json();
+                            console.log('Response data:', data);
+                            if (data.redirect) {
+                                console.log('Redirecting to step 4:', data.redirect);
+                                window.location.href = data.redirect;
+                                return;
+                            }
+                        } catch (e) {
+                            console.error('Could not parse JSON response:', e);
+                        }
+                    }
+                    
+                    // Fallback: redirect to step 4 manually
+                    const plan = planInput ? planInput.value : 'professional';
+                    const redirectUrl = `/onboarding?plan=${plan}&step=4`;
+                    console.log('Fallback: Redirecting to step 4:', redirectUrl);
+                    window.location.href = redirectUrl;
+                } else {
+                    // Other error - redirect to step 4 anyway
+                    const plan = planInput ? planInput.value : 'professional';
+                    const redirectUrl = `/onboarding?plan=${plan}&step=4`;
+                    console.log('Error occurred, redirecting to step 4:', redirectUrl);
+                    window.location.href = redirectUrl;
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error submitting form:', error);
+                // On error, redirect to step 4
+                const plan = planInput ? planInput.value : 'professional';
+                const redirectUrl = `/onboarding?plan=${plan}&step=4`;
+                console.log('Exception occurred, redirecting to step 4:', redirectUrl);
+                window.location.href = redirectUrl;
             }
         });
 
@@ -465,6 +657,106 @@
                 // Limit to 6 digits
                 if (this.value.length > 6) {
                     this.value = this.value.substring(0, 6);
+                }
+            });
+        }
+
+        // Ensure all form data is included when submitting from step 4
+        const wizardForm = document.getElementById('wizardForm');
+        if (wizardForm) {
+            wizardForm.addEventListener('submit', function(e) {
+                const currentStep = document.querySelector('.wizard-step.active');
+                if (currentStep && currentStep.dataset.step === '4') {
+                    console.log('Submitting from step 4, ensuring all fields are included...');
+                    
+                    // Get email from step 3 (visible input) or hidden field
+                    const emailInput = document.querySelector('input[type="email"][name="email"]');
+                    let hiddenEmail = document.querySelector('input[type="hidden"][name="email"]');
+                    
+                    // Always ensure email is in hidden field - check multiple sources
+                    let emailValue = '';
+                    
+                    // 1. Check step 4 hidden email field
+                    const step4Email = document.getElementById('step4_email');
+                    if (step4Email && step4Email.value) {
+                        emailValue = step4Email.value;
+                        console.log('Email from step4_email field:', emailValue);
+                    }
+                    
+                    // 2. Check visible email input from step 3
+                    if (!emailValue && emailInput && emailInput.value) {
+                        emailValue = emailInput.value;
+                        console.log('Email from visible input:', emailValue);
+                    }
+                    
+                    // 3. Check other hidden email fields
+                    if (!emailValue) {
+                        const allHiddenEmails = document.querySelectorAll('input[type="hidden"][name="email"]');
+                        for (let hidden of allHiddenEmails) {
+                            if (hidden.value) {
+                                emailValue = hidden.value;
+                                console.log('Email from hidden field:', emailValue);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // 4. Ensure email is set in all hidden fields
+                    if (emailValue) {
+                        // Update step4_email
+                        if (step4Email) {
+                            step4Email.value = emailValue;
+                        }
+                        
+                        // Update or create hidden_email
+                        if (!hiddenEmail) {
+                            hiddenEmail = document.createElement('input');
+                            hiddenEmail.type = 'hidden';
+                            hiddenEmail.name = 'email';
+                            hiddenEmail.id = 'hidden_email';
+                            this.appendChild(hiddenEmail);
+                        }
+                        hiddenEmail.value = emailValue;
+                        
+                        console.log('Final email value set:', emailValue);
+                    } else {
+                        console.error('CRITICAL: Email not found anywhere!');
+                        console.log('Available email fields:', {
+                            step4Email: step4Email?.value,
+                            emailInput: emailInput?.value,
+                            hiddenEmail: hiddenEmail?.value
+                        });
+                    }
+                    
+                    // Ensure all required fields from step 3 are included
+                    const requiredFields = ['name', 'password', 'password_confirmation', 'pos_type', 'company_name', 'address'];
+                    requiredFields.forEach(fieldName => {
+                        const fieldInput = document.querySelector(`input[name="${fieldName}"], select[name="${fieldName}"]`);
+                        if (fieldInput && fieldInput.value) {
+                            let hiddenField = document.querySelector(`input[type="hidden"][name="${fieldName}"]`);
+                            if (!hiddenField) {
+                                hiddenField = document.createElement('input');
+                                hiddenField.type = 'hidden';
+                                hiddenField.name = fieldName;
+                                this.appendChild(hiddenField);
+                            }
+                            if (!hiddenField.value) {
+                                hiddenField.value = fieldInput.value;
+                            }
+                        }
+                    });
+                    
+                    // Final check - log all form data
+                    const formData = new FormData(this);
+                    console.log('Final form data:', Object.fromEntries(formData));
+                    
+                    // If email is still missing, prevent submission
+                    if (!formData.get('email') || formData.get('email').trim() === '') {
+                        console.error('Email is still missing! Preventing submission.');
+                        e.preventDefault();
+                        alert('Email is required. Please go back to step 3 and enter your email address.');
+                        return false;
+                    }
                 }
             });
         }
