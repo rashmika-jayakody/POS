@@ -1,164 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Get Started | POS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --navy-dark: #0A1A3D;
-            --light-blue: #4A9EFF;
-            --light-blue-bg: #F0F8FF;
-            --accent-teal: #00C9B7;
-            --white: #FFFFFF;
-            --gray-100: #F1F5F9;
-            --gray-500: #64748B;
-            --gray-900: #0F172A;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --shadow-md: 0 8px 24px rgba(10, 26, 61, 0.12);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--gray-100); min-height: 100vh; padding: 40px 20px; }
-        .wizard-container { max-width: 520px; margin: 0 auto; }
-        .wizard-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            padding: 40px;
-            margin-bottom: 24px;
-        }
-        .step-indicator { display: flex; gap: 12px; margin-bottom: 32px; }
-        .step-dot {
-            width: 12px; height: 12px; border-radius: 50%;
-            background: var(--gray-100);
-            transition: background 0.3s;
-        }
-        .step-dot.active { background: var(--light-blue); }
-        .step-dot.done { background: var(--accent-teal); }
-        .plan-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--light-blue), var(--accent-teal));
-            color: var(--white);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-        }
-        .plan-badge .currency { font-size: 0.85rem; opacity: 0.95; }
-        h1 { font-size: 1.5rem; color: var(--navy-dark); margin-bottom: 8px; }
-        .subtitle { color: var(--gray-500); font-size: 0.95rem; margin-bottom: 28px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #E2E8F0;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--light-blue);
-            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
-        }
-        .form-group .hint { font-size: 0.8rem; color: var(--gray-500); margin-top: 6px; }
-        .error { font-size: 0.85rem; color: #DC2626; margin-top: 6px; }
-        .wizard-actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
-        .btn {
-            padding: 14px 28px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--light-blue), var(--accent-teal)); color: var(--white); }
-        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
-        .btn-secondary { background: var(--white); color: var(--gray-500); border: 1px solid #E2E8F0; }
-        .btn-secondary:hover { background: var(--gray-100); }
-        .wizard-step { display: none; }
-        .wizard-step.active { display: block; }
-        a.back-link { color: var(--light-blue); text-decoration: none; font-size: 0.9rem; }
-        a.back-link:hover { text-decoration: underline; }
-        .pos-type-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-        .pos-type-card {
-            padding: 24px;
-            border: 2px solid #E2E8F0;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.3s;
-            background: var(--white);
-            text-align: center;
-        }
-        .pos-type-card:hover {
-            border-color: var(--light-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.15);
-        }
-        .pos-type-card.selected {
-            border-color: var(--light-blue);
-            background: var(--light-blue-bg);
-            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
-        }
-        .pos-type-card i {
-            font-size: 2.5rem;
-            color: var(--light-blue);
-            margin-bottom: 12px;
-        }
-        .pos-type-card h3 {
-            font-size: 1.1rem;
-            color: var(--navy-dark);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-        .pos-type-card p {
-            font-size: 0.85rem;
-            color: var(--gray-500);
-        }
-        input[type="radio"][name="pos_type"] {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="wizard-container">
-        <div class="wizard-card">
-            <div class="step-indicator">
-                <span class="step-dot {{ ($step ?? 1) === 1 ? 'active' : (($step ?? 1) > 1 ? 'done' : '') }}" id="dot1"></span>
-                <span class="step-dot {{ ($step ?? 1) === 2 ? 'active' : (($step ?? 1) > 2 ? 'done' : '') }}" id="dot2"></span>
-                <span class="step-dot {{ ($step ?? 1) === 3 ? 'active' : (($step ?? 1) > 3 ? 'done' : '') }}" id="dot3"></span>
-            </div>
+<x-guest-layout>
+    <div class="auth-narrow">
+        <div class="step-indicator" style="display: flex; gap: 12px; margin-bottom: 28px; justify-content: center;">
+            <span class="step-dot {{ ($step ?? 1) === 1 ? 'active' : (($step ?? 1) > 1 ? 'done' : '') }}" id="dot1"></span>
+            <span class="step-dot {{ ($step ?? 1) === 2 ? 'active' : (($step ?? 1) > 2 ? 'done' : '') }}" id="dot2"></span>
+            <span class="step-dot {{ ($step ?? 1) === 3 ? 'active' : (($step ?? 1) > 3 ? 'done' : '') }}" id="dot3"></span>
+        </div>
 
-            <div class="plan-badge">
-                {{ $planInfo['name'] }} — LKR {{ number_format($planInfo['price_lkr']) }}<span class="currency">/month</span>
-            </div>
+        <div class="plan-badge" style="display: inline-block; background: linear-gradient(135deg, #4A9EFF 0%, #00C9B7 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; margin-bottom: 24px; text-align: center; width: 100%;">
+            {{ $planInfo['name'] }} — LKR {{ number_format($planInfo['price_lkr']) }}<span style="font-size: 0.85rem; opacity: 0.95;">/month</span>
+        </div>
 
             <form action="{{ route('onboarding.store') }}" method="POST" id="wizardForm">
                 @csrf
                 <input type="hidden" name="plan" value="{{ $plan }}">
 
                 <div class="wizard-step active" data-step="1">
-                    <h1>Choose your POS type</h1>
-                    <p class="subtitle">Select the type of business you're setting up.</p>
+                    <h2 class="auth-heading">Choose your POS type</h2>
+                    <p class="auth-subheading">Select the type of business you're setting up.</p>
 
                     <div class="pos-type-options">
                         <label class="pos-type-card" for="pos_type_retail">
@@ -176,17 +34,19 @@
                     </div>
                     @error('pos_type') <p class="error">{{ $message }}</p> @enderror
 
-                    <div class="wizard-actions">
-                        <button type="button" class="btn btn-primary" id="nextStep1">
-                            Next <i class="fas fa-arrow-right"></i>
+                    <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
+                        <button type="button" class="auth-btn" id="nextStep1" style="width: auto; flex: 1; min-width: 120px;">
+                            Next <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
                         </button>
-                        <a href="{{ url('/') }}#packages" class="btn btn-secondary">Back to pricing</a>
+                        <a href="{{ url('/') }}#packages" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;">
+                            Back to pricing
+                        </a>
                     </div>
                 </div>
 
                 <div class="wizard-step" data-step="2">
-                    <h1>Business information</h1>
-                    <p class="subtitle">We'll create your store URL from your company name (e.g. my-store).</p>
+                    <h2 class="auth-heading">Business information</h2>
+                    <p class="auth-subheading">We'll create your store URL from your company name (e.g. my-store).</p>
 
                     <div class="form-group">
                         <label for="company_name">Company / Store name *</label>
@@ -205,17 +65,19 @@
                         <input type="text" id="phone" name="phone" value="{{ old('phone') }}" placeholder="e.g. 011 234 5678">
                         @error('phone') <p class="error">{{ $message }}</p> @enderror
                     </div>
-                    <div class="wizard-actions">
-                        <button type="button" class="btn btn-secondary" id="prevStep2"><i class="fas fa-arrow-left"></i> Back</button>
-                        <button type="button" class="btn btn-primary" id="nextStep2">
-                            Next <i class="fas fa-arrow-right"></i>
+                    <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
+                        <button type="button" id="prevStep2" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="button" class="auth-btn" id="nextStep2" style="width: auto; flex: 1; min-width: 120px;">
+                            Next <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
                         </button>
                     </div>
                 </div>
 
                 <div class="wizard-step" data-step="3">
-                    <h1>Your account</h1>
-                    <p class="subtitle">You'll use this to sign in and manage your store.</p>
+                    <h2 class="auth-heading">Your account</h2>
+                    <p class="auth-subheading">You'll use this to sign in and manage your store.</p>
 
                     <div class="form-group">
                         <label for="name">Your name *</label>
@@ -236,14 +98,97 @@
                         <label for="password_confirmation">Confirm password *</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
                     </div>
-                    <div class="wizard-actions">
-                        <button type="button" class="btn btn-secondary" id="prevStep3"><i class="fas fa-arrow-left"></i> Back</button>
-                        <button type="submit" class="btn btn-primary">Create my store</button>
+                    <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
+                        <button type="button" id="prevStep3" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button type="submit" class="auth-btn" style="width: auto; flex: 1; min-width: 120px;">
+                            <i class="fas fa-check" style="margin-right: 8px;"></i> Create my store
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
-    </div>
+    </x-guest-layout>
+    <style>
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            transition: background 0.3s;
+        }
+        .step-dot.active {
+            background: #4A9EFF;
+        }
+        .step-dot.done {
+            background: #00C9B7;
+        }
+        .wizard-step {
+            display: none;
+        }
+        .wizard-step.active {
+            display: block;
+        }
+        .form-group .hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 6px;
+        }
+        .error {
+            font-size: 0.85rem;
+            color: #ef4444;
+            margin-top: 6px;
+        }
+        .pos-type-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .pos-type-card {
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            text-align: center;
+        }
+        .pos-type-card:hover {
+            border-color: #4A9EFF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.15);
+        }
+        .pos-type-card.selected {
+            border-color: #4A9EFF;
+            background: #F0F8FF;
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
+        }
+        .pos-type-card i {
+            font-size: 2.5rem;
+            color: #4A9EFF;
+            margin-bottom: 12px;
+        }
+        .pos-type-card h3 {
+            font-size: 1.1rem;
+            color: #0A1A3D;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .pos-type-card p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        input[type="radio"][name="pos_type"] {
+            display: none;
+        }
+        @media (max-width: 640px) {
+            .pos-type-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
     <script>
         // POS type selection
         document.querySelectorAll('input[name="pos_type"]').forEach(radio => {
@@ -309,5 +254,3 @@
             document.getElementById('slugPreview').textContent = slugify(this.value) || 'store';
         });
     </script>
-</body>
-</html>
