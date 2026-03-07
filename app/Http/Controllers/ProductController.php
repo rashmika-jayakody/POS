@@ -120,20 +120,22 @@ class ProductController extends Controller
         $units = Unit::all();
         $posType = auth()->user()->tenant?->pos_type ?? 'retail';
         
-        // Get latest purchase price from GRN batches (FIFO)
-        $latestBatch = \App\Models\StockBatch::where('product_id', $product->id)
+        // Get FIFO cost price: first batch (oldest) that has stock
+        // This represents the cost of the stock that will be sold next (FIFO)
+        $fifoBatch = \App\Models\StockBatch::where('product_id', $product->id)
             ->where('tenant_id', $product->tenant_id)
             ->where('quantity', '>', 0)
-            ->orderBy('received_at', 'desc')
-            ->orderBy('id', 'desc')
+            ->orderBy('received_at', 'asc')  // Oldest first (FIFO)
+            ->orderBy('id', 'asc')
             ->first();
         
-        $latestPurchasePrice = $latestBatch ? (float) $latestBatch->purchase_price : (float) ($product->cost_price ?? 0);
+        // If no batches, use product cost_price as fallback
+        $fifoCostPrice = $fifoBatch ? (float) $fifoBatch->purchase_price : (float) ($product->cost_price ?? 0);
         
         $settings = auth()->user()->tenant?->businessSetting;
         $currencySymbol = $settings?->currency_symbol ?? 'Rs';
         
-        return view('products.edit', compact('product', 'categories', 'units', 'posType', 'latestPurchasePrice', 'currencySymbol'));
+        return view('products.edit', compact('product', 'categories', 'units', 'posType', 'fifoCostPrice', 'currencySymbol'));
     }
 
     /**
@@ -156,16 +158,16 @@ class ProductController extends Controller
             'description' => 'nullable|string',
         ]);
         
-        // Use latest purchase price from GRN if available, otherwise keep existing
+        // Use FIFO cost price (first batch with stock) if available, otherwise keep existing
         if (!isset($validated['cost_price']) || $validated['cost_price'] == 0) {
-            $latestBatch = \App\Models\StockBatch::where('product_id', $product->id)
+            $fifoBatch = \App\Models\StockBatch::where('product_id', $product->id)
                 ->where('tenant_id', $product->tenant_id)
                 ->where('quantity', '>', 0)
-                ->orderBy('received_at', 'desc')
-                ->orderBy('id', 'desc')
+                ->orderBy('received_at', 'asc')  // Oldest first (FIFO)
+                ->orderBy('id', 'asc')
                 ->first();
             
-            $validated['cost_price'] = $latestBatch ? (float) $latestBatch->purchase_price : $product->cost_price;
+            $validated['cost_price'] = $fifoBatch ? (float) $fifoBatch->purchase_price : $product->cost_price;
         }
         $validated['discount_type'] = $validated['discount_type'] ?? null;
         $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;

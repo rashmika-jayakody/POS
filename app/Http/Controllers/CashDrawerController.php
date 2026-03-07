@@ -34,15 +34,30 @@ class CashDrawerController extends Controller
     public function index()
     {
         $categories = Category::orderBy('name')->get();
+        $user = auth()->user();
+        $tenantId = $user->tenant_id;
+        $branchId = $user->branch_id;
+        
+        if (!$branchId) {
+            $branch = Branch::where('tenant_id', $tenantId)->first();
+            $branchId = $branch ? $branch->id : null;
+        }
+        
         $products = Product::with(['unit', 'productPrices', 'stocks'])->where('is_active', true)->orderBy('name')->get();
-        $productsJson = $products->map(function ($p) {
+        $fifo = app(FifoStockService::class);
+        
+        $productsJson = $products->map(function ($p) use ($branchId, $fifo) {
             $prices = [['label' => 'Selling price', 'price' => (float) $p->selling_price]];
             foreach ($p->productPrices as $pp) {
                 if ($pp->label !== 'Selling price') {
                     $prices[] = ['label' => $pp->label, 'price' => (float) $pp->price];
                 }
             }
-            $stock = (float) $p->stocks->sum('quantity');
+            
+            // Get stock from batches (FIFO) for accurate stock count
+            // This ensures stock reflects actual available quantity from batches
+            $stock = $branchId ? $fifo->getAvailableQuantity($p->id, $branchId) : (float) $p->stocks->sum('quantity');
+            
             return [
                 'id' => $p->id,
                 'name' => $p->name,
@@ -125,6 +140,45 @@ class CashDrawerController extends Controller
     {
         // Logic to get cash drawer status
         return response()->json(['status' => 'open']);
+    }
+
+    /**
+     * Get updated stock for products (used to refresh stock in POS after GRN/sales).
+     */
+    public function getStock(Request $request)
+    {
+        $user = $request->user();
+        $tenantId = $user->tenant_id;
+        $branchId = $user->branch_id;
+
+        if (!$branchId) {
+            $branch = Branch::where('tenant_id', $tenantId)->first();
+            $branchId = $branch ? $branch->id : null;
+        }
+
+        if (!$tenantId || !$branchId) {
+            return response()->json(['success' => false, 'message' => 'Invalid tenant or branch'], 400);
+        }
+
+        $productIds = $request->get('product_ids', []);
+        
+        $query = Product::where('is_active', true);
+        if (!empty($productIds)) {
+            $query->whereIn('id', $productIds);
+        }
+        
+        $products = $query->get();
+        $fifo = app(FifoStockService::class);
+        
+        $stockData = $products->mapWithKeys(function ($product) use ($branchId, $fifo) {
+            $stock = $branchId ? $fifo->getAvailableQuantity($product->id, $branchId) : 0;
+            return [$product->id => $stock];
+        });
+
+        return response()->json([
+            'success' => true,
+            'stock' => $stockData,
+        ]);
     }
 
     /**

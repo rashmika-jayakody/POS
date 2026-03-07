@@ -76,14 +76,14 @@
                         <div>
                             <label
                                 style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Cost
-                                Price ({{ $currencySymbol ?? 'Rs' }}) <span style="font-size: 0.75rem; color: var(--gray-500); font-weight: 400;">(Read-only, from GRN)</span></label>
+                                Price ({{ $currencySymbol ?? 'Rs' }}) <span style="font-size: 0.75rem; color: var(--gray-500); font-weight: 400;">(Read-only, FIFO from GRN)</span></label>
                             <input type="number" step="0.01" name="cost_price"
-                                value="{{ old('cost_price', $latestPurchasePrice ?? $product->cost_price) }}" required readonly
+                                value="{{ old('cost_price', $fifoCostPrice ?? $product->cost_price) }}" required readonly
                                 style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; background-color: #f8f9fa; cursor: not-allowed;"
                                 id="cost_price_input"
-                                title="Cost price is automatically set from the latest GRN purchase price. This field is read-only.">
+                                title="Cost price shows the FIFO cost (first batch cost that will be sold next). This field is read-only and updates automatically from GRN batches.">
                             <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: 4px;">
-                                <i class="fas fa-info-circle"></i> Latest purchase price from GRN: {{ $currencySymbol ?? 'Rs' }} {{ number_format($latestPurchasePrice ?? 0, 2) }}
+                                <i class="fas fa-info-circle"></i> FIFO cost price (first batch with stock): {{ $currencySymbol ?? 'Rs' }} {{ number_format($fifoCostPrice ?? 0, 2) }}
                             </p>
                         </div>
                         <div>

@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/cash-drawer/open', [CashDrawerController::class, 'open'])->name('cash-drawer.open');
     Route::post('/cash-drawer/close', [CashDrawerController::class, 'close'])->name('cash-drawer.close');
     Route::get('/cash-drawer/status', [CashDrawerController::class, 'status'])->name('cash-drawer.status');
+    Route::get('/cash-drawer/stock', [CashDrawerController::class, 'getStock'])->name('cash-drawer.stock');
     Route::post('/cash-drawer/process-sale', [CashDrawerController::class, 'processSale'])->name('cash-drawer.process-sale');
     Route::post('/cash-drawer/process-return', [CashDrawerController::class, 'processReturn'])->name('cash-drawer.process-return');
 

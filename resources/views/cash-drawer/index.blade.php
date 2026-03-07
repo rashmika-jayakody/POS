@@ -2247,6 +2247,7 @@
         const HELD_STORAGE_KEY = 'pos_held_bills';
         const SHORTCUTS_UPDATE_URL = @json(route('cash-drawer.shortcuts.update'));
         const PROCESS_SALE_URL = @json(route('cash-drawer.process-sale'));
+        const GET_STOCK_URL = @json(route('cash-drawer.stock'));
         const CSRF_TOKEN = @json(csrf_token());
         const TAX_RATE = @json($taxRate ?? 0);
 
@@ -2680,6 +2681,36 @@
             el.focus();
             el.dispatchEvent(new Event('input', { bubbles: true }));
             el.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        function refreshStockForProducts(productIds) {
+            if (!productIds || productIds.length === 0) return;
+            
+            fetch(GET_STOCK_URL + '?product_ids=' + productIds.join(','), {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.stock) {
+                    // Update stock in products array
+                    Object.keys(data.stock).forEach(productId => {
+                        const product = products.find(p => p.id == productId);
+                        if (product) {
+                            product.stock = parseFloat(data.stock[productId]) || 0;
+                            product.maxStock = product.stock; // Update maxStock for cart validation
+                        }
+                    });
+                    // Re-render products to show updated stock
+                    renderProducts();
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing stock:', error);
+            });
         }
 
         function renderProducts() {
@@ -3193,6 +3224,9 @@
                         discount_value: parseFloat(item.discount_value) || 0
                     }))
                 });
+
+                // Refresh stock for sold items
+                refreshStockForProducts(cart.map(item => item.id));
 
                 if (confirm('Order completed. Clear cart for next customer?')) {
                     cart = [];
