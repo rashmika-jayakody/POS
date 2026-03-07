@@ -107,12 +107,7 @@
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation">Confirm password *</label>
-                        <div style="position: relative;">
-                            <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" style="padding-right: 45px;">
-                            <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 4px;">
-                                <i class="fas fa-eye" id="password_confirmation-eye"></i>
-                            </button>
-                        </div>
+                        <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
                         @error('password_confirmation') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">

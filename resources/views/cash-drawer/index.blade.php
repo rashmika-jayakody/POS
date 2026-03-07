@@ -2428,6 +2428,8 @@
             discountValue = 0;
             discountType = 'fixed';
             selectedCustomer = null;
+            paymentMethod = 'Cash'; // Reset payment method to default
+            
             document.getElementById('invoiceBadge').textContent = getNextInvoiceNo();
             const discInput = document.getElementById('discountInput');
             if (discInput) discInput.value = '0.00';
@@ -2442,6 +2444,15 @@
             const receivedInput = document.getElementById('receivedAmount');
             if (receivedInput) receivedInput.value = '';
             document.getElementById('summaryChange').textContent = '0.00';
+            
+            // Reset payment method to Cash (default)
+            const cashBtn = Array.from(document.querySelectorAll('.payment-btn')).find(btn => 
+                btn.textContent.includes('Cash') || btn.getAttribute('onclick')?.includes('Cash')
+            );
+            if (cashBtn) {
+                setPaymentMethod('Cash', cashBtn);
+            }
+            
             renderCart();
             renderProducts();
             document.getElementById('productSearch').focus();
@@ -3233,14 +3244,8 @@
                 // Refresh stock for sold items
                 refreshStockForProducts(cart.map(item => item.id));
 
-                if (confirm('Order completed. Clear cart for next customer?')) {
-                    cart = [];
-                    discountValue = 0;
-                    document.getElementById('discountInput').value = '0.00';
-                    resetCustomer();
-                    renderCart();
-                    document.getElementById('productSearch').focus();
-                }
+                // Automatically start new bill for next customer
+                startNewBill();
             })
             .catch(error => {
                 console.error('Error:', error);
