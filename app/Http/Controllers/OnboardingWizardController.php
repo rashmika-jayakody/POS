@@ -27,25 +27,60 @@ class OnboardingWizardController extends Controller
         if (!array_key_exists($plan, self::PLANS)) {
             $plan = 'professional';
         }
+        
+        // Determine which step to show based on validation errors
+        $step = 1;
+        if ($request->has('step')) {
+            $step = (int) $request->query('step');
+        } elseif (session()->has('errors')) {
+            // If there are errors, determine which step has errors
+            $errors = session()->get('errors')->getBag('default');
+            if ($errors->has('pos_type')) {
+                $step = 1;
+            } elseif ($errors->has('company_name') || $errors->has('address') || $errors->has('phone')) {
+                $step = 2;
+            } elseif ($errors->has('name') || $errors->has('email') || $errors->has('password')) {
+                $step = 3;
+            }
+        }
+        
         return view('onboarding.wizard', [
             'plan' => $plan,
             'planInfo' => self::PLANS[$plan],
             'plans' => self::PLANS,
+            'step' => $step,
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|View
     {
-        $validated = $request->validate([
-            'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
-            'pos_type' => ['required', 'string', 'in:retail,restaurant'],
-            'company_name' => ['required', 'string', 'max:255'],
-            'address' => ['required', 'string', 'max:500'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        try {
+            $validated = $request->validate([
+                'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
+                'pos_type' => ['required', 'string', 'in:retail,restaurant'],
+                'company_name' => ['required', 'string', 'max:255'],
+                'address' => ['required', 'string', 'max:500'],
+                'phone' => ['nullable', 'string', 'max:20'],
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Determine which step has errors
+            $errors = $e->errors();
+            $step = 1;
+            if (isset($errors['pos_type'])) {
+                $step = 1;
+            } elseif (isset($errors['company_name']) || isset($errors['address']) || isset($errors['phone'])) {
+                $step = 2;
+            } elseif (isset($errors['name']) || isset($errors['email']) || isset($errors['password'])) {
+                $step = 3;
+            }
+            
+            return redirect()->route('onboarding.index', ['plan' => $request->input('plan', 'professional'), 'step' => $step])
+                ->withErrors($e->errors())
+                ->withInput();
+        }
 
         $slug = Tenant::generateUniqueSlug($validated['company_name']);
 
@@ -95,5 +130,49 @@ class OnboardingWizardController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Welcome! Your store is ready. Your store link: ' . route('store.landing', ['tenant' => $slug]));
+    }
+
+    public function validateStep(Request $request)
+    {
+        $step = $request->input('step');
+        $data = $request->except(['_token', 'step']);
+
+        $rules = [];
+        $messages = [];
+
+        switch ($step) {
+            case 1:
+                $rules = [
+                    'pos_type' => ['required', 'string', 'in:retail,restaurant'],
+                ];
+                break;
+            case 2:
+                $rules = [
+                    'company_name' => ['required', 'string', 'max:255'],
+                    'address' => ['required', 'string', 'max:500'],
+                    'phone' => ['nullable', 'string', 'max:20'],
+                ];
+                break;
+            case 3:
+                $rules = [
+                    'name' => ['required', 'string', 'max:255'],
+                    'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                ];
+                break;
+        }
+
+        $validator = \Validator::make($data, $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

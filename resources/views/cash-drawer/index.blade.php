@@ -2021,7 +2021,7 @@
                     <div class="summary-line total"><span>Total</span><span class="val" id="summaryTotal">0.00</span></div>
                     <div class="summary-line" id="row-received"
                         style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; font-size: 17px; font-weight: 700;">
-                        <span>Received (Rs)</span>
+                        <span>Received (Rs) <span class="shortcut-hint" data-shortcut-action="received" style="font-size: 0.7rem; color: rgba(0,0,0,0.4); font-weight: 400; margin-left: 4px;"><kbd>{{ $posShortcuts['received'] ?? 'F7' }}</kbd></span></span>
                         <input type="text" inputmode="decimal" id="receivedAmount" value="" placeholder="0.00"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, ''); calculateChange()"
                             style="width: 110px; text-align: right; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 17px; font-weight: 700;">
@@ -2252,15 +2252,15 @@
         const TAX_RATE = @json($taxRate ?? 0);
 
         const SHORTCUT_DEFAULTS = {
-            help: 'F1', search: 'F2', loyalty: 'F3', newBill: 'F4', hold: 'F5', refund: 'F6', pay: 'F8', clear: 'F9',
+            help: 'F1', search: 'F2', loyalty: 'F3', newBill: 'F4', hold: 'F5', refund: 'F6', received: 'F7', pay: 'F8', clear: 'F9',
             newBill2: 'Ctrl+N', pay2: 'Ctrl+P'
         };
         let posShortcutsConfig = { ...SHORTCUT_DEFAULTS, ...@json($posShortcuts ?? []) };
         const SHORTCUT_LABELS = {
-            help: 'Shortcuts help', search: 'Search', loyalty: 'Loyalty', newBill: 'New bill', hold: 'Hold', refund: 'Refund', pay: 'Pay & Print', clear: 'Clear cart',
+            help: 'Shortcuts help', search: 'Search', loyalty: 'Loyalty', newBill: 'New bill', hold: 'Hold', refund: 'Refund', received: 'Focus received amount', pay: 'Pay & Print', clear: 'Clear cart',
             newBill2: 'New bill', pay2: 'Pay & Print'
         };
-        const SHORTCUT_CONFIG_KEYS = ['help', 'search', 'loyalty', 'newBill', 'hold', 'refund', 'pay', 'clear', 'newBill2', 'pay2'];
+        const SHORTCUT_CONFIG_KEYS = ['help', 'search', 'loyalty', 'newBill', 'hold', 'refund', 'received', 'pay', 'clear', 'newBill2', 'pay2'];
 
         function getShortcutsConfig() {
             return { ...SHORTCUT_DEFAULTS, ...posShortcutsConfig };
@@ -2299,7 +2299,7 @@
         let shortcutKeyToAction = {};
         function buildShortcutKeyToAction() {
             const config = getShortcutsConfig();
-            const actionMap = { help: 'help', search: 'search', loyalty: 'loyalty', newBill: 'newBill', hold: 'hold', refund: 'refund', pay: 'pay', clear: 'clear', newBill2: 'newBill', pay2: 'pay' };
+            const actionMap = { help: 'help', search: 'search', loyalty: 'loyalty', newBill: 'newBill', hold: 'hold', refund: 'refund', received: 'received', pay: 'pay', clear: 'clear', newBill2: 'newBill', pay2: 'pay' };
             shortcutKeyToAction = {};
             SHORTCUT_CONFIG_KEYS.forEach(id => {
                 const key = config[id];
@@ -2314,6 +2314,10 @@
                 newBill: newBill,
                 hold: holdBill,
                 refund: openRefundModal,
+                received: () => {
+                    const receivedInput = document.getElementById('receivedAmount');
+                    if (receivedInput) receivedInput.focus();
+                },
                 pay: processPayment,
                 clear: clearCart
             };
@@ -2325,7 +2329,7 @@
             if (!bar) return;
             const parts = [
                 [config.help, 'Help'], [config.search, 'Search'], [config.loyalty, 'Loyalty'], [config.newBill, 'New'], [config.hold, 'Hold'],
-                [config.refund, 'Refund'], [config.pay, 'Pay'], [config.clear, 'Clear']
+                [config.refund, 'Refund'], [config.received, 'Received'], [config.pay, 'Pay'], [config.clear, 'Clear']
             ];
             bar.innerHTML = parts.map(([key, label]) => `<kbd>${key}</kbd><span>${label}</span>`).join('<span style="opacity:0.4;">|</span>');
         }
@@ -2338,6 +2342,7 @@
                 { id: 'newBill', label: 'New bill' },
                 { id: 'hold', label: 'Hold current bill' },
                 { id: 'refund', label: 'Return / Refund' },
+                { id: 'received', label: 'Focus received amount' },
                 { id: 'pay', label: 'Pay & Print' },
                 { id: 'clear', label: 'Clear cart' },
                 { id: 'newBill2', label: 'New bill' },

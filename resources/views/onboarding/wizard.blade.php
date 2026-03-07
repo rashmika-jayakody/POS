@@ -5,6 +5,12 @@
             <span class="step-dot {{ ($step ?? 1) === 2 ? 'active' : (($step ?? 1) > 2 ? 'done' : '') }}" id="dot2"></span>
             <span class="step-dot {{ ($step ?? 1) === 3 ? 'active' : (($step ?? 1) > 3 ? 'done' : '') }}" id="dot3"></span>
         </div>
+        
+        @if ($errors->any())
+            <div style="background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;">
+                <strong><i class="fas fa-exclamation-circle"></i> Please fix the errors below:</strong>
+            </div>
+        @endif
 
         <div class="plan-badge" style="display: inline-block; background: linear-gradient(135deg, #4A9EFF 0%, #00C9B7 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; margin-bottom: 24px; text-align: center; width: 100%;">
             {{ $planInfo['name'] }} — LKR {{ number_format($planInfo['price_lkr']) }}<span style="font-size: 0.85rem; opacity: 0.95;">/month</span>
@@ -14,7 +20,7 @@
                 @csrf
                 <input type="hidden" name="plan" value="{{ $plan }}">
 
-                <div class="wizard-step active" data-step="1">
+                <div class="wizard-step {{ ($step ?? 1) === 1 ? 'active' : '' }}" data-step="1">
                     <h2 class="auth-heading">Choose your POS type</h2>
                     <p class="auth-subheading">Select the type of business you're setting up.</p>
 
@@ -44,7 +50,7 @@
                     </div>
                 </div>
 
-                <div class="wizard-step" data-step="2">
+                <div class="wizard-step {{ ($step ?? 1) === 2 ? 'active' : '' }}" data-step="2">
                     <h2 class="auth-heading">Business information</h2>
                     <p class="auth-subheading">We'll create your store URL from your company name (e.g. my-store).</p>
 
@@ -75,7 +81,7 @@
                     </div>
                 </div>
 
-                <div class="wizard-step" data-step="3">
+                <div class="wizard-step {{ ($step ?? 1) === 3 ? 'active' : '' }}" data-step="3">
                     <h2 class="auth-heading">Your account</h2>
                     <p class="auth-subheading">You'll use this to sign in and manage your store.</p>
 
@@ -91,12 +97,23 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password *</label>
-                        <input type="password" id="password" name="password" required autocomplete="new-password">
+                        <div style="position: relative;">
+                            <input type="password" id="password" name="password" required autocomplete="new-password" style="padding-right: 45px;">
+                            <button type="button" class="password-toggle" onclick="togglePassword('password')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 4px;">
+                                <i class="fas fa-eye" id="password-eye"></i>
+                            </button>
+                        </div>
                         @error('password') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation">Confirm password *</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
+                        <div style="position: relative;">
+                            <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" style="padding-right: 45px;">
+                            <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 4px;">
+                                <i class="fas fa-eye" id="password_confirmation-eye"></i>
+                            </button>
+                        </div>
+                        @error('password_confirmation') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
                         <button type="button" id="prevStep3" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;">
@@ -139,6 +156,16 @@
             font-size: 0.85rem;
             color: #ef4444;
             margin-top: 6px;
+        }
+        .field-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+        .password-toggle {
+            z-index: 10;
+        }
+        .password-toggle:hover {
+            color: #4A9EFF !important;
         }
         .pos-type-options {
             display: grid;
@@ -206,13 +233,75 @@
             radio.closest('.pos-type-card').classList.add('selected');
         });
 
-        // Step navigation
-        document.getElementById('nextStep1').addEventListener('click', function() {
+        // Password toggle function
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const eye = document.getElementById(fieldId + '-eye');
+            if (field.type === 'password') {
+                field.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+
+        // Real-time validation function
+        async function validateStep(step) {
+            const form = document.getElementById('wizardForm');
+            const formData = new FormData(form);
+            formData.append('step', step);
+
+            try {
+                const response = await fetch('{{ route("onboarding.validate-step") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                // Clear previous errors
+                document.querySelectorAll('.error').forEach(el => el.remove());
+                document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+
+                if (!data.success) {
+                    // Display errors
+                    Object.keys(data.errors).forEach(field => {
+                        const input = form.querySelector(`[name="${field}"]`);
+                        if (input) {
+                            input.classList.add('field-error');
+                            const errorDiv = document.createElement('p');
+                            errorDiv.className = 'error';
+                            errorDiv.textContent = data.errors[field][0];
+                            input.parentElement.appendChild(errorDiv);
+                        }
+                    });
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Validation error:', error);
+                return false;
+            }
+        }
+
+        // Step navigation with validation
+        document.getElementById('nextStep1').addEventListener('click', async function() {
             const selected = document.querySelector('input[name="pos_type"]:checked');
             if (!selected) {
                 alert('Please select a POS type');
                 return;
             }
+            
+            const isValid = await validateStep(1);
+            if (!isValid) return;
+
             document.querySelector('.wizard-step[data-step="1"]').classList.remove('active');
             document.querySelector('.wizard-step[data-step="2"]').classList.add('active');
             document.getElementById('dot1').classList.remove('active');
@@ -220,7 +309,10 @@
             document.getElementById('dot2').classList.add('active');
         });
 
-        document.getElementById('nextStep2').addEventListener('click', function() {
+        document.getElementById('nextStep2').addEventListener('click', async function() {
+            const isValid = await validateStep(2);
+            if (!isValid) return;
+
             document.querySelector('.wizard-step[data-step="2"]').classList.remove('active');
             document.querySelector('.wizard-step[data-step="3"]').classList.add('active');
             document.getElementById('dot2').classList.remove('active');

@@ -22,6 +22,7 @@ class CashDrawerController extends Controller
         'newBill' => 'F4',
         'hold' => 'F5',
         'refund' => 'F6',
+        'received' => 'F7',
         'pay' => 'F8',
         'clear' => 'F9',
         'newBill2' => 'Ctrl+N',

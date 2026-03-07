@@ -304,8 +304,13 @@
                             </div>
 
                             <div class="modern-input-group" style="max-width: 500px;">
+                                <div id="logo-preview-container" style="margin-bottom: 16px; padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: var(--gray-light); display: none; text-align: center;">
+                                    <div style="font-weight: 600; color: var(--navy-dark); margin-bottom: 8px;">Logo Preview</div>
+                                    <img id="logo-preview" src="" alt="Logo Preview" style="max-height: 120px; max-width: 100%; object-fit: contain; border-radius: 4px;">
+                                </div>
                                 @if ($settings->logo_path)
-                                    <div style="margin-bottom: 16px; padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: var(--gray-light); display: inline-block;">
+                                    <div id="current-logo" style="margin-bottom: 16px; padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-md); background: var(--gray-light); display: inline-block;">
+                                        <div style="font-weight: 600; color: var(--navy-dark); margin-bottom: 8px;">Current Logo</div>
                                         <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Current Logo" style="max-height: 120px; max-width: 100%; object-fit: contain;">
                                     </div>
                                 @endif
@@ -491,6 +496,45 @@
                     textEl.addEventListener('input', function () { colorInput.value = this.value; });
                 }
             });
+            
+            // Logo preview functionality
+            const logoUpload = document.getElementById('logo-upload');
+            const logoPreview = document.getElementById('logo-preview');
+            const logoPreviewContainer = document.getElementById('logo-preview-container');
+            const currentLogo = document.getElementById('current-logo');
+            
+            if (logoUpload) {
+                logoUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file size (2MB)
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert('File size must be less than 2MB');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Please select a valid image file (PNG, JPG, GIF, or WebP)');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            logoPreview.src = e.target.result;
+                            logoPreviewContainer.style.display = 'block';
+                            if (currentLogo) {
+                                currentLogo.style.display = 'none';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
         </script>
     @endpush
 @endsection
