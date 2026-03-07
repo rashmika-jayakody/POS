@@ -43,7 +43,7 @@
                 Sign In</button>
 
             <div class="auth-footer-link">
-                Don't have an account? <a href="{{ route('onboarding.index', ['plan' => 'professional']) }}">Create one free</a>
+                Don't have an account? <a href="{{ route('onboarding.index', ['plan' => 'professional']) }}">Create new account</a>
             </div>
 
             <div class="auth-footer-link" style="margin-top: 12px;">

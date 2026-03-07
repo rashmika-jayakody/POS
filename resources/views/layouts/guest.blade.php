@@ -78,8 +78,8 @@
         }
 
         .brand-icon {
-            width: 96px;
-            height: 96px;
+            width: 180px;
+            height: 80px;
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 24px;
@@ -89,11 +89,18 @@
             margin: 0 auto 32px;
             backdrop-filter: blur(8px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 12px;
         }
 
         .brand-icon i {
             font-size: 2.5rem;
             color: white;
+        }
+
+        .brand-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
         .brand-title {
@@ -203,19 +210,26 @@
         }
 
         .mobile-logo-icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #0A1A3D, #4A9EFF);
+            width: 140px;
+            height: 60px;
+            background: transparent;
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 24px rgba(10, 26, 61, 0.35);
+            box-shadow: none;
+            padding: 8px;
         }
 
         .mobile-logo-icon i {
             color: white;
             font-size: 1.5rem;
+        }
+
+        .mobile-logo-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
         @media (min-width: 1024px) {
@@ -450,10 +464,20 @@
             padding: 0;
             line-height: 1;
             transition: color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            z-index: 10;
         }
 
         .pw-toggle:hover {
             color: #4A9EFF;
+        }
+
+        .pw-toggle i {
+            display: block;
         }
     </style>
 </head>
@@ -463,7 +487,7 @@
     <div class="auth-branding">
         <div class="brand-content">
             <div class="brand-icon">
-                <i class="fas fa-bolt"></i>
+                <img src="{{ asset('assets/logo.png') }}" alt="PosHere" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             <div class="brand-title">Empower Your<br>Business</div>
             <div class="brand-subtitle">Manage sales, inventory, and growth with our all-in-one Point of Sale system.
@@ -489,8 +513,8 @@
     <div class="auth-form-pane">
         <div class="auth-card">
             <div class="mobile-logo">
-                <div class="mobile-logo-icon">
-                    <i class="fas fa-bolt"></i>
+                <div class="mobile-logo-icon" style="background: transparent; box-shadow: none; border: none;">
+                    <img src="{{ asset('assets/logo.png') }}" alt="PosHere" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
             </div>
             {{ $slot }}
@@ -500,9 +524,31 @@
 
 <script>
     document.querySelectorAll('.pw-toggle').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var input = this.previousElementSibling;
-            var icon = this.querySelector('i');
+        // Ensure only one icon exists
+        var existingIcons = btn.querySelectorAll('i');
+        if (existingIcons.length > 1) {
+            // Remove duplicate icons, keep only the first one
+            for (var i = 1; i < existingIcons.length; i++) {
+                existingIcons[i].remove();
+            }
+        }
+        
+        // Find the input field - it's the previous sibling of the button's parent (password-wrapper)
+        var passwordWrapper = btn.parentElement;
+        var input = passwordWrapper.querySelector('input[type="password"], input[type="text"]');
+        var icon = btn.querySelector('i');
+        
+        // Ensure icon exists
+        if (!icon) {
+            icon = document.createElement('i');
+            icon.className = 'fas fa-eye';
+            btn.appendChild(icon);
+        }
+        
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('fa-eye');

@@ -97,17 +97,22 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password *</label>
-                        <div style="position: relative;">
+                        <div class="password-wrapper" style="position: relative;">
                             <input type="password" id="password" name="password" required autocomplete="new-password" style="padding-right: 45px;">
-                            <button type="button" class="password-toggle" onclick="togglePassword('password')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 4px;">
-                                <i class="fas fa-eye" id="password-eye"></i>
+                            <button type="button" class="pw-toggle" tabindex="-1" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 0; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; z-index: 10;">
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                         @error('password') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation">Confirm password *</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
+                        <div class="password-wrapper" style="position: relative;">
+                            <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" style="padding-right: 45px;">
+                            <button type="button" class="pw-toggle" tabindex="-1" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 0; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; z-index: 10;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         @error('password_confirmation') <p class="error">{{ $message }}</p> @enderror
                     </div>
                     <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
@@ -228,20 +233,41 @@
             radio.closest('.pos-type-card').classList.add('selected');
         });
 
-        // Password toggle function
-        function togglePassword(fieldId) {
-            const field = document.getElementById(fieldId);
-            const eye = document.getElementById(fieldId + '-eye');
-            if (field.type === 'password') {
-                field.type = 'text';
-                eye.classList.remove('fa-eye');
-                eye.classList.add('fa-eye-slash');
-            } else {
-                field.type = 'password';
-                eye.classList.remove('fa-eye-slash');
-                eye.classList.add('fa-eye');
+        // Password toggle - handled by guest layout script, but ensure it works here too
+        document.querySelectorAll('.pw-toggle').forEach(function (btn) {
+            // Ensure only one icon exists
+            var existingIcons = btn.querySelectorAll('i');
+            if (existingIcons.length > 1) {
+                for (var i = 1; i < existingIcons.length; i++) {
+                    existingIcons[i].remove();
+                }
             }
-        }
+            
+            var passwordWrapper = btn.parentElement;
+            var input = passwordWrapper.querySelector('input[type="password"], input[type="text"]');
+            var icon = btn.querySelector('i');
+            
+            if (!icon) {
+                icon = document.createElement('i');
+                icon.className = 'fas fa-eye';
+                btn.appendChild(icon);
+            }
+            
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
 
         // Real-time validation function
         async function validateStep(step) {
