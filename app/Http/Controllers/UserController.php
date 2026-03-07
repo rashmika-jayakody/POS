@@ -28,7 +28,9 @@ class UserController extends Controller
             ? Tenant::orderBy('name')->get()
             : null;
         $branches = Branch::all();
-        $roles = Role::whereIn('name', ['business_owner', 'branch_manager', 'cashier'])->get();
+        $roles = Role::where('name', '!=', 'system_owner')
+            ->orderBy('name')
+            ->get();
         return view('users.create', compact('branches', 'roles', 'tenants'));
     }
 
@@ -77,7 +79,9 @@ class UserController extends Controller
 
         $tenants = auth()->user()->hasRole('system_owner') ? Tenant::orderBy('name')->get() : null;
         $branches = Branch::withoutGlobalScope('tenant')->where('tenant_id', $user->tenant_id)->get();
-        $roles = Role::whereIn('name', ['business_owner', 'branch_manager', 'cashier'])->get();
+        $roles = Role::where('name', '!=', 'system_owner')
+            ->orderBy('name')
+            ->get();
         return view('users.edit', compact('user', 'branches', 'roles', 'tenants'));
     }
 
