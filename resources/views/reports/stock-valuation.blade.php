@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', 'Stock Valuation')
+@section('title', __('Stock Valuation'))
 
 @section('content')
     <div class="page-header animate-in">
-        <div class="page-title"><i class="fas fa-boxes-stacked"></i> Stock Valuation</div>
-        <div class="page-subtitle">Current inventory value at cost and selling price (batch-wise).</div>
+        <div class="page-title"><i class="fas fa-boxes-stacked"></i> {{ __('Stock Valuation') }}</div>
+        <div class="page-subtitle">{{ __('Current inventory value at cost and selling price (batch-wise).') }}</div>
     </div>
 
     @include('reports.partials.filter', ['showDate' => false, 'showBranch' => true, 'f' => $f ?? [], 'branches' => $branches, 'routeName' => 'reports.stock-valuation'])
@@ -38,18 +38,18 @@
 
     <!-- Product Summary Section -->
     <div class="section animate-in">
-        <h2 class="section-title"><i class="fas fa-list"></i> Product Summary</h2>
+        <h2 class="section-title"><i class="fas fa-list"></i> {{ __('Product Summary') }}</h2>
         <div class="table-wrapper">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Branch</th>
-                        <th>Batches</th>
-                        <th>Total Qty</th>
-                        <th>Cost value</th>
-                        <th>Retail value</th>
+                        <th>{{ __('Product') }}</th>
+                        <th>{{ __('Category') }}</th>
+                        <th>{{ __('Branch') }}</th>
+                        <th>{{ __('Batches') }}</th>
+                        <th>{{ __('Total Qty') }}</th>
+                        <th>{{ __('Cost value') }}</th>
+                        <th>{{ __('Retail value') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,21 +73,21 @@
 
     <!-- Batch-wise Details Section -->
     <div class="section animate-in">
-        <h2 class="section-title"><i class="fas fa-layer-group"></i> Batch-wise Details</h2>
+        <h2 class="section-title"><i class="fas fa-layer-group"></i> {{ __('Batch-wise Details') }}</h2>
         <div class="table-wrapper">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Branch</th>
-                        <th>Batch Number</th>
-                        <th>Supplier</th>
-                        <th>Received Date</th>
-                        <th>Expiry Date</th>
-                        <th>Qty</th>
-                        <th>Purchase Price</th>
-                        <th>Cost value</th>
-                        <th>Retail value</th>
+                        <th>{{ __('Product') }}</th>
+                        <th>{{ __('Branch') }}</th>
+                        <th>{{ __('Batch Number') }}</th>
+                        <th>{{ __('Supplier') }}</th>
+                        <th>{{ __('Received Date') }}</th>
+                        <th>{{ __('Expiry Date') }}</th>
+                        <th>{{ __('Qty') }}</th>
+                        <th>{{ __('Purchase Price') }}</th>
+                        <th>{{ __('Cost value') }}</th>
+                        <th>{{ __('Retail value') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,7 +105,7 @@
                             <td>{{ $currencySymbol ?? 'Rs' }}{{ number_format($r['retail_value'], 2) }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="10" style="text-align: center; color: var(--gray-500); padding: 24px;">No stock batches.</td></tr>
+                        <tr><td colspan="10" style="text-align: center; color: var(--gray-500); padding: 24px;">{{ __('No stock batches.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

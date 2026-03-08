@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'User Management')
+@section('title', __('Staff Management'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,13 +8,13 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-user-tie"></i>
-                    Staff Management
+                    {{ __('Staff Management') }}
                 </div>
-                <div class="page-subtitle">Manage system users, roles, and branch assignments.</div>
+                <div class="page-subtitle">{{ __('Manage system users, roles, and branch assignments.') }}</div>
             </div>
             <a href="{{ route('users.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                Add New Staff
+                {{ __('Add New Staff') }}
             </a>
         </div>
     </div>
@@ -32,14 +32,14 @@
                 <thead>
                     <tr>
                         @if(isset($isSystemOwner) && $isSystemOwner)
-                            <th>Shop / Tenant</th>
+                            <th>{{ __('Shop / Tenant') }}</th>
                         @endif
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Branch</th>
-                        <th>Status</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Name') }}</th>
+                        <th>{{ __('Email') }}</th>
+                        <th>{{ __('Role') }}</th>
+                        <th>{{ __('Branch') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,11 +58,11 @@
                                     </span>
                                 @endforeach
                             </td>
-                            <td>{{ $user->branch?->name ?? 'All Branches' }}</td>
+                            <td>{{ $user->branch?->name ?? __('All Branches') }}</td>
                             <td>
                                 <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}">
                                     <span class="status-dot"></span>
-                                    {{ $user->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $user->is_active ? __('Active') : __('Inactive') }}
                                 </span>
                             </td>
                             <td style="text-align: right;">
@@ -73,7 +73,7 @@
                                     </a>
                                     @if($user->id !== auth()->id())
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST"
-                                            onsubmit="return confirm('Delete this user?');">
+                                            onsubmit="return confirm('{{ __('Delete this user?') }}');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn"

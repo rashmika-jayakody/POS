@@ -18,6 +18,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Switch language (stored in session; optional: set APP_LOCALE in .env for app-wide default)
+Route::get('/locale/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'si'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('locale.switch');
+
 // Public onboarding: pricing → wizard → create tenant (path-based: /app/{slug} later)
 Route::get('/onboarding', [OnboardingWizardController::class, 'index'])->name('onboarding.index');
 Route::post('/onboarding', [OnboardingWizardController::class, 'store'])->name('onboarding.store');
@@ -32,6 +40,8 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
 // SaaS Platform Management (System Owner only)
 Route::middleware(['auth', 'role:system_owner'])->group(function () {
     Route::resource('tenants', \App\Http\Controllers\TenantController::class);
+    Route::get('/translations', [\App\Http\Controllers\TranslationController::class, 'index'])->name('translations.index');
+    Route::post('/translations', [\App\Http\Controllers\TranslationController::class, 'store'])->name('translations.store');
 });
 
 Route::middleware('auth')->group(function () {

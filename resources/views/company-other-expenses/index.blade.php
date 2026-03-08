@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Company Other Expenses')
+@section('title', __('Company Other Expenses'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,13 +8,13 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-receipt"></i>
-                    Expenses
+                    {{ __('Expenses') }}
                 </div>
-                <div class="page-subtitle">Business expenses (utilities, rent, salary, etc.) and owner withdrawals (drawings). Never mixed in reports.</div>
+                <div class="page-subtitle">{{ __('Business expenses (utilities, rent, salary, etc.) and owner withdrawals (drawings). Never mixed in reports.') }}</div>
             </div>
             <a href="{{ route('company-other-expenses.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                Add Expense / Drawing
+                {{ __('Add Expense / Drawing') }}
             </a>
         </div>
     </div>
@@ -28,23 +28,23 @@
 
     <div class="stats-grid" style="margin-bottom: 24px;">
         <div class="section animate-in" style="margin-bottom: 0;">
-            <div class="section-title"><i class="fas fa-briefcase"></i> Business Expenses</div>
+            <div class="section-title"><i class="fas fa-briefcase"></i> {{ __('Business Expenses') }}</div>
             <div style="font-size: 1.5rem; font-weight: 800; color: var(--navy-dark);">
                 {{ $currencySymbol ?? 'Rs' }}{{ number_format($totalBusinessExpenses, 2) }}
             </div>
-            <p style="font-size: 0.8rem; color: var(--gray-500); margin-top: 8px;">Reduces profit · Included in P&L</p>
+            <p style="font-size: 0.8rem; color: var(--gray-500); margin-top: 8px;">{{ __('Reduces profit · Included in P&L') }}</p>
         </div>
         <div class="section animate-in" style="margin-bottom: 0;">
-            <div class="section-title"><i class="fas fa-user"></i> Owner Drawings</div>
+            <div class="section-title"><i class="fas fa-user"></i> {{ __('Owner Drawings') }}</div>
             <div style="font-size: 1.5rem; font-weight: 800; color: var(--navy-dark);">
                 {{ $currencySymbol ?? 'Rs' }}{{ number_format($totalOwnerDrawings, 2) }}
             </div>
-            <p style="font-size: 0.8rem; color: var(--gray-500); margin-top: 8px;">Reduces cash only · Not in P&L</p>
+            <p style="font-size: 0.8rem; color: var(--gray-500); margin-top: 8px;">{{ __('Reduces cash only · Not in P&L') }}</p>
         </div>
     </div>
 
     <p style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 16px;">
-        <i class="fas fa-info-circle"></i> Sales − Cost − <strong>Business expenses</strong> = Net profit. Owner drawings are recorded but not counted as expenses.
+        <i class="fas fa-info-circle"></i> {{ __('Sales − Cost − Business expenses = Net profit. Owner drawings are recorded but not counted as expenses.') }}
     </p>
 
     <div class="section animate-in">
@@ -52,13 +52,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Category</th>
-                        <th>Description</th>
-                        <th>Location</th>
-                        <th>Amount</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Date') }}</th>
+                        <th>{{ __('Type') }}</th>
+                        <th>{{ __('Category') }}</th>
+                        <th>{{ __('Description') }}</th>
+                        <th>{{ __('Location') }}</th>
+                        <th>{{ __('Amount') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,15 +68,15 @@
                             <td>
                                 @if($expense->isOwnerDrawing())
                                     <span class="status-badge inactive" style="background: rgba(148, 163, 184, 0.15); color: var(--gray-600);">
-                                        <i class="fas fa-user" style="margin-right: 4px;"></i> Drawing
+                                        <i class="fas fa-user" style="margin-right: 4px;"></i> {{ __('Drawing') }}
                                     </span>
                                 @else
                                     <span class="status-badge active" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
-                                        <i class="fas fa-briefcase" style="margin-right: 4px;"></i> Expense
+                                        <i class="fas fa-briefcase" style="margin-right: 4px;"></i> {{ __('Expense') }}
                                     </span>
                                 @endif
                             </td>
-                            <td><span style="font-weight: 600; color: var(--navy-dark);">{{ $expense->category }}</span></td>
+                            <td><span style="font-weight: 600; color: var(--navy-dark);">{{ __(array_merge(\App\Models\CompanyOtherExpense::businessExpenseCategories(), \App\Models\CompanyOtherExpense::ownerDrawingsCategory())[$expense->category] ?? $expense->category) }}</span></td>
                             <td>{{ $expense->description }}</td>
                             <td>{{ $expense->branch?->name ?? '—' }}</td>
                             <td style="font-weight: 700; color: var(--danger);">{{ $currencySymbol ?? 'Rs' }}{{ number_format($expense->amount, 2) }}</td>
@@ -87,7 +87,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('company-other-expenses.destroy', $expense) }}" method="POST"
-                                        onsubmit="return confirm('Delete this {{ $expense->isOwnerDrawing() ? "drawing" : "expense" }}?');">
+                                        onsubmit="return confirm('{{ $expense->isOwnerDrawing() ? __("Delete this drawing?") : __("Delete this expense?") }}');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn"
@@ -101,7 +101,7 @@
                     @empty
                         <tr>
                             <td colspan="7" style="text-align: center; padding: 32px; color: var(--gray-500);">
-                                No expenses or drawings recorded yet. <a href="{{ route('company-other-expenses.create') }}" style="color: var(--light-blue); font-weight: 600;">Add one</a>.
+                                {{ __('No expenses or drawings recorded yet.') }} <a href="{{ route('company-other-expenses.create') }}" style="color: var(--light-blue); font-weight: 600;">{{ __('Add one') }}</a>.
                             </td>
                         </tr>
                     @endforelse

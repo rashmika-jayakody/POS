@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Products & Inventory')
+@section('title', __('Products & Inventory'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,19 +8,19 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-box"></i>
-                    Product Management
+                    {{ __('Product Management') }}
                 </div>
                 <div class="page-subtitle">
                     @if(($posType ?? 'retail') === 'restaurant')
-                        Manage your menu items, pricing, and modifiers.
+                        {{ __('Manage your menu items, pricing, and modifiers.') }}
                     @else
-                        Manage your product catalog, pricing, and view real-time stock levels.
+                        {{ __('Manage your product catalog, pricing, and view real-time stock levels.') }}
                     @endif
                 </div>
             </div>
             <a href="{{ route('products.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                Add New Product
+                {{ __('Add New Product') }}
             </a>
         </div>
     </div>
@@ -37,13 +37,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Product Information</th>
-                        <th>Pricing</th>
+                        <th>{{ __('Product Information') }}</th>
+                        <th>{{ __('Pricing') }}</th>
                         @if(($posType ?? 'retail') === 'retail')
-                        <th>Stock Levels</th>
+                        <th>{{ __('Stock Levels') }}</th>
                         @endif
-                        <th>Status</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,17 +55,17 @@
                                 <div
                                     style="font-size: 0.8rem; color: var(--gray-500); display: flex; align-items: center; gap: 8px;">
                                     @if($product->code)<span><i class="fas fa-hashtag"></i> {{ $product->code }}</span>@endif
-                                    <span><i class="fas fa-barcode"></i> {{ $product->barcode ?? 'No Barcode' }}</span>
+                                    <span><i class="fas fa-barcode"></i> {{ $product->barcode ?? __('No Barcode') }}</span>
                                     <span
                                         style="background: rgba(74, 158, 255, 0.1); color: var(--light-blue); padding: 2px 8px; border-radius: 4px; font-weight: 700;">{{ $product->category->name }}</span>
                                 </div>
                             </td>
                             <td>
-                                <div style="font-size: 0.75rem; color: var(--gray-500); margin-bottom: 2px;">Selling Price:
+                                <div style="font-size: 0.75rem; color: var(--gray-500); margin-bottom: 2px;">{{ __('Selling Price') }}:
                                 </div>
                                 <span
                                     style="font-family: monospace; font-weight: 700; color: var(--accent-teal); font-size: 1.1rem;">{{ $currencySymbol ?? 'Rs' }}{{ number_format($product->selling_price, 2) }}</span>
-                                <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 2px;">Cost:
+                                <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 2px;">{{ __('Cost') }}:
                                     {{ $currencySymbol ?? 'Rs' }}{{ number_format($product->cost_price, 2) }}</div>
                             </td>
                             @if(($posType ?? 'retail') === 'retail')
@@ -92,13 +92,13 @@
                                 @if(($posType ?? 'retail') === 'restaurant')
                                     <span class="status-badge {{ $product->is_active ? 'active' : 'inactive' }}">
                                         <span class="status-dot"></span>
-                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                        {{ $product->is_active ? __('Active') : __('Inactive') }}
                                     </span>
                                 @else
                                     @php $totalStock = $product->stocks->sum('quantity'); @endphp
                                     <span class="status-badge {{ $totalStock > 0 ? 'active' : 'inactive' }}">
                                         <span class="status-dot"></span>
-                                        {{ $totalStock > 0 ? 'In Stock' : 'Out of Stock' }}
+                                        {{ $totalStock > 0 ? __('In Stock') : __('Out of Stock') }}
                                     </span>
                                 @endif
                             </td>
@@ -109,7 +109,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                                        onsubmit="return confirm('Delete this product?');">
+                                        onsubmit="return confirm('{{ __('Delete this product?') }}');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn"

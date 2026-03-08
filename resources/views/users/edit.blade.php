@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Staff Member')
+@section('title', __('Edit Staff Member'))
 
 @section('content')
     <div class="page-header animate-in" style="max-width: 800px; margin: 0 auto 28px auto;">
         <div class="page-title">
             <i class="fas fa-edit"></i>
-            Edit Staff: {{ $user->name }}
+            {{ __('Edit Staff: :name', ['name' => $user->name]) }}
         </div>
-        <div class="page-subtitle">Update account details and permissions.</div>
+        <div class="page-subtitle">{{ __('Update account details and permissions.') }}</div>
     </div>
 
     <div class="section animate-in" style="max-width: 800px; margin: 0 auto;">
@@ -17,16 +17,14 @@
             @method('PUT')
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                 <div style="grid-column: span 2;">
-                    <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Full
-                        Name</label>
+                    <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Full Name') }}</label>
                     <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                     @error('name') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span> @enderror
                 </div>
 
                 <div style="grid-column: span 2;">
-                    <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Email
-                        Address</label>
+                    <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Email Address') }}</label>
                     <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                     @error('email') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span> @enderror
@@ -34,7 +32,7 @@
 
                 <div>
                     <label
-                        style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Role</label>
+                        style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Role') }}</label>
                     <select name="role" required
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                         @foreach($roles as $role)
@@ -46,11 +44,10 @@
                 </div>
 
                 <div>
-                    <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Branch
-                        (Optional)</label>
+                    <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Branch (Optional)') }}</label>
                     <select name="branch_id"
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
-                        <option value="">All Branches</option>
+                        <option value="">{{ __('All Branches') }}</option>
                         @foreach($branches as $branch)
                             <option value="{{ $branch->id }}" {{ $user->branch_id == $branch->id ? 'selected' : '' }}>
                                 {{ $branch->name }}
@@ -61,13 +58,11 @@
 
                 <div
                     style="grid-column: span 2; padding: 10px; background: var(--light-blue-bg); border-radius: 8px; margin-top: 10px;">
-                    <div style="font-weight: 700; color: var(--light-blue); font-size: 0.85rem; margin-bottom: 10px;">Change
-                        Password (Leave blank to keep current)</div>
+                    <div style="font-weight: 700; color: var(--light-blue); font-size: 0.85rem; margin-bottom: 10px;">{{ __('Change Password (Leave blank to keep current)') }}</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div>
                             <label
-                                style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">New
-                                Password</label>
+                                style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('New Password') }}</label>
                             <input type="password" name="password"
                                 style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                             @error('password') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span>
@@ -75,8 +70,7 @@
                         </div>
                         <div>
                             <label
-                                style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Confirm
-                                New Password</label>
+                                style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Confirm New Password') }}</label>
                             <input type="password" name="password_confirmation"
                                 style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                         </div>
@@ -86,14 +80,14 @@
                 <div style="display: flex; align-items: center; gap: 10px; margin-top: 20px;">
                     <input type="checkbox" name="is_active" id="is_active" {{ $user->is_active ? 'checked' : '' }}
                         style="width: 18px; height: 18px;">
-                    <label for="is_active" style="font-weight: 600; color: var(--gray-700);">Account is active</label>
+                    <label for="is_active" style="font-weight: 600; color: var(--gray-700);">{{ __('Account is active') }}</label>
                 </div>
             </div>
 
             <div
                 style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--gray-100); padding-top: 20px;">
-                <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Update Staff Account</button>
+                <a href="{{ route('users.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
+                <button type="submit" class="btn btn-primary">{{ __('Update Staff Account') }}</button>
             </div>
         </form>
     </div>

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Goods Received Notes (GRN)')
+@section('title', __('Goods Received Notes (GRN)'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,13 +8,13 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-file-invoice"></i>
-                    Goods Received Notes
+                    {{ __('Goods Received Notes') }}
                 </div>
-                <div class="page-subtitle">Track incoming inventory and update stock levels.</div>
+                <div class="page-subtitle">{{ __('Track incoming inventory and update stock levels.') }}</div>
             </div>
             <a href="{{ route('grns.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                New GRN
+                {{ __('New GRN') }}
             </a>
         </div>
     </div>
@@ -31,13 +31,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>GRN Number</th>
-                        <th>Supplier</th>
-                        <th>Branch</th>
-                        <th>Received Date</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('GRN Number') }}</th>
+                        <th>{{ __('Supplier') }}</th>
+                        <th>{{ __('Branch') }}</th>
+                        <th>{{ __('Received Date') }}</th>
+                        <th>{{ __('Total Amount') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,7 +55,7 @@
                                 <span
                                     class="status-badge {{ $grn->status == 'received' ? 'active' : ($grn->status == 'draft' ? 'pending' : 'inactive') }}">
                                     <span class="status-dot"></span>
-                                    {{ ucfirst($grn->status) }}
+                                    {{ __(ucfirst($grn->status)) }}
                                 </span>
                             </td>
                             <td style="text-align: right;">
@@ -69,11 +69,11 @@
                                             @csrf
                                             <button type="submit" class="btn btn-primary"
                                                 style="padding: 6px 10px; font-size: 0.75rem; background: var(--success); box-shadow: none;">
-                                                <i class="fas fa-check"></i> Receive
+                                                <i class="fas fa-check"></i> {{ __('Receive') }}
                                             </button>
                                         </form>
                                         <form action="{{ route('grns.destroy', $grn->id) }}" method="POST"
-                                            onsubmit="return confirm('Delete this GRN?');">
+                                            onsubmit="return confirm('{{ __('Delete this GRN?') }}');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn"

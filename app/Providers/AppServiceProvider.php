@@ -12,7 +12,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->extend('translation.loader', function ($currentLoader) {
+            return new \App\Translation\MergeTranslationLoader(
+                $this->app['files'],
+                $this->app->langPath()
+            );
+        });
     }
 
     /**

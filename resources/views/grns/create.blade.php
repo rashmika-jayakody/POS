@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'New Goods Received Note')
+@section('title', __('New Goods Received Note'))
 
 @section('content')
     <div class="page-header animate-in" style="max-width: 1200px; margin: 0 auto 28px auto;">
         <div class="page-title">
             <i class="fas fa-plus-circle"></i>
-            Create New GRN
+            {{ __('Create New GRN') }}
         </div>
-        <div class="page-subtitle">Record incoming goods and prepare to update inventory.</div>
+        <div class="page-subtitle">{{ __('Record incoming goods and prepare to update inventory.') }}</div>
     </div>
 
     <div style="max-width: 1200px; margin: 0 auto;">
@@ -18,14 +18,14 @@
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px;">
                 <!-- GRN Header -->
                 <div class="section" style="margin-bottom: 0;">
-                    <h3 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h3>
+                    <h3 class="section-title"><i class="fas fa-info-circle"></i> {{ __('Basic Information') }}</h3>
 
                     <div style="margin-bottom: 16px;">
                         <label
-                            style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Supplier</label>
+                            style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Supplier') }}</label>
                         <select name="supplier_id" required
                             style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
-                            <option value="">Select Supplier</option>
+                            <option value="">{{ __('Select Supplier') }}</option>
                             @foreach($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                             @endforeach
@@ -33,8 +33,7 @@
                     </div>
 
                     <div style="margin-bottom: 16px;">
-                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Branch
-                            (Recipient)</label>
+                        <label style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Branch (Recipient)') }}</label>
                         <select name="branch_id" required
                             style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                             @foreach($branches as $branch)
@@ -45,18 +44,17 @@
 
                     <div style="margin-bottom: 16px;">
                         <label
-                            style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Received
-                            Date</label>
+                            style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Received Date') }}</label>
                         <input type="date" name="received_date" value="{{ date('Y-m-d') }}" required
                             style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                     </div>
                 </div>
 
                 <div class="section" style="margin-bottom: 0;">
-                    <h3 class="section-title"><i class="fas fa-sticky-note"></i> Additional Details</h3>
+                    <h3 class="section-title"><i class="fas fa-sticky-note"></i> {{ __('Additional Details') }}</h3>
                     <label
-                        style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Notes</label>
-                    <textarea name="notes" rows="6" placeholder="Any specific details about this delivery..."
+                        style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Notes') }}</label>
+                    <textarea name="notes" rows="6" placeholder="{{ __('Any specific details about this delivery...') }}"
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; resize: none;"></textarea>
                 </div>
             </div>
@@ -64,9 +62,9 @@
             <!-- GRN Items -->
             <div class="section animate-in">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 class="section-title" style="margin-bottom: 0;"><i class="fas fa-list-ul"></i> Received Items</h3>
+                    <h3 class="section-title" style="margin-bottom: 0;"><i class="fas fa-list-ul"></i> {{ __('Received Items') }}</h3>
                     <button type="button" id="add-item" class="btn btn-secondary" style="padding: 8px 16px;">
-                        <i class="fas fa-plus"></i> Add Product
+                        <i class="fas fa-plus"></i> {{ __('Add Product') }}
                     </button>
                 </div>
 
@@ -74,12 +72,12 @@
                     <table class="table" id="items-table">
                         <thead>
                             <tr>
-                                <th style="width: 28%;">Product</th>
-                                <th style="width: 10%;">Quantity</th>
-                                <th style="width: 14%;">Unit Cost ({{ $currencySymbol ?? 'Rs' }})</th>
-                                <th style="width: 14%;">Batch / Lot #</th>
-                                <th style="width: 12%;">Expiry Date</th>
-                                <th style="width: 12%;">Subtotal</th>
+                                <th style="width: 28%;">{{ __('Product') }}</th>
+                                <th style="width: 10%;">{{ __('Quantity') }}</th>
+                                <th style="width: 14%;">{{ __('Unit Cost') }} ({{ $currencySymbol ?? 'Rs' }})</th>
+                                <th style="width: 14%;">{{ __('Batch / Lot #') }}</th>
+                                <th style="width: 12%;">{{ __('Expiry Date') }}</th>
+                                <th style="width: 12%;">{{ __('Subtotal') }}</th>
                                 <th style="width: 5%;"></th>
                             </tr>
                         </thead>
@@ -88,7 +86,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="5" style="text-align: right; font-weight: 800; padding: 20px;">TOTAL AMOUNT:
+                                <td colspan="5" style="text-align: right; font-weight: 800; padding: 20px;">{{ __('TOTAL AMOUNT') }}:
                                 </td>
                                 <td id="total-amount"
                                     style="font-weight: 800; padding: 20px; font-size: 1.2rem; color: var(--light-blue); font-family: monospace;">
@@ -100,9 +98,9 @@
                 </div>
 
                 <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid var(--gray-100);">
-                    <a href="{{ route('grns.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('grns.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save GRN
+                        <i class="fas fa-save"></i> {{ __('Save GRN') }}
                     </button>
                 </div>
             </div>
@@ -116,6 +114,7 @@
 
                     const products = @json($products);
                     const currencySymbol = @json($currencySymbol ?? 'Rs');
+                    window.__grnT = { selectProduct: @json(__('Select Product')), optional: @json(__('Optional')) };
 
                     function calculateTotals() {
                         let grandTotal = 0;
@@ -130,7 +129,7 @@
                         row.innerHTML = `
                                     <td>
                                         <select name="items[${itemIndex}][product_id]" class="product-select" required style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
-                                            <option value="">Select Product</option>
+                                            <option value="">${window.__grnT ? window.__grnT.selectProduct : 'Select Product'}</option>
                                             ${products.map(p => `<option value="${p.id}" data-cost="${p.cost_price}">${p.name}</option>`).join('')}
                                         </select>
                                     </td>
@@ -141,7 +140,7 @@
                                         <input type="number" step="0.01" name="items[${itemIndex}][unit_price]" class="price-input" required min="0" value="0.00" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
                                     </td>
                                     <td>
-                                        <input type="text" name="items[${itemIndex}][batch_number]" placeholder="Optional" maxlength="100" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
+                                        <input type="text" name="items[${itemIndex}][batch_number]" placeholder="${window.__grnT ? window.__grnT.optional : 'Optional'}" maxlength="100" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">
                                     </td>
                                     <td>
                                         <input type="date" name="items[${itemIndex}][expiry_date]" style="width: 100%; padding: 8px; border: 1px solid var(--gray-300); border-radius: 6px;">

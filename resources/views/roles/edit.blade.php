@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Role Permissions')
+@section('title', __('Edit Role Permissions'))
 
 @section('content')
     <div class="page-header animate-in" style="max-width: 900px; margin: 0 auto 28px auto;">
         <div class="page-title">
             <i class="fas fa-key"></i>
-            Permissions for: {{ ucwords(str_replace('_', ' ', $role->name)) }}
+            {{ __('Permissions for: :name', ['name' => ucwords(str_replace('_', ' ', $role->name))]) }}
         </div>
-        <div class="page-subtitle">Configure what users with this role can see and do.</div>
+        <div class="page-subtitle">{{ __('Configure what users with this role can see and do.') }}</div>
     </div>
 
     <div class="section animate-in" style="max-width: 900px; margin: 0 auto;">
@@ -24,15 +24,15 @@
                             style="width: 20px; height: 20px; accent-color: var(--light-blue);">
                         <div>
                             <div style="font-weight: 600; color: var(--navy-dark); font-size: 0.9rem;">{{ ucwords($permission->name) }}</div>
-                            <div style="font-size: 0.75rem; color: var(--gray-500);">Can {{ $permission->name }}</div>
+                            <div style="font-size: 0.75rem; color: var(--gray-500);">{{ __('Can :action', ['action' => $permission->name]) }}</div>
                         </div>
                     </label>
                 @endforeach
             </div>
 
             <div style="display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--gray-100); padding-top: 20px;">
-                <a href="{{ route('roles.index') }}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Update Permissions</button>
+                <a href="{{ route('roles.index') }}" class="btn btn-secondary">{{ __('Cancel') }}</a>
+                <button type="submit" class="btn btn-primary">{{ __('Update Permissions') }}</button>
             </div>
         </form>
     </div>

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'POS Terminal')
+@section('title', __('POS Terminal'))
 
 @section('content')
     <style>
@@ -1914,18 +1914,18 @@
             <div class="left-catalog">
                 <div class="search-wrap" style="display: flex; gap: 8px; align-items: center;">
                     <div style="flex: 1; position: relative;">
-                        <input type="text" id="productSearch" placeholder="Search by name, code, barcode or category..."
+                        <input type="text" id="productSearch" placeholder="{{ __('Search by name, code, barcode or category...') }}"
                             autocomplete="off" style="width: 100%;">
                         <span class="shortcut-hint" data-shortcut-action="search"
                             style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><kbd>{{ $posShortcuts['search'] ?? 'F2' }}</kbd></span>
                     </div>
-                    <button type="button" id="shortcutsHelpBtn" onclick="toggleShortcutsHelp()" title="Keyboard shortcuts"
+                    <button type="button" id="shortcutsHelpBtn" onclick="toggleShortcutsHelp()" title="{{ __('Keyboard shortcuts') }}"
                         style="flex-shrink: 0; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; color: var(--gray-600); cursor: pointer; font-size: 14px;"><i
                             class="fas fa-keyboard"></i> <span class="shortcut-hint"
                             data-shortcut-action="help"><kbd>{{ $posShortcuts['help'] ?? 'F1' }}</kbd></span></button>
                 </div>
                 <div class="category-bar" id="categoryBar">
-                    <div class="category-item active" data-category-id="all">All Items</div>
+                    <div class="category-item active" data-category-id="all">{{ __('All Items') }}</div>
                     @foreach($categories as $category)
                         <div class="category-item" data-category-id="{{ $category->id }}">{{ $category->name }}</div>
                     @endforeach
@@ -1938,14 +1938,14 @@
             <div class="middle-cart">
                 <div class="sidebar-header" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
                     <h3 style="margin: 0; flex: 1; min-width: 0;">
-                        <span>Current Order</span>
+                        <span>{{ __('Current Order') }}</span>
                         <span id="invoiceBadge"
                             style="font-size: 11px; background: #eff6ff; color: var(--light-blue, #3b82f6); padding: 4px 8px; border-radius: 6px;">{{ $invoiceNo }}</span>
                     </h3>
                     <div style="position: relative;">
                         <button type="button" id="heldBillsBtn" onclick="toggleHeldBills()"
                             style="display: none; padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 8px; background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer; white-space: nowrap;"><i
-                                class="fas fa-pause-circle" style="margin-right: 4px;"></i>Held <span
+                                class="fas fa-pause-circle" style="margin-right: 4px;"></i>{{ __('Held') }} <span
                                 id="heldBillsCount">0</span></button>
                         <div id="heldBillsDropdown"
                             style="display: none; position: absolute; top: 100%; right: 0; margin-top: 4px; min-width: 220px; max-height: 280px; overflow-y: auto; background: white; border: 1px solid var(--gray-300); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 50;">
@@ -1956,14 +1956,14 @@
                     style="flex-shrink: 0; padding: 12px 20px; border-top: 1px solid #f3f4f6;">
                     <div id="customerSelectionArea" style="margin-top: 0;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                            <input type="text" id="customerName" placeholder="Name"
+                            <input type="text" id="customerName" placeholder="{{ __('Name') }}"
                                 style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
-                            <input type="text" id="customerPhone" placeholder="Phone"
+                            <input type="text" id="customerPhone" placeholder="{{ __('Phone') }}"
                                 style="padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px;">
                         </div>
                         <button onclick="openLoyaltyModal()" id="loyaltyPlaceholderBtn"
                             style="width: 100%; padding: 8px; border: 1px dashed var(--gray-300); background: var(--gray-light); border-radius: 8px; color: var(--gray-500); font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-search" style="margin-right: 6px;"></i> Loyalty Search <span
+                            <i class="fas fa-search" style="margin-right: 6px;"></i> {{ __('Loyalty Search') }} <span
                                 class="shortcut-hint"
                                 data-shortcut-action="loyalty"><kbd>{{ $posShortcuts['loyalty'] ?? 'F3' }}</kbd></span>
                         </button>
@@ -1971,14 +1971,14 @@
                             style="display: none; margin-top: 8px; padding: 10px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <div style="font-weight: 700; color: var(--gray-900); font-size: 13px;">Loyalty Member
+                                    <div style="font-weight: 700; color: var(--gray-900); font-size: 13px;">{{ __('Loyalty Member') }}
                                     </div>
-                                    <div id="displayCustomerPoints" style="font-size: 11px; color: var(--gray-500);">Points:
+                                    <div id="displayCustomerPoints" style="font-size: 11px; color: var(--gray-500);">{{ __('Points') }}:
                                         0.00</div>
                                 </div>
                                 <button onclick="resetCustomer()"
                                     style="color: var(--danger); background: none; border: none; cursor: pointer; padding: 4px;"><i
-                                        class="fas fa-times-circle"></i> Clear</button>
+                                        class="fas fa-times-circle"></i> {{ __('Clear') }}</button>
                             </div>
                         </div>
                     </div>
@@ -1986,8 +1986,8 @@
                 <div style="text-align: center; padding: 60px 40px; color: var(--gray-400, #94a3b8); display: block;"
                     id="emptyCartMsg">
                     <i class="fas fa-shopping-cart" style="font-size: 64px; margin-bottom: 16px; opacity: 0.3;"></i>
-                    <p style="font-size: 16px; font-weight: 500;">No items in cart</p>
-                    <p style="font-size: 13px;">Select a product to start an order</p>
+                    <p style="font-size: 16px; font-weight: 500;">{{ __('No items in cart') }}</p>
+                    <p style="font-size: 13px;">{{ __('Select a product to start an order') }}</p>
                 </div>
                 <div class="cart-container" id="cartContainer"></div>
             </div>
@@ -1995,60 +1995,60 @@
             <div class="right-controls">
                 <div class="payment-methods">
                     <button class="payment-btn active" onclick="setPaymentMethod('Cash', this)"><i
-                            class="fas fa-money-bill-wave"></i><span>Cash</span></button>
+                            class="fas fa-money-bill-wave"></i><span>{{ __('Cash') }}</span></button>
                     <button class="payment-btn" onclick="setPaymentMethod('Card', this)"><i
-                            class="fas fa-credit-card"></i><span>Card</span></button>
+                            class="fas fa-credit-card"></i><span>{{ __('Card') }}</span></button>
                     <button class="payment-btn" onclick="setPaymentMethod('Bank', this)"><i
-                            class="fas fa-university"></i><span>Bank</span></button>
+                            class="fas fa-university"></i><span>{{ __('Bank') }}</span></button>
                 </div>
                 <div class="discount-container">
                     <div class="discount-wrap">
                         <div class="discount-toggle">
-                            <div class="toggle-btn active" id="type-fixed" onclick="setDiscountType('fixed')">Rs</div>
+                            <div class="toggle-btn active" id="type-fixed" onclick="setDiscountType('fixed')">{{ __('Rs') }}</div>
                             <div class="toggle-btn" id="type-percent" onclick="setDiscountType('percent')">%</div>
                         </div>
-                        <input type="text" inputmode="decimal" id="discountInput" class="discount-input" placeholder="0.00"
+                        <input type="text" inputmode="decimal" id="discountInput" class="discount-input" placeholder="{{ __('0.00') }}"
                             value="0.00" onfocus="if(this.value==='0.00') this.value=''"
                             onblur="if(this.value==='') this.value='0.00'"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
                     </div>
                 </div>
                 <div class="checkout-summary">
-                    <div class="summary-line"><span>Items</span><span id="summaryItemCount">0</span></div>
-                    <div class="summary-line"><span>Subtotal</span><span id="summarySubtotal">0.00</span></div>
-                    <div class="summary-line"><span>Discount</span><span id="summaryDiscount"
+                    <div class="summary-line"><span>{{ __('Items') }}</span><span id="summaryItemCount">0</span></div>
+                    <div class="summary-line"><span>{{ __('Subtotal') }}</span><span id="summarySubtotal">0.00</span></div>
+                    <div class="summary-line"><span>{{ __('Discount') }}</span><span id="summaryDiscount"
                             style="color: var(--danger);">- 0.00</span></div>
-                    <div class="summary-line total"><span>Total</span><span class="val" id="summaryTotal">0.00</span></div>
+                    <div class="summary-line total"><span>{{ __('Total') }}</span><span class="val" id="summaryTotal">0.00</span></div>
                     <div class="summary-line" id="row-received"
                         style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #eee; font-size: 17px; font-weight: 700;">
-                        <span>Received (Rs) <span class="shortcut-hint" data-shortcut-action="received" style="font-size: 0.7rem; color: rgba(0,0,0,0.4); font-weight: 400; margin-left: 4px;"><kbd>{{ $posShortcuts['received'] ?? 'F7' }}</kbd></span></span>
-                        <input type="text" inputmode="decimal" id="receivedAmount" value="" placeholder="0.00"
+                        <span>{{ __('Received (Rs)') }} <span class="shortcut-hint" data-shortcut-action="received" style="font-size: 0.7rem; color: rgba(0,0,0,0.4); font-weight: 400; margin-left: 4px;"><kbd>{{ $posShortcuts['received'] ?? 'F7' }}</kbd></span></span>
+                        <input type="text" inputmode="decimal" id="receivedAmount" value="" placeholder="{{ __('0.00') }}"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, ''); calculateChange()"
                             style="width: 110px; text-align: right; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 17px; font-weight: 700;">
                     </div>
                     <div class="summary-line" id="row-change"
                         style="font-weight: 800; font-size: 20px; color: var(--success);"><span
-                            style="color: var(--gray-900);">Change</span><span id="summaryChange">0.00</span></div>
+                            style="color: var(--gray-900);">{{ __('Change') }}</span><span id="summaryChange">0.00</span></div>
                 </div>
                 <div class="checkout-actions" style="grid-template-columns: 1fr 1fr 1fr;">
-                    <button type="button" class="btn-clear" onclick="clearCart()">Clear <span class="shortcut-hint"
+                    <button type="button" class="btn-clear" onclick="clearCart()">{{ __('Clear') }} <span class="shortcut-hint"
                             data-shortcut-action="clear"><kbd>{{ $posShortcuts['clear'] ?? 'F9' }}</kbd></span></button>
                     <button type="button" class="btn-hold" onclick="holdBill()"
                         style="padding: 10px; border: 2px solid var(--gray-400); color: var(--gray-700); background: white; border-radius: var(--radius-md, 12px); font-weight: 700; cursor: pointer; transition: all 0.2s;"><i
-                            class="fas fa-pause-circle" style="margin-right: 4px;"></i>Hold <span class="shortcut-hint"
+                            class="fas fa-pause-circle" style="margin-right: 4px;"></i>{{ __('Hold') }} <span class="shortcut-hint"
                             data-shortcut-action="hold"><kbd>{{ $posShortcuts['hold'] ?? 'F5' }}</kbd></span></button>
-                    <button class="btn-pay" onclick="processPayment()">Pay & Print <span class="shortcut-hint"
+                    <button class="btn-pay" onclick="processPayment()">{{ __('Pay & Print') }} <span class="shortcut-hint"
                             data-shortcut-action="pay" style="color: rgba(255,255,255,0.9);"><kbd
                                 style="background: rgba(255,255,255,0.25);">{{ $posShortcuts['pay'] ?? 'F8' }}</kbd></span></button>
                 </div>
                 <div style="padding: 0 20px 12px; display: flex; gap: 8px; flex-wrap: wrap;">
                     <button type="button" onclick="newBill()"
                         style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: var(--gray-light, #f8fafc); font-size: 13px; font-weight: 600; color: var(--gray-600); cursor: pointer;"><i
-                            class="fas fa-file-invoice" style="margin-right: 4px;"></i>New Bill <span class="shortcut-hint"
+                            class="fas fa-file-invoice" style="margin-right: 4px;"></i>{{ __('New Bill') }} <span class="shortcut-hint"
                             data-shortcut-action="newBill"><kbd>{{ $posShortcuts['newBill'] ?? 'F4' }}</kbd></span></button>
                     <button type="button" onclick="openRefundModal()"
                         style="flex: 1; min-width: 100px; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; background: #fef2f2; font-size: 13px; font-weight: 600; color: var(--danger, #dc2626); cursor: pointer;"><i
-                            class="fas fa-undo" style="margin-right: 4px;"></i>Return / Refund <span class="shortcut-hint"
+                            class="fas fa-undo" style="margin-right: 4px;"></i>{{ __('Return / Refund') }} <span class="shortcut-hint"
                             data-shortcut-action="refund"
                             style="color: var(--danger);"><kbd>{{ $posShortcuts['refund'] ?? 'F6' }}</kbd></span></button>
                 </div>
@@ -2065,7 +2065,7 @@
                         <button class="numpad-btn" onclick="handleNumpad('9')">9</button>
                         <button class="numpad-btn action" onclick="handleNumpad('.')">.</button>
                         <button class="numpad-btn" onclick="handleNumpad('0')">0</button>
-                        <button class="numpad-btn clear" onclick="handleNumpad('CLR')">CLR</button>
+                        <button class="numpad-btn clear" onclick="handleNumpad('CLR')">{{ __('CLR') }}</button>
                     </div>
                 </div>
             </div>
@@ -2077,23 +2077,21 @@
             <div class="modal-card" style="max-width: 520px;" onclick="event.stopPropagation()">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 style="margin: 0; font-size: 18px;"><i class="fas fa-keyboard"
-                            style="margin-right: 8px;"></i>Keyboard shortcuts</h2>
+                            style="margin-right: 8px;"></i>{{ __('Keyboard shortcuts') }}</h2>
                     <div style="display: flex; gap: 8px;">
                         <button type="button" onclick="resetShortcutsToDefaults()"
-                            style="padding: 6px 12px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; cursor: pointer; font-size: 12px;">Reset
-                            to defaults</button>
+                            style="padding: 6px 12px; border: 1px solid var(--gray-300); background: white; border-radius: 6px; cursor: pointer; font-size: 12px;">{{ __('Reset to defaults') }}</button>
                         <button type="button" onclick="toggleShortcutsHelp()"
                             style="padding: 6px 10px; border: none; background: var(--gray-100); border-radius: 6px; cursor: pointer; font-size: 14px;"><i
                                 class="fas fa-times"></i></button>
                     </div>
                 </div>
-                <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px;">Click <strong>Change</strong> then
-                    press the key you want. Esc and Enter are fixed.</p>
+                <p style="font-size: 12px; color: var(--gray-500); margin-bottom: 12px;">{{ __('Click Change then press the key you want. Esc and Enter are fixed.') }}</p>
                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--gray-200);">
-                            <th style="text-align: left; padding: 8px 12px;">Key</th>
-                            <th style="text-align: left; padding: 8px 12px;">Action</th>
+                            <th style="text-align: left; padding: 8px 12px;">{{ __('Key') }}</th>
+                            <th style="text-align: left; padding: 8px 12px;">{{ __('Action') }}</th>
                             <th style="text-align: right; padding: 8px 12px; width: 80px;"></th>
                         </tr>
                     </thead>
@@ -2109,8 +2107,8 @@
                     <table id="priceModalTable">
                         <thead>
                             <tr>
-                                <th>Price level</th>
-                                <th style="text-align: right;">Amount</th>
+                                <th>{{ __('Price level') }}</th>
+                                <th style="text-align: right;">{{ __('Amount') }}</th>
                             </tr>
                         </thead>
                         <tbody id="priceModalOptions"></tbody>
@@ -2118,19 +2116,18 @@
                 </div>
                 <div class="modal-footer-btns">
                     <button type="button" class="qty-btn" style="background: #f1f5f9; border: none;"
-                        onclick="closePriceModal()">Cancel</button>
-                    <button type="button" class="btn-pay" style="padding: 0;" id="confirmPriceBtn">Add with selected
-                        price</button>
+                        onclick="closePriceModal()">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn-pay" style="padding: 0;" id="confirmPriceBtn">{{ __('Add with selected price') }}</button>
                 </div>
             </div>
         </div>
 
         <div id="loyaltyModal" class="modal-overlay">
             <div class="modal-card">
-                <h2 style="margin-top: 0; font-size: 18px;">Loyalty Customer</h2>
-                <p style="color: var(--gray-500); font-size: 14px; margin-bottom: 20px;">Search by name or phone number.</p>
+                <h2 style="margin-top: 0; font-size: 18px;">{{ __('Loyalty Customer') }}</h2>
+                <p style="color: var(--gray-500); font-size: 14px; margin-bottom: 20px;">{{ __('Search by name or phone number.') }}</p>
                 <div style="position: relative; margin-bottom: 20px;">
-                    <input type="text" id="loyaltySearch" placeholder="Phone or name..."
+                    <input type="text" id="loyaltySearch" placeholder="{{ __('Phone or name...') }}"
                         style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--gray-300);"
                         oninput="searchLoyaltyCustomers(this.value)">
                     <div id="loyaltySearchResults" class="pos-dropdown-no-scrollbar"
@@ -2139,21 +2136,19 @@
                 </div>
                 <button class="qty-btn"
                     style="width: 100%; height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;"
-                    onclick="closeLoyaltyModal()">Cancel</button>
+                    onclick="closeLoyaltyModal()">{{ __('Cancel') }}</button>
             </div>
         </div>
 
         <div id="refundModal" class="modal-overlay">
             <div class="modal-card" style="max-width: 440px;">
                 <h2 style="margin-top: 0; font-size: 18px; display: flex; align-items: center; gap: 8px;"><i
-                        class="fas fa-undo" style="color: var(--danger, #dc2626);"></i> Return & Refund</h2>
-                <p style="color: var(--gray-500); font-size: 13px; margin-bottom: 12px;">Search and select the invoice to
-                    refund.</p>
+                        class="fas fa-undo" style="color: var(--danger, #dc2626);"></i> {{ __('Return & Refund') }}</h2>
+                <p style="color: var(--gray-500); font-size: 13px; margin-bottom: 12px;">{{ __('Search and select the invoice to refund.') }}</p>
                 <div style="margin-bottom: 12px; position: relative;">
                     <label
-                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Search
-                        invoice</label>
-                    <input type="text" id="refundInvoiceSearch" placeholder="Type invoice no or customer name..."
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">{{ __('Search invoice') }}</label>
+                    <input type="text" id="refundInvoiceSearch" placeholder="{{ __('Type invoice no or customer name...') }}"
                         autocomplete="off"
                         style="width: 100%; padding: 12px 12px 12px 36px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
                     <i class="fas fa-search"
@@ -2170,21 +2165,18 @@
                             id="refundCurrencyLabel">{{ $currencySymbol ?? 'Rs' }}</span> <span id="refundSelTotal"></span>
                     </div>
                     <button type="button" onclick="clearRefundSelection()"
-                        style="margin-top: 6px; padding: 4px 8px; font-size: 11px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; cursor: pointer;">Change
-                        invoice</button>
+                        style="margin-top: 6px; padding: 4px 8px; font-size: 11px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; cursor: pointer;">{{ __('Change invoice') }}</button>
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label
-                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Refund
-                        amount ({{ $currencySymbol ?? 'Rs' }}) <span style="color: var(--danger);">*</span></label>
-                    <input type="text" inputmode="decimal" id="refundAmount" placeholder="0.00" value=""
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">{{ __('Refund amount') }} ({{ $currencySymbol ?? 'Rs' }}) <span style="color: var(--danger);">*</span></label>
+                    <input type="text" inputmode="decimal" id="refundAmount" placeholder="{{ __('0.00') }}" value=""
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 16px; font-weight: 600; box-sizing: border-box;"
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label
-                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">Refund
-                        method</label>
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">{{ __('Refund method') }}</label>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                         <button type="button" class="refund-method-btn" data-method="Cash"
                             onclick="setRefundMethod('Cash', this)"
@@ -2206,32 +2198,29 @@
                         <input type="checkbox" id="refundUpdateInventory"
                             style="width: 18px; height: 18px; accent-color: var(--light-blue, #3b82f6);"
                             onchange="document.getElementById('refundBranchWrap').style.display = this.checked ? 'block' : 'none';">
-                        <span>Update inventory with this return</span>
+                        <span>{{ __('Update inventory with this return') }}</span>
                     </label>
-                    <p style="font-size: 12px; color: var(--gray-500); margin: 4px 0 0 28px;">Returned items will be added
-                        back to your assigned branch.</p>
+                    <p style="font-size: 12px; color: var(--gray-500); margin: 4px 0 0 28px;">{{ __('Returned items will be added back to your assigned branch.') }}</p>
                 </div>
                 <div id="refundBranchWrap" style="display: none; margin-bottom: 14px;">
                     <label
-                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Branch
-                        (for inventory) <span style="color: var(--danger);">*</span></label>
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">{{ __('Branch (for inventory)') }} <span style="color: var(--danger);">*</span></label>
                     <input type="text" id="refundBranchDisplay" value="{{ $inventoryBranchName ?? '' }}" readonly
                         style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #f8fafc; color: var(--gray-700);">
                 </div>
                 <div style="margin-bottom: 16px;">
                     <label
-                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">Reason
-                        (optional)</label>
-                    <textarea id="refundReason" placeholder="Reason for refund..." rows="2"
+                        style="display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px;">{{ __('Reason (optional)') }}</label>
+                    <textarea id="refundReason" placeholder="{{ __('Reason for refund...') }}" rows="2"
                         style="width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 13px; resize: none; box-sizing: border-box;"></textarea>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <button type="button" class="qty-btn"
                         style="height: 48px; background: #f1f5f9; border: none; font-size: 14px; font-weight: 600;"
-                        onclick="closeRefundModal()">Cancel</button>
+                        onclick="closeRefundModal()">{{ __('Cancel') }}</button>
                     <button type="button" class="btn-pay"
                         style="height: 48px; padding: 0; font-size: 14px; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);"
-                        id="processRefundBtn" onclick="processRefund()">Process Refund</button>
+                        id="processRefundBtn" onclick="processRefund()">{{ __('Process Refund') }}</button>
                 </div>
             </div>
         </div>
@@ -2251,14 +2240,95 @@
         const CSRF_TOKEN = @json(csrf_token());
         const TAX_RATE = @json($taxRate ?? 0);
 
+        @php
+        $__posTranslations = [
+            'cart_empty_hold' => __('Cart is empty. Nothing to hold.'),
+            'hold_and_new_bill' => __('Hold current bill and start a new one?'),
+            'no_held_bills' => __('No held bills'),
+            'remove' => __('Remove'),
+            'points' => __('Points'),
+            'no_products_found' => __('No products found'),
+            'in_stock' => __('In Stock'),
+            'out_of_stock' => __('Out of Stock'),
+            'product_out_of_stock' => __('This product is out of stock!'),
+            'cannot_add_more' => __('Cannot add more. Only :count items available.'),
+            'cannot_exceed_stock' => __('Cannot exceed stock limit (:count available).'),
+            'stock_limit' => __('Stock limit'),
+            'remove_item_from_cart' => __('Remove item from cart?'),
+            'clear_current_order' => __('Clear current order?'),
+            'press_key' => __('Press key...'),
+            'shortcuts_help' => __('Shortcuts help'),
+            'focus_product_search' => __('Focus product search'),
+            'loyalty_customer_search' => __('Loyalty customer search'),
+            'new_bill' => __('New bill'),
+            'hold_current_bill' => __('Hold current bill'),
+            'return_refund' => __('Return / Refund'),
+            'focus_received_amount' => __('Focus received amount'),
+            'pay_print' => __('Pay & Print'),
+            'clear_cart' => __('Clear cart'),
+            'close_modal' => __('Close modal'),
+            'confirm_price_modal' => __('Confirm (price modal)'),
+            'help' => __('Help'),
+            'search' => __('Search'),
+            'loyalty' => __('Loyalty'),
+            'new' => __('New'),
+            'hold' => __('Hold'),
+            'refund' => __('Refund'),
+            'received' => __('Received'),
+            'pay' => __('Pay'),
+            'clear' => __('Clear'),
+            'change_btn' => __('Change key'),
+            'type_to_search_invoice' => __('Type to search by invoice no or customer name.'),
+            'no_invoices_found' => __('No invoices found.'),
+            'item' => __('item'),
+            'items' => __('items'),
+            'valid_refund_amount' => __('Please enter a valid refund amount.'),
+            'refund_badge' => __('REFUND'),
+            'date_label' => __('Date'),
+            'invoice_label' => __('Invoice'),
+            'method_label' => __('Method'),
+            'reason_label' => __('Reason'),
+            'thank_you' => __('Thank you'),
+            'no_customers_found' => __('No customers found'),
+            'cart_empty' => __('Cart is empty!'),
+            'insufficient_cash' => __('Insufficient cash! Need :amount more.'),
+            'error_processing_sale' => __('Error processing sale'),
+            'errors_label' => __('Errors'),
+            'error_try_again' => __('Error processing sale. Please try again.'),
+            'bill_badge' => __('BILL'),
+            'bill_no' => __('Bill No'),
+            'customer_label' => __('Customer'),
+            'item_label' => __('Item'),
+            'qty_label' => __('Qty'),
+            'total_label' => __('Total'),
+            'cash_received_label' => __('Cash received'),
+            'change_label' => __('Change'),
+            'payment_label' => __('Payment'),
+            'thank_you_excl' => __('Thank you!'),
+            'inventory_updated' => __('Inventory updated.'),
+            'inventory_not_updated' => __('Inventory was not updated (assign a branch in Users to update stock on returns).'),
+            'refund_processed' => __('Refund of :symbol :amount (:method) processed.'),
+        ];
+        @endphp
+        window.__posT = @json($__posTranslations);
+
         const SHORTCUT_DEFAULTS = {
             help: 'F1', search: 'F2', loyalty: 'F3', newBill: 'F4', hold: 'F5', refund: 'F6', received: 'F7', pay: 'F8', clear: 'F9',
             newBill2: 'Ctrl+N', pay2: 'Ctrl+P'
         };
         let posShortcutsConfig = { ...SHORTCUT_DEFAULTS, ...@json($posShortcuts ?? []) };
         const SHORTCUT_LABELS = {
-            help: 'Shortcuts help', search: 'Search', loyalty: 'Loyalty', newBill: 'New bill', hold: 'Hold', refund: 'Refund', received: 'Focus received amount', pay: 'Pay & Print', clear: 'Clear cart',
-            newBill2: 'New bill', pay2: 'Pay & Print'
+            help: (window.__posT && window.__posT.shortcuts_help) || 'Shortcuts help',
+            search: (window.__posT && window.__posT.search) || 'Search',
+            loyalty: (window.__posT && window.__posT.loyalty) || 'Loyalty',
+            newBill: (window.__posT && window.__posT.new_bill) || 'New bill',
+            hold: (window.__posT && window.__posT.hold) || 'Hold',
+            refund: (window.__posT && window.__posT.refund) || 'Refund',
+            received: (window.__posT && window.__posT.focus_received_amount) || 'Focus received amount',
+            pay: (window.__posT && window.__posT.pay_print) || 'Pay & Print',
+            clear: (window.__posT && window.__posT.clear_cart) || 'Clear cart',
+            newBill2: (window.__posT && window.__posT.new_bill) || 'New bill',
+            pay2: (window.__posT && window.__posT.pay_print) || 'Pay & Print'
         };
         const SHORTCUT_CONFIG_KEYS = ['help', 'search', 'loyalty', 'newBill', 'hold', 'refund', 'received', 'pay', 'clear', 'newBill2', 'pay2'];
 
@@ -2328,40 +2398,48 @@
             const bar = document.getElementById('posShortcutsBar');
             if (!bar) return;
             const parts = [
-                [config.help, 'Help'], [config.search, 'Search'], [config.loyalty, 'Loyalty'], [config.newBill, 'New'], [config.hold, 'Hold'],
-                [config.refund, 'Refund'], [config.received, 'Received'], [config.pay, 'Pay'], [config.clear, 'Clear']
+                [config.help, (window.__posT && window.__posT.help) || 'Help'],
+                [config.search, (window.__posT && window.__posT.search) || 'Search'],
+                [config.loyalty, (window.__posT && window.__posT.loyalty) || 'Loyalty'],
+                [config.newBill, (window.__posT && window.__posT.new) || 'New'],
+                [config.hold, (window.__posT && window.__posT.hold) || 'Hold'],
+                [config.refund, (window.__posT && window.__posT.refund) || 'Refund'],
+                [config.received, (window.__posT && window.__posT.received) || 'Received'],
+                [config.pay, (window.__posT && window.__posT.pay) || 'Pay'],
+                [config.clear, (window.__posT && window.__posT.clear) || 'Clear']
             ];
             bar.innerHTML = parts.map(([key, label]) => `<kbd>${key}</kbd><span>${label}</span>`).join('<span style="opacity:0.4;">|</span>');
         }
         function renderShortcutsModalTable() {
             const config = getShortcutsConfig();
+            const T = window.__posT || {};
             const rows = [
-                { id: 'help', label: 'Shortcuts help' },
-                { id: 'search', label: 'Focus product search' },
-                { id: 'loyalty', label: 'Loyalty customer search' },
-                { id: 'newBill', label: 'New bill' },
-                { id: 'hold', label: 'Hold current bill' },
-                { id: 'refund', label: 'Return / Refund' },
-                { id: 'received', label: 'Focus received amount' },
-                { id: 'pay', label: 'Pay & Print' },
-                { id: 'clear', label: 'Clear cart' },
-                { id: 'newBill2', label: 'New bill' },
-                { id: 'pay2', label: 'Pay & Print' },
-                { fixed: true, key: 'Esc', label: 'Close modal' },
-                { fixed: true, key: 'Enter', label: 'Confirm (price modal)' }
+                { id: 'help', label: T.shortcuts_help || 'Shortcuts help' },
+                { id: 'search', label: T.focus_product_search || 'Focus product search' },
+                { id: 'loyalty', label: T.loyalty_customer_search || 'Loyalty customer search' },
+                { id: 'newBill', label: T.new_bill || 'New bill' },
+                { id: 'hold', label: T.hold_current_bill || 'Hold current bill' },
+                { id: 'refund', label: T.return_refund || 'Return / Refund' },
+                { id: 'received', label: T.focus_received_amount || 'Focus received amount' },
+                { id: 'pay', label: T.pay_print || 'Pay & Print' },
+                { id: 'clear', label: T.clear_cart || 'Clear cart' },
+                { id: 'newBill2', label: T.new_bill || 'New bill' },
+                { id: 'pay2', label: T.pay_print || 'Pay & Print' },
+                { fixed: true, key: 'Esc', label: T.close_modal || 'Close modal' },
+                { fixed: true, key: 'Enter', label: T.confirm_price_modal || 'Confirm (price modal)' }
             ];
             const tbody = document.getElementById('shortcutsModalTbody');
             if (!tbody) return;
             tbody.innerHTML = rows.map(r => {
                 if (r.fixed) return `<tr><td style="padding:10px 12px;"><kbd style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-size:12px;">${r.key}</kbd></td><td style="padding:10px 12px;">${r.label}</td><td></td></tr>`;
                 const key = config[r.id] || '';
-                return `<tr><td style="padding:10px 12px;"><kbd class="shortcut-kbd" style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-size:12px;">${key}</kbd></td><td style="padding:10px 12px;">${r.label}</td><td style="padding:10px 12px;"><button type="button" class="btn-change-key" data-action="${r.id}" style="padding:4px 10px;font-size:11px;border:1px solid var(--gray-300);border-radius:6px;background:white;cursor:pointer;">Change</button></td></tr>`;
+                return `<tr><td style="padding:10px 12px;"><kbd class="shortcut-kbd" style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-size:12px;">${key}</kbd></td><td style="padding:10px 12px;">${r.label}</td><td style="padding:10px 12px;"><button type="button" class="btn-change-key" data-action="${r.id}" style="padding:4px 10px;font-size:11px;border:1px solid var(--gray-300);border-radius:6px;background:white;cursor:pointer;">${T.change_btn || 'Change'}</button></td></tr>`;
             }).join('');
             tbody.querySelectorAll('.btn-change-key').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const actionId = this.dataset.action;
                     const kbd = this.closest('tr').querySelector('.shortcut-kbd');
-                    kbd.textContent = 'Press key...';
+                    kbd.textContent = (window.__posT && window.__posT.press_key) || 'Press key...';
                     const once = (e) => {
                         e.preventDefault();
                         document.removeEventListener('keydown', once);
@@ -2458,7 +2536,7 @@
             document.getElementById('productSearch').focus();
         }
         function holdBill() {
-            if (cart.length === 0) return alert('Cart is empty. Nothing to hold.');
+            if (cart.length === 0) return alert((window.__posT && window.__posT.cart_empty_hold) || 'Cart is empty. Nothing to hold.');
             const held = getHeldBills();
             const invoiceNo = document.getElementById('invoiceBadge').textContent;
             const nameInput = document.getElementById('customerName');
@@ -2480,7 +2558,7 @@
             startNewBill();
         }
         function newBill() {
-            if (cart.length > 0 && !confirm('Hold current bill and start a new one?')) return;
+            if (cart.length > 0 && !confirm((window.__posT && window.__posT.hold_and_new_bill) || 'Hold current bill and start a new one?')) return;
             if (cart.length > 0) holdBill();
             else startNewBill();
         }
@@ -2488,15 +2566,15 @@
             const el = document.getElementById('heldBillsDropdown');
             if (el.style.display === 'block') { el.style.display = 'none'; return; }
             const held = getHeldBills();
-            if (held.length === 0) { el.innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">No held bills</div>'; }
+            if (held.length === 0) { el.innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">' + ((window.__posT && window.__posT.no_held_bills) || 'No held bills') + '</div>'; }
             else {
                 el.innerHTML = held.map((h, i) => `
                                                 <div style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;" onclick="recallHeldBill(${i}); document.getElementById('heldBillsDropdown').style.display='none';">
                                                     <div style="min-width: 0;">
                                                         <div style="font-weight: 600; font-size: 12px; color: var(--gray-900);">${h.invoiceNo}</div>
-                                                        <div style="font-size: 11px; color: var(--gray-500);">${h.itemCount} items · ${currencySymbol} ${(h.total || 0).toFixed(2)}</div>
+                                                        <div style="font-size: 11px; color: var(--gray-500);">${h.itemCount} ${h.itemCount !== 1 ? ((window.__posT && window.__posT.items) || 'items') : ((window.__posT && window.__posT.item) || 'item')} · ${currencySymbol} ${(h.total || 0).toFixed(2)}</div>
                                                     </div>
-                                                    <button type="button" onclick="event.stopPropagation(); removeHeldBill(${i});" style="padding: 4px 8px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; font-size: 11px; cursor: pointer;">Remove</button>
+                                                    <button type="button" onclick="event.stopPropagation(); removeHeldBill(${i});" style="padding: 4px 8px; border: none; background: #fee2e2; color: var(--danger); border-radius: 4px; font-size: 11px; cursor: pointer;">${(window.__posT && window.__posT.remove) || 'Remove'}</button>
                                                 </div>
                                             `).join('');
             }
@@ -2521,7 +2599,7 @@
             if (selectedCustomer) {
                 document.getElementById('selectedCustomerDisplay').style.display = 'block';
                 document.getElementById('loyaltyPlaceholderBtn').style.display = 'none';
-                document.getElementById('displayCustomerPoints').textContent = 'Points: ' + parseFloat(selectedCustomer.loyalty_points || 0).toFixed(2);
+                document.getElementById('displayCustomerPoints').textContent = ((window.__posT && window.__posT.points) || 'Points') + ': ' + parseFloat(selectedCustomer.loyalty_points || 0).toFixed(2);
             } else {
                 document.getElementById('selectedCustomerDisplay').style.display = 'none';
                 document.getElementById('loyaltyPlaceholderBtn').style.display = 'flex';
@@ -2583,7 +2661,7 @@
                 const match = byBarcode[0] || byCode[0];
                 if (match) {
                     if (match.stock <= 0) {
-                        alert('This product is out of stock!');
+                        alert((window.__posT && window.__posT.product_out_of_stock) || 'This product is out of stock!');
                         return;
                     }
                     const price = (match.prices && match.prices.length === 1) ? match.prices[0].price : match.price;
@@ -2741,13 +2819,13 @@
                 return matchesCategory && matchesSearch;
             });
             if (filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 80px 40px; color: var(--gray-400); background: white; border-radius: 12px;">No products found</div>';
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 80px 40px; color: var(--gray-400); background: white; border-radius: 12px;">' + ((window.__posT && window.__posT.no_products_found) || 'No products found') + '</div>';
                 return;
             }
             grid.innerHTML = filtered.map(p => `
                                             <div class="product-card ${p.stock <= 0 ? 'out-of-stock' : ''}" onclick="${p.stock > 0 ? `handleProductClick(${p.id})` : ''}">
                                                 <span class="p-unit">${p.unit || 'unit'}</span>
-                                                <div class="p-stock">${p.stock > 0 ? 'In Stock: ' + parseInt(p.stock) : 'Out of Stock'}</div>
+                                                <div class="p-stock">${p.stock > 0 ? ((window.__posT && window.__posT.in_stock) || 'In Stock') + ': ' + parseInt(p.stock) : ((window.__posT && window.__posT.out_of_stock) || 'Out of Stock')}</div>
                                                 <div class="product-image-wrap">
                                                     ${p.image ? `<img src="${p.image}" class="product-image" alt="${p.name}">` : `<div class="product-image-placeholder"><i class="fas fa-box"></i></div>`}
                                                 </div>
@@ -2780,12 +2858,13 @@
             const existing = cart.find(item => item.id === product.id && parseFloat(item.price) === parseFloat(price));
             if (existing) {
                 if (existing.qty + 1 > product.stock) {
-                    alert('Cannot add more. Only ' + parseInt(product.stock) + ' items available.');
+                    const msg = (window.__posT && window.__posT.cannot_add_more) ? window.__posT.cannot_add_more.replace(':count', parseInt(product.stock)) : 'Cannot add more. Only ' + parseInt(product.stock) + ' items available.';
+                    alert(msg);
                     return;
                 }
                 existing.qty = parseFloat(existing.qty) + 1;
             } else {
-                if (product.stock <= 0) { alert('This product is out of stock!'); return; }
+                if (product.stock <= 0) { alert((window.__posT && window.__posT.product_out_of_stock) || 'This product is out of stock!'); return; }
                 cart.push({
                     id: product.id,
                     name: product.name,
@@ -2803,12 +2882,13 @@
         function updateQty(index, delta) {
             const newQty = parseFloat(cart[index].qty) + delta;
             if (newQty > cart[index].maxStock) {
-                alert('Cannot exceed stock limit (' + parseInt(cart[index].maxStock) + ' available).');
+                const msg = (window.__posT && window.__posT.cannot_exceed_stock) ? window.__posT.cannot_exceed_stock.replace(':count', parseInt(cart[index].maxStock)) : 'Cannot exceed stock limit (' + parseInt(cart[index].maxStock) + ' available).';
+                alert(msg);
                 return;
             }
             cart[index].qty = Math.max(0, newQty);
             if (cart[index].qty <= 0) {
-                if (confirm('Remove item from cart?')) cart.splice(index, 1);
+                if (confirm((window.__posT && window.__posT.remove_item_from_cart) || 'Remove item from cart?')) cart.splice(index, 1);
                 else cart[index].qty = 1;
             }
             renderCart();
@@ -2817,7 +2897,7 @@
         function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
 
         function clearCart(force) {
-            if (force || confirm('Clear current order?')) {
+            if (force || confirm((window.__posT && window.__posT.clear_current_order) || 'Clear current order?')) {
                 cart = [];
                 discountValue = 0;
                 discountType = 'fixed';
@@ -2863,7 +2943,7 @@
                                                     </div>
                                                     <div class="qty-controls">
                                                         <button class="qty-btn" onclick="updateQty(${i}, -1)">-</button>
-                                                        <input type="number" class="qty-input" value="${item.qty}" onchange="var val = Math.max(1, parseFloat(this.value)); if(val > ${item.maxStock}) { alert('Stock limit'); val = ${item.maxStock}; } cart[${i}].qty = val; renderCart();">
+                                                        <input type="number" class="qty-input" value="${item.qty}" onchange="var val = Math.max(1, parseFloat(this.value)); if(val > ${item.maxStock}) { alert((window.__posT && window.__posT.stock_limit) || 'Stock limit'); val = ${item.maxStock}; } cart[${i}].qty = val; renderCart();">
                                                         <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
                                                     </div>
                                                     <div class="item-total">${currencySymbol} ${total.toFixed(2)}</div>
@@ -2968,7 +3048,7 @@
             const q = (document.getElementById('refundInvoiceSearch').value || '').trim().toLowerCase();
             const list = getCompletedSales();
             if (!q) {
-                document.getElementById('refundInvoiceResults').innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">Type to search by invoice no or customer name.</div>';
+                document.getElementById('refundInvoiceResults').innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">' + ((window.__posT && window.__posT.type_to_search_invoice) || 'Type to search by invoice no or customer name.') + '</div>';
                 document.getElementById('refundInvoiceResults').style.display = 'block';
                 return;
             }
@@ -2976,7 +3056,7 @@
             refundSearchResults = matches.slice(0, 15);
             const el = document.getElementById('refundInvoiceResults');
             if (refundSearchResults.length === 0) {
-                el.innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">No invoices found.</div>';
+                el.innerHTML = '<div style="padding: 12px; color: var(--gray-500); font-size: 13px;">' + ((window.__posT && window.__posT.no_invoices_found) || 'No invoices found.') + '</div>';
             } else {
                 el.innerHTML = refundSearchResults.map((s, i) => `
                                                 <div onclick="selectRefundInvoice(refundSearchResults[${i}])" style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; font-size: 13px;">
@@ -2996,7 +3076,7 @@
             document.getElementById('refundSelInvoiceNo').textContent = sale.invoiceNo || '—';
             document.getElementById('refundSelCustomer').textContent = sale.customerName || '—';
             const itemCount = (sale.items || []).length;
-            document.getElementById('refundSelItems').textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
+            document.getElementById('refundSelItems').textContent = itemCount + ' ' + (itemCount !== 1 ? (window.__posT && window.__posT.items) || 'items' : (window.__posT && window.__posT.item) || 'item');
             document.getElementById('refundSelTotal').textContent = (sale.total || 0).toFixed(2);
             document.getElementById('refundAmount').value = (sale.total || 0).toFixed(2);
             document.getElementById('refundAmount').focus();
@@ -3020,7 +3100,7 @@
         function processRefund() {
             const amount = parseFloat(document.getElementById('refundAmount').value) || 0;
             if (amount <= 0) {
-                alert('Please enter a valid refund amount.');
+                alert((window.__posT && window.__posT.valid_refund_amount) || 'Please enter a valid refund amount.');
                 document.getElementById('refundAmount').focus();
                 return;
             }
@@ -3036,10 +3116,10 @@
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                     body: JSON.stringify({ invoice_no: reference, items, update_inventory: true })
                 }).then(r => r.json()).then(data => {
-                    const invMsg = data.inventory_updated ? ' Inventory updated.' : (updateInventory ? ' Inventory was not updated (assign a branch in Users to update stock on returns).' : '');
+                    const invMsg = data.inventory_updated ? ' ' + ((window.__posT && window.__posT.inventory_updated) || 'Inventory updated.') : (updateInventory ? ' ' + ((window.__posT && window.__posT.inventory_not_updated) || 'Inventory was not updated (assign a branch in Users to update stock on returns).') : '');
                     finishRefundSlip(amount, reference, date, reason, invMsg);
                 }).catch(() => {
-                    finishRefundSlip(amount, reference, date, reason, updateInventory ? ' Inventory was not updated.' : '');
+                    finishRefundSlip(amount, reference, date, reason, updateInventory ? ' ' + ((window.__posT && window.__posT.inventory_not_updated) || 'Inventory was not updated.') : '');
                 });
             } else {
                 finishRefundSlip(amount, reference, date, reason);
@@ -3052,19 +3132,20 @@
                                             <div class="receipt-paper">
                                                 <div class="receipt-store">${storeName}</div>
                                                 <hr class="receipt-divider">
-                                                <div class="receipt-badge" style="color: #b91c1c;">REFUND</div>
-                                                <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
-                                                ${reference ? '<div class="receipt-meta"><strong>Invoice:</strong> ' + reference + '</div>' : ''}
-                                                <div class="receipt-meta"><strong>Method:</strong> ${refundMethod}</div>
+                                                <div class="receipt-badge" style="color: #b91c1c;">${(window.__posT && window.__posT.refund_badge) || 'REFUND'}</div>
+                                                <div class="receipt-meta"><strong>${(window.__posT && window.__posT.date_label) || 'Date'}:</strong> ${date}</div>
+                                                ${reference ? '<div class="receipt-meta"><strong>' + ((window.__posT && window.__posT.invoice_label) || 'Invoice') + ':</strong> ' + reference + '</div>' : ''}
+                                                <div class="receipt-meta"><strong>${(window.__posT && window.__posT.method_label) || 'Method'}:</strong> ${refundMethod}</div>
                                                 <div class="receipt-amount" style="color: #b91c1c;">${currencySymbol} ${amount.toFixed(2)}</div>
-                                                ${reason ? '<div class="receipt-meta" style="margin-top: 8px;">Reason: ' + reason + '</div>' : ''}
+                                                ${reason ? '<div class="receipt-meta" style="margin-top: 8px;">' + ((window.__posT && window.__posT.reason_label) || 'Reason') + ': ' + reason + '</div>' : ''}
                                                 <hr class="receipt-divider">
-                                                <div class="receipt-thanks">Thank you</div>
+                                                <div class="receipt-thanks">${(window.__posT && window.__posT.thank_you) || 'Thank you'}</div>
                                             </div>
                                         `;
             window.print();
             closeRefundModal();
-            alert('Refund of ' + currencySymbol + ' ' + amount.toFixed(2) + ' (' + refundMethod + ') processed.' + extraMessage);
+            const rp = (window.__posT && window.__posT.refund_processed) ? window.__posT.refund_processed.replace(':symbol', currencySymbol).replace(':amount', amount.toFixed(2)).replace(':method', refundMethod) : ('Refund of ' + currencySymbol + ' ' + amount.toFixed(2) + ' (' + refundMethod + ') processed.');
+            alert(rp + extraMessage);
         }
 
         function searchLoyaltyCustomers(query) {
@@ -3085,11 +3166,11 @@
                                                     `).join('');
                         results.style.display = 'block';
                     } else {
-                        results.innerHTML = '<div style="padding: 10px; color: var(--gray-400); text-align: center;">No customers found</div>';
+                        results.innerHTML = '<div style="padding: 10px; color: var(--gray-400); text-align: center;">' + ((window.__posT && window.__posT.no_customers_found) || 'No customers found') + '</div>';
                         results.style.display = 'block';
                     }
                 }).catch(() => {
-                    document.getElementById('loyaltySearchResults').innerHTML = '<div style="padding: 10px; color: var(--gray-400); text-align: center;">No customers found</div>';
+                    document.getElementById('loyaltySearchResults').innerHTML = '<div style="padding: 10px; color: var(--gray-400); text-align: center;">' + ((window.__posT && window.__posT.no_customers_found) || 'No customers found') + '</div>';
                     document.getElementById('loyaltySearchResults').style.display = 'block';
                 });
         }
@@ -3100,7 +3181,7 @@
             document.getElementById('customerName').readOnly = true;
             document.getElementById('customerPhone').value = customer.phone || '';
             document.getElementById('customerPhone').readOnly = true;
-            document.getElementById('displayCustomerPoints').textContent = 'Points: ' + parseFloat(customer.loyalty_points || 0).toFixed(2);
+            document.getElementById('displayCustomerPoints').textContent = ((window.__posT && window.__posT.points) || 'Points') + ': ' + parseFloat(customer.loyalty_points || 0).toFixed(2);
             document.getElementById('selectedCustomerDisplay').style.display = 'block';
             document.getElementById('loyaltyPlaceholderBtn').style.display = 'none';
             closeLoyaltyModal();
@@ -3117,13 +3198,14 @@
         }
 
         function processPayment() {
-            if (cart.length === 0) return alert('Cart is empty!');
+            if (cart.length === 0) return alert((window.__posT && window.__posT.cart_empty) || 'Cart is empty!');
             const finalTotal = parseFloat(document.getElementById('summaryTotal').textContent) || 0;
             let cashReceived = 0, changeAmount = 0;
             if (paymentMethod === 'Cash') {
                 cashReceived = parseFloat(document.getElementById('receivedAmount').value) || 0;
                 if (finalTotal > 0 && cashReceived < finalTotal) {
-                    alert('Insufficient cash! Need ' + currencySymbol + ' ' + (finalTotal - cashReceived).toFixed(2) + ' more.');
+                    const icMsg = (window.__posT && window.__posT.insufficient_cash) ? window.__posT.insufficient_cash.replace(':amount', currencySymbol + ' ' + (finalTotal - cashReceived).toFixed(2)) : ('Insufficient cash! Need ' + currencySymbol + ' ' + (finalTotal - cashReceived).toFixed(2) + ' more.');
+                    alert(icMsg);
                     document.getElementById('receivedAmount').focus();
                     return;
                 }
@@ -3180,9 +3262,9 @@
             .then(response => response.json())
             .then(data => {
                 if (!data.success) {
-                    alert('Error processing sale: ' + (data.message || 'Unknown error'));
+                    alert(((window.__posT && window.__posT.error_processing_sale) || 'Error processing sale') + ': ' + (data.message || 'Unknown error'));
                     if (data.errors && data.errors.length > 0) {
-                        alert('Errors:\n' + data.errors.join('\n'));
+                        alert(((window.__posT && window.__posT.errors_label) || 'Errors') + ':\n' + data.errors.join('\n'));
                     }
                     return;
                 }
@@ -3200,26 +3282,26 @@
                 receipt.innerHTML = `
                                             <div class="receipt-paper">
                                                 <div class="receipt-store">${storeName}</div>
-                                                <div class="receipt-badge">BILL</div>
-                                                <div class="receipt-meta"><strong>Bill No:</strong> ${invoiceNo}</div>
-                                                <div class="receipt-meta"><strong>Date:</strong> ${date}</div>
-                                                <div class="receipt-meta"><strong>Customer:</strong> ${customerName}</div>
+                                                <div class="receipt-badge">${(window.__posT && window.__posT.bill_badge) || 'BILL'}</div>
+                                                <div class="receipt-meta"><strong>${(window.__posT && window.__posT.bill_no) || 'Bill No'}:</strong> ${invoiceNo}</div>
+                                                <div class="receipt-meta"><strong>${(window.__posT && window.__posT.date_label) || 'Date'}:</strong> ${date}</div>
+                                                <div class="receipt-meta"><strong>${(window.__posT && window.__posT.customer_label) || 'Customer'}:</strong> ${customerName}</div>
                                                 <hr class="receipt-line">
                                                 <table>
-                                                    <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+                                                    <thead><tr><th>${(window.__posT && window.__posT.item_label) || 'Item'}</th><th>${(window.__posT && window.__posT.qty_label) || 'Qty'}</th><th>${(window.__posT && window.__posT.total_label) || 'Total'}</th></tr></thead>
                                                     <tbody>${itemsHtml}</tbody>
                                                 </table>
                                                 <div class="receipt-total-row">
-                                                    <span>Total</span>
+                                                    <span>${(window.__posT && window.__posT.total_label) || 'Total'}</span>
                                                     <span>${currencySymbol} ${grandTotal.toFixed(2)}</span>
                                                 </div>
                                                 ${paymentMethod === 'Cash' ? `
-                                                <div class="receipt-sub-row"><span>Cash received</span><span>${currencySymbol} ${cashReceived.toFixed(2)}</span></div>
-                                                <div class="receipt-sub-row"><span>Change</span><span>${currencySymbol} ${changeAmount.toFixed(2)}</span></div>
+                                                <div class="receipt-sub-row"><span>${(window.__posT && window.__posT.cash_received_label) || 'Cash received'}</span><span>${currencySymbol} ${cashReceived.toFixed(2)}</span></div>
+                                                <div class="receipt-sub-row"><span>${(window.__posT && window.__posT.change_label) || 'Change'}</span><span>${currencySymbol} ${changeAmount.toFixed(2)}</span></div>
                                                 ` : ''}
-                                                <div class="receipt-sub-row"><span>Payment</span><span>${paymentMethod}</span></div>
+                                                <div class="receipt-sub-row"><span>${(window.__posT && window.__posT.payment_label) || 'Payment'}</span><span>${paymentMethod}</span></div>
                                                 <hr class="receipt-divider">
-                                                <div class="receipt-thanks">Thank you!</div>
+                                                <div class="receipt-thanks">${(window.__posT && window.__posT.thank_you_excl) || 'Thank you!'}</div>
                                             </div>
                                         `;
                 window.print();
@@ -3249,7 +3331,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error processing sale. Please try again.');
+                alert((window.__posT && window.__posT.error_try_again) || 'Error processing sale. Please try again.');
             });
         }
     </script>
