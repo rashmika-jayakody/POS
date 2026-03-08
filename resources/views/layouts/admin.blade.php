@@ -280,6 +280,67 @@
             cursor: pointer;
         }
 
+        /* Language switcher */
+        .lang-dropdown {
+            position: relative;
+        }
+        .lang-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .lang-dropdown-trigger:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-300);
+        }
+        .lang-dropdown-trigger i {
+            color: var(--gray-500);
+        }
+        .lang-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 6px;
+            min-width: 160px;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-100);
+            padding: 6px 0;
+            z-index: 1101;
+            display: none;
+        }
+        .lang-dropdown-menu.open {
+            display: block;
+        }
+        .lang-dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            color: var(--gray-900);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        .lang-dropdown-menu a:hover {
+            background: var(--gray-100);
+        }
+        .lang-dropdown-menu a.active {
+            background: var(--light-blue-bg);
+            color: var(--light-blue);
+            font-weight: 600;
+        }
+
         /* User account dropdown */
         .user-dropdown {
             position: relative;
@@ -859,48 +920,52 @@
                 $posType = auth()->user()->tenant?->pos_type ?? 'retail';
             @endphp
             <div class="nav-section">
-                <div class="nav-section-title">Main</div>
+                <div class="nav-section-title">{{ __('Main') }}</div>
                 <a href="{{ route('dashboard') }}"
                     class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
+                    <span>{{ __('Dashboard') }}</span>
                 </a>
                 @hasrole('system_owner')
                 <a href="{{ route('tenants.index') }}" class="nav-item {{ request()->is('tenants*') ? 'active' : '' }}">
                     <i class="fas fa-store-alt"></i>
-                    <span>Registered Shops</span>
+                    <span>{{ __('Registered Shops') }}</span>
+                </a>
+                <a href="{{ route('translations.index') }}" class="nav-item {{ request()->is('translations*') ? 'active' : '' }}">
+                    <i class="fas fa-language"></i>
+                    <span>{{ __('Customize Translations') }}</span>
                 </a>
                 @endhasrole
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Management</div>
+                <div class="nav-section-title">{{ __('Management') }}</div>
                 <a href="{{ route('users.index') }}" class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
-                    <i class="fas fa-user-tie"></i> <span>Users</span>
+                    <i class="fas fa-user-tie"></i> <span>{{ __('Users') }}</span>
                 </a>
                 <a href="{{ route('branches.index') }}"
                     class="nav-item {{ request()->is('branches*') ? 'active' : '' }}">
-                    <i class="fas fa-store"></i> <span>Locations</span>
+                    <i class="fas fa-store"></i> <span>{{ __('Locations') }}</span>
                 </a>
                 <a href="{{ route('roles.index') }}" class="nav-item {{ request()->is('roles*') ? 'active' : '' }}">
-                    <i class="fas fa-shield-alt"></i> <span>Roles & Permissions</span>
+                    <i class="fas fa-shield-alt"></i> <span>{{ __('Roles & Permissions') }}</span>
                 </a>
                 @hasrole('business_owner|system_owner')
                 <a href="{{ route('business-settings.edit') }}"
                     class="nav-item {{ request()->is('business-settings*') ? 'active' : '' }}">
-                    <i class="fas fa-cog"></i> <span>Business Settings</span>
+                    <i class="fas fa-cog"></i> <span>{{ __('Business Settings') }}</span>
                 </a>
                 @endhasrole
                 @can('view activity log')
                     <a href="{{ route('activity-logs.index') }}"
                         class="nav-item {{ request()->is('activity-logs*') ? 'active' : '' }}">
-                        <i class="fas fa-history"></i> <span>Activity Log</span>
+                        <i class="fas fa-history"></i> <span>{{ __('Activity Log') }}</span>
                     </a>
                 @endcan
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Operations</div>
+                <div class="nav-section-title">{{ __('Operations') }}</div>
                 @php
                     $posType = auth()->user()->tenant?->pos_type ?? 'retail';
                     // Debug: Uncomment to see pos_type value
@@ -911,80 +976,80 @@
                     @unlessrole('business_owner|system_owner')
                     <a href="{{ route('restaurant-cash-drawer.index') }}"
                         class="nav-item {{ request()->is('restaurant-cash-drawer*') ? 'active' : '' }}">
-                        <i class="fas fa-utensils"></i> <span>Restaurant POS</span>
+                        <i class="fas fa-utensils"></i> <span>{{ __('Restaurant POS') }}</span>
                     </a>
                     @endunlessrole
                     <a href="{{ route('restaurant.tables.index') }}" class="nav-item {{ request()->is('restaurant/tables*') ? 'active' : '' }}">
-                        <i class="fas fa-chair"></i> <span>Table Management</span>
+                        <i class="fas fa-chair"></i> <span>{{ __('Table Management') }}</span>
                     </a>
                     <a href="{{ route('restaurant.orders.index') }}" class="nav-item {{ request()->is('restaurant/orders*') ? 'active' : '' }}">
-                        <i class="fas fa-clipboard-list"></i> <span>Orders</span>
+                        <i class="fas fa-clipboard-list"></i> <span>{{ __('Orders') }}</span>
                     </a>
                     <a href="{{ route('restaurant.kitchen.index') }}" class="nav-item {{ request()->is('restaurant/kitchen*') ? 'active' : '' }}">
-                        <i class="fas fa-tv"></i> <span>Kitchen Display (KDS)</span>
+                        <i class="fas fa-tv"></i> <span>{{ __('Kitchen Display (KDS)') }}</span>
                     </a>
                     <a href="{{ route('restaurant.reservations.index') }}" class="nav-item {{ request()->is('restaurant/reservations*') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-check"></i> <span>Reservations</span>
+                        <i class="fas fa-calendar-check"></i> <span>{{ __('Reservations') }}</span>
                     </a>
                     <a href="{{ route('restaurant.customers.index') }}" class="nav-item {{ request()->is('restaurant/customers*') ? 'active' : '' }}">
-                        <i class="fas fa-users"></i> <span>Customers</span>
+                        <i class="fas fa-users"></i> <span>{{ __('Customers') }}</span>
                     </a>
                     <a href="{{ route('products.index') }}"
                         class="nav-item {{ request()->is('products*') ? 'active' : '' }}">
-                        <i class="fas fa-book"></i> <span>Menu Management</span>
+                        <i class="fas fa-book"></i> <span>{{ __('Menu Management') }}</span>
                     </a>
                     <a href="{{ route('categories.index') }}"
                         class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
-                        <i class="fas fa-tags"></i> <span>Menu Categories</span>
+                        <i class="fas fa-tags"></i> <span>{{ __('Menu Categories') }}</span>
                     </a>
                     <a href="{{ route('suppliers.index') }}"
                         class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
-                        <i class="fas fa-truck"></i> <span>Suppliers</span>
+                        <i class="fas fa-truck"></i> <span>{{ __('Suppliers') }}</span>
                     </a>
                     <a href="{{ route('grns.index') }}" class="nav-item {{ request()->is('grns*') ? 'active' : '' }}">
-                        <i class="fas fa-boxes"></i> <span>Ingredient Inventory</span>
+                        <i class="fas fa-boxes"></i> <span>{{ __('Ingredient Inventory') }}</span>
                     </a>
                     <a href="{{ route('reports.stock-valuation') }}" class="nav-item {{ request()->is('reports/stock-valuation*') ? 'active' : '' }}">
-                        <i class="fas fa-exclamation-triangle"></i> <span>Low Stock Alerts</span>
+                        <i class="fas fa-exclamation-triangle"></i> <span>{{ __('Low Stock Alerts') }}</span>
                     </a>
                     <a href="{{ route('reports.index') }}" class="nav-item {{ request()->is('reports*') ? 'active' : '' }}">
-                        <i class="fas fa-chart-line"></i> <span>Reports & Analytics</span>
+                        <i class="fas fa-chart-line"></i> <span>{{ __('Reports & Analytics') }}</span>
                     </a>
-                    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>Payments</span></a>
+                    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>{{ __('Payments') }}</span></a>
                 @else
                     {{-- Retail menu --}}
                     @unlessrole('business_owner|system_owner')
                     <a href="{{ route('cash-drawer.index') }}"
                         class="nav-item {{ request()->is('cash-drawer*') ? 'active' : '' }}">
-                        <i class="fas fa-cash-register"></i> <span>POS Terminal</span>
+                        <i class="fas fa-cash-register"></i> <span>{{ __('POS Terminal') }}</span>
                     </a>
                     @endunlessrole
                     <a href="{{ route('products.index') }}"
                         class="nav-item {{ request()->is('products*') ? 'active' : '' }}">
-                        <i class="fas fa-box"></i> <span>Products & Stock</span>
+                        <i class="fas fa-box"></i> <span>{{ __('Products & Stock') }}</span>
                     </a>
                     <a href="{{ route('categories.index') }}"
                         class="nav-item {{ request()->is('categories*') ? 'active' : '' }}">
-                        <i class="fas fa-tags"></i> <span>Categories</span>
+                        <i class="fas fa-tags"></i> <span>{{ __('Categories') }}</span>
                     </a>
                     <a href="{{ route('units.index') }}"
                         class="nav-item {{ request()->is('units*') ? 'active' : '' }}">
-                        <i class="fas fa-balance-scale"></i> <span>Units</span>
+                        <i class="fas fa-balance-scale"></i> <span>{{ __('Units') }}</span>
                     </a>
                     <a href="{{ route('suppliers.index') }}"
                         class="nav-item {{ request()->is('suppliers*') ? 'active' : '' }}">
-                        <i class="fas fa-truck"></i> <span>Suppliers</span>
+                        <i class="fas fa-truck"></i> <span>{{ __('Suppliers') }}</span>
                     </a>
                     <a href="{{ route('grns.index') }}" class="nav-item {{ request()->is('grns*') ? 'active' : '' }}">
-                        <i class="fas fa-file-invoice"></i> <span>GRN (Goods Received)</span>
+                        <i class="fas fa-file-invoice"></i> <span>{{ __('GRN (Goods Received)') }}</span>
                     </a>
                     <a href="{{ route('company-other-expenses.index') }}" class="nav-item {{ request()->is('company-other-expenses*') ? 'active' : '' }}">
-                        <i class="fas fa-receipt"></i> <span>Other Expenses</span>
+                        <i class="fas fa-receipt"></i> <span>{{ __('Other Expenses') }}</span>
                     </a>
                     <a href="{{ route('reports.index') }}" class="nav-item {{ request()->is('reports*') ? 'active' : '' }}">
-                        <i class="fas fa-chart-line"></i> <span>Reports</span>
+                        <i class="fas fa-chart-line"></i> <span>{{ __('Reports') }}</span>
                     </a>
-                    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>Payments</span></a>
+                    <a href="#" class="nav-item"><i class="fas fa-credit-card"></i> <span>{{ __('Payments') }}</span></a>
                 @endif
             </div>
         </nav>
@@ -993,7 +1058,7 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
                 </button>
             </form>
         </div>
@@ -1023,6 +1088,17 @@
                     <i class="fas fa-crown"></i>
                     {{ ucfirst(str_replace('_', ' ', auth()->user()->roles->first()->name ?? 'Admin')) }}
                 </div>
+                <div class="lang-dropdown" id="langDropdown">
+                    <button type="button" class="lang-dropdown-trigger" id="langTrigger" aria-expanded="false" aria-haspopup="true" title="{{ app()->getLocale() === 'si' ? 'සිංහල' : 'Language' }}">
+                        <i class="fas fa-globe"></i>
+                        <span>{{ app()->getLocale() === 'si' ? 'සිංහල' : 'EN' }}</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                    </button>
+                    <div class="lang-dropdown-menu" id="langMenu" role="menu">
+                        <a href="{{ route('locale.switch', ['locale' => 'en']) }}" role="menuitem" class="{{ app()->getLocale() === 'en' ? 'active' : '' }}">English</a>
+                        <a href="{{ route('locale.switch', ['locale' => 'si']) }}" role="menuitem" class="{{ app()->getLocale() === 'si' ? 'active' : '' }}">සිංහල</a>
+                    </div>
+                </div>
                 <i class="fas fa-bell bell-icon"></i>
                 <div class="user-dropdown" id="userAccountDropdown">
                     <button type="button" class="user-dropdown-trigger user-section" id="userAccountTrigger"
@@ -1032,18 +1108,18 @@
                             <div style="font-weight: 700; color: var(--gray-900); font-size: 0.95rem;">
                                 {{ auth()->user()->name }}
                             </div>
-                            <div style="font-size: 0.85rem; color: var(--gray-500);">Account</div>
+                            <div style="font-size: 0.85rem; color: var(--gray-500);">{{ __('Account') }}</div>
                         </div>
                         <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--gray-400);"></i>
                     </button>
                     <div class="user-dropdown-menu" id="userAccountMenu" role="menu">
                         <a href="{{ route('profile.edit') }}" role="menuitem"><i class="fas fa-user-cog"></i>
-                            Profile</a>
+                            {{ __('Profile') }}</a>
                         <div class="dropdown-divider"></div>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="logout-item" role="menuitem"><i
-                                    class="fas fa-sign-out-alt"></i> Logout</button>
+                                    class="fas fa-sign-out-alt"></i> {{ __('Logout') }}</button>
                         </form>
                     </div>
                 </div>
@@ -1108,6 +1184,24 @@
                 userTrigger.setAttribute('aria-expanded', 'false');
             }
         });
+
+        // Language dropdown
+        const langDropdown = document.getElementById('langDropdown');
+        const langTrigger = document.getElementById('langTrigger');
+        const langMenu = document.getElementById('langMenu');
+        if (langTrigger && langMenu) {
+            langTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langMenu.classList.toggle('open');
+                langTrigger.setAttribute('aria-expanded', langMenu.classList.contains('open'));
+            });
+            document.addEventListener('click', (e) => {
+                if (langDropdown && !langDropdown.contains(e.target)) {
+                    langMenu.classList.remove('open');
+                    langTrigger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
     </script>
     @stack('scripts')
 </body>

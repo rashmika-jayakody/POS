@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('title', 'Itemwise Sales')
+@section('title', __('Itemwise Sales'))
 
 @section('content')
     <div class="page-header animate-in">
-        <div class="page-title"><i class="fas fa-list"></i> Itemwise Sales</div>
-        <div class="page-subtitle">Sales by product for the selected period.</div>
+        <div class="page-title"><i class="fas fa-list"></i> {{ __('Itemwise Sales') }}</div>
+        <div class="page-subtitle">{{ __('Sales by product for the selected period.') }}</div>
     </div>
 
     @include('reports.partials.filter', ['showDate' => true, 'showBranch' => true, 'f' => $f, 'branches' => $branches, 'routeName' => 'reports.itemwise-sales'])
@@ -15,12 +15,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Category</th>
-                        <th>Qty sold</th>
-                        <th>Net sales</th>
-                        <th>COGS</th>
-                        <th>Profit</th>
+                        <th>{{ __('Product') }}</th>
+                        <th>{{ __('Category') }}</th>
+                        <th>{{ __('Qty sold') }}</th>
+                        <th>{{ __('Net sales') }}</th>
+                        <th>{{ __('COGS') }}</th>
+                        <th>{{ __('Profit') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,7 +34,7 @@
                             <td>{{ $currencySymbol ?? 'Rs' }}{{ number_format($r['profit'], 2) }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" style="text-align: center; color: var(--gray-500); padding: 24px;">No sales in this period.</td></tr>
+                        <tr><td colspan="6" style="text-align: center; color: var(--gray-500); padding: 24px;">{{ __('No sales in this period.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

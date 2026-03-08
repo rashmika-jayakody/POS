@@ -1,18 +1,18 @@
 @extends('layouts.admin')
 
-@section('title', 'Roles & Permissions')
+@section('title', __('Roles & Permissions'))
 
 @section('content')
     <div class="page-header animate-in" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
         <div>
             <div class="page-title">
                 <i class="fas fa-shield-alt"></i>
-                Roles & Permissions
+                {{ __('Roles & Permissions') }}
             </div>
-            <div class="page-subtitle">Manage system access levels and assigned permissions.</div>
+            <div class="page-subtitle">{{ __('Manage system access levels and assigned permissions.') }}</div>
         </div>
         <a href="{{ route('roles.create') }}" class="btn btn-primary" style="white-space: nowrap;">
-            <i class="fas fa-plus"></i> Add Role
+            <i class="fas fa-plus"></i> {{ __('Add Role') }}
         </a>
     </div>
 
@@ -28,9 +28,9 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th style="width: 250px;">Role Name</th>
-                        <th>Permissions Summary</th>
-                        <th style="text-align: right; width: 120px;">Actions</th>
+                        <th style="width: 250px;">{{ __('Role Name') }}</th>
+                        <th>{{ __('Permissions Summary') }}</th>
+                        <th style="text-align: right; width: 120px;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,7 +40,7 @@
                                 <div style="font-weight: 700; color: var(--navy-dark);">
                                     {{ ucwords(str_replace('_', ' ', $role->name)) }}
                                 </div>
-                                <div style="font-size: 0.75rem; color: var(--gray-500);">System Identifier: {{ $role->name }}
+                                <div style="font-size: 0.75rem; color: var(--gray-500);">{{ __('System Identifier: :name', ['name' => $role->name]) }}
                                 </div>
                             </td>
                             <td>
@@ -51,14 +51,14 @@
                                             {{ $permission->name }}
                                         </span>
                                     @empty
-                                        <span style="color: var(--gray-400); font-style: italic;">No permissions assigned</span>
+                                        <span style="color: var(--gray-400); font-style: italic;">{{ __('No permissions assigned') }}</span>
                                     @endforelse
                                 </div>
                             </td>
                             <td style="text-align: right;">
                                 <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-secondary"
                                     style="padding: 6px 12px; font-size: 0.75rem;">
-                                    <i class="fas fa-key"></i> Edit Permissions
+                                    <i class="fas fa-key"></i> {{ __('Edit Permissions') }}
                                 </a>
                             </td>
                         </tr>

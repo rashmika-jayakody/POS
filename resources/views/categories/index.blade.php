@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Product Categories')
+@section('title', __('Product Categories'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,13 +8,13 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-tags"></i>
-                    Product Categories
+                    {{ __('Product Categories') }}
                 </div>
-                <div class="page-subtitle">Organize your products into logical groups for better management.</div>
+                <div class="page-subtitle">{{ __('Organize your products into logical groups for better management.') }}</div>
             </div>
             <a href="{{ route('categories.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                New Category
+                {{ __('New Category') }}
             </a>
         </div>
     </div>
@@ -38,12 +38,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Category Name</th>
-                        <th>Slug</th>
-                        <th>Description</th>
-                        <th>Products Count</th>
-                        <th>Status</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Category Name') }}</th>
+                        <th>{{ __('Slug') }}</th>
+                        <th>{{ __('Description') }}</th>
+                        <th>{{ __('Products Count') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,7 +56,7 @@
                             <td>
                                 <span class="status-badge {{ $category->is_active ? 'active' : 'inactive' }}">
                                     <span class="status-dot"></span>
-                                    {{ $category->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $category->is_active ? __('Active') : __('Inactive') }}
                                 </span>
                             </td>
                             <td style="text-align: right;">
@@ -66,7 +66,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
-                                        onsubmit="return confirm('Delete this category?');">
+                                        onsubmit="return confirm('{{ __('Delete this category?') }}');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn"

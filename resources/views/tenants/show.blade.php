@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Tenant Details')
+@section('title', __('Tenant Details'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -10,10 +10,10 @@
                     <i class="fas fa-store-alt"></i>
                     {{ $tenant->name }}
                 </div>
-                <div class="page-subtitle">Tenant details, branches, and users.</div>
+                <div class="page-subtitle">{{ __('Tenant details, branches, and users.') }}</div>
             </div>
             <a href="{{ route('tenants.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Shops
+                <i class="fas fa-arrow-left"></i> {{ __('Back to Shops') }}
             </a>
         </div>
     </div>
@@ -26,48 +26,48 @@
     @endif
 
     <div class="section animate-in">
-        <h3 style="margin-bottom: 16px; color: var(--navy-dark);">Details</h3>
+        <h3 style="margin-bottom: 16px; color: var(--navy-dark);">{{ __('Details') }}</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
             <div>
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Email</div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">{{ __('Email') }}</div>
                 <div>{{ $tenant->email ?? '—' }}</div>
             </div>
             <div>
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Phone</div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">{{ __('Phone') }}</div>
                 <div>{{ $tenant->phone ?? '—' }}</div>
             </div>
             <div>
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Status</div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">{{ __('Status') }}</div>
                 <span class="status-badge {{ $tenant->status == 'active' ? 'active' : 'inactive' }}">
                     <span class="status-dot"></span>
-                    {{ ucfirst($tenant->status) }}
+                    {{ $tenant->status == 'active' ? __('Active') : __('Suspended') }}
                 </span>
             </div>
             <div>
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Store link</div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">{{ __('Store link') }}</div>
                 <div style="font-size: 0.875rem;">{{ request()->getSchemeAndHttpHost() }}/app/{{ $tenant->slug }}</div>
             </div>
         </div>
         @if($tenant->address)
             <div style="margin-bottom: 24px;">
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Address</div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">{{ __('Address') }}</div>
                 <div>{{ $tenant->address }}</div>
             </div>
         @endif
     </div>
 
     <div class="section animate-in">
-        <h3 style="margin-bottom: 16px; color: var(--navy-dark);">Branches ({{ $tenant->branches->count() }})</h3>
+        <h3 style="margin-bottom: 16px; color: var(--navy-dark);">{{ __('Branches (:count)', ['count' => $tenant->branches->count()]) }}</h3>
         @if($tenant->branches->isEmpty())
-            <p style="color: var(--muted);">No branches yet.</p>
+            <p style="color: var(--muted);">{{ __('No branches yet.') }}</p>
         @else
             <div class="table-wrapper">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone</th>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('Address') }}</th>
+                            <th>{{ __('Phone') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,20 +85,20 @@
     </div>
 
     <div class="section animate-in">
-        <h3 style="margin-bottom: 16px; color: var(--navy-dark);">Users ({{ $tenant->users->count() }})</h3>
+        <h3 style="margin-bottom: 16px; color: var(--navy-dark);">{{ __('Users (:count)', ['count' => $tenant->users->count()]) }}</h3>
         @if($tenant->users->isEmpty())
-            <p style="color: var(--muted);">No users yet.</p>
+            <p style="color: var(--muted);">{{ __('No users yet.') }}</p>
         @else
             <div class="table-wrapper">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Branch</th>
-                            <th>Status</th>
-                            <th style="text-align: right;">Actions</th>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('Email') }}</th>
+                            <th>{{ __('Role') }}</th>
+                            <th>{{ __('Branch') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th style="text-align: right;">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,7 +118,7 @@
                                 <td>
                                     <span class="status-badge {{ $user->is_active ? 'active' : 'inactive' }}">
                                         <span class="status-dot"></span>
-                                        {{ $user->is_active ? 'Active' : 'Inactive' }}
+                                        {{ $user->is_active ? __('Active') : __('Inactive') }}
                                     </span>
                                 </td>
                                 <td style="text-align: right;">

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Units')
+@section('title', __('Units'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,13 +8,13 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-balance-scale"></i>
-                    Units
+                    {{ __('Units') }}
                 </div>
-                <div class="page-subtitle">Manage measurement units for your products (e.g. kg, pcs, L).</div>
+                <div class="page-subtitle">{{ __('Manage measurement units for your products (e.g. kg, pcs, L).') }}</div>
             </div>
             <a href="{{ route('units.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                New Unit
+                {{ __('New Unit') }}
             </a>
         </div>
     </div>
@@ -38,10 +38,10 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Short code</th>
-                        <th>Products</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Name') }}</th>
+                        <th>{{ __('Short code') }}</th>
+                        <th>{{ __('Products') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,7 +71,7 @@
                     @empty
                         <tr>
                             <td colspan="4" style="text-align: center; padding: 40px; color: var(--gray-500);">
-                                No units yet. <a href="{{ route('units.create') }}" style="color: var(--light-blue);">Add your first unit</a> so you can assign them to products.
+                                {{ __('No units yet.') }} <a href="{{ route('units.create') }}" style="color: var(--light-blue);">{{ __('Add your first unit') }}</a> {{ __('so you can assign them to products.') }}
                             </td>
                         </tr>
                     @endforelse

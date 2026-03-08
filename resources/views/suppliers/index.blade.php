@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Suppliers')
+@section('title', __('Suppliers'))
 
 @section('content')
     <div class="page-header animate-in">
@@ -8,13 +8,13 @@
             <div>
                 <div class="page-title">
                     <i class="fas fa-truck"></i>
-                    Suppliers
+                    {{ __('Suppliers') }}
                 </div>
-                <div class="page-subtitle">Manage your vendor relationships and contact information.</div>
+                <div class="page-subtitle">{{ __('Manage your vendor relationships and contact information.') }}</div>
             </div>
             <a href="{{ route('suppliers.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
-                Add Supplier
+                {{ __('Add Supplier') }}
             </a>
         </div>
     </div>
@@ -31,12 +31,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Supplier Name</th>
-                        <th>Contact Person</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Supplier Name') }}</th>
+                        <th>{{ __('Contact Person') }}</th>
+                        <th>{{ __('Phone') }}</th>
+                        <th>{{ __('Email') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,7 +49,7 @@
                             <td>
                                 <span class="status-badge {{ $supplier->is_active ? 'active' : 'inactive' }}">
                                     <span class="status-dot"></span>
-                                    {{ $supplier->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $supplier->is_active ? __('Active') : __('Inactive') }}
                                 </span>
                             </td>
                             <td style="text-align: right;">
@@ -59,7 +59,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST"
-                                        onsubmit="return confirm('Delete this supplier?');">
+                                        onsubmit="return confirm('{{ __('Delete this supplier?') }}');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn"
