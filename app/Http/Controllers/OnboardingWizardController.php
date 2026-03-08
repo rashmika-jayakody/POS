@@ -18,16 +18,16 @@ use Illuminate\View\View;
 
 class OnboardingWizardController extends Controller
 {
-    private const PLANS = [
-        'essential' => ['name' => 'Essential', 'price_lkr' => 35000],
-        'professional' => ['name' => 'Professional', 'price_lkr' => 85000],
-        'enterprise' => ['name' => 'Enterprise', 'price_lkr' => 175000],
-    ];
+    public static function plans(): array
+    {
+        return config('plans', []);
+    }
 
     public function index(Request $request): View|RedirectResponse
     {
+        $plans = self::plans();
         $plan = $request->query('plan', 'professional');
-        if (!array_key_exists($plan, self::PLANS)) {
+        if (!array_key_exists($plan, $plans)) {
             $plan = 'professional';
         }
         
@@ -58,8 +58,8 @@ class OnboardingWizardController extends Controller
         
         return view('onboarding.wizard', [
             'plan' => $plan,
-            'planInfo' => self::PLANS[$plan],
-            'plans' => self::PLANS,
+            'planInfo' => $plans[$plan],
+            'plans' => $plans,
             'step' => $step,
             'email' => $email,
         ]);
@@ -76,7 +76,7 @@ class OnboardingWizardController extends Controller
             // Validate all form data first
             try {
                 $validated = $request->validate([
-                    'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
+                    'plan' => ['required', 'string', 'in:' . implode(',', array_keys(self::plans()))],
                     'pos_type' => ['required', 'string', 'in:retail,restaurant'],
                     'company_name' => ['required', 'string', 'max:255'],
                     'address' => ['required', 'string', 'max:500'],
@@ -235,7 +235,7 @@ class OnboardingWizardController extends Controller
         // Validate using merged data
         try {
             $validator = \Validator::make($formData, [
-                'plan' => ['required', 'string', 'in:essential,professional,enterprise'],
+                'plan' => ['required', 'string', 'in:' . implode(',', array_keys(self::plans()))],
                 'pos_type' => ['required', 'string', 'in:retail,restaurant'],
                 'company_name' => ['required', 'string', 'max:255'],
                 'address' => ['required', 'string', 'max:500'],

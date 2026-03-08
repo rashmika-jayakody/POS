@@ -1,29 +1,41 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+@extends('layouts.admin')
+
+@section('title', __('Profile'))
+
+@push('styles')
+<style>
+.profile-section .settings-card-title { font-size: 1.05rem; font-weight: 700; color: var(--navy-dark); display: flex; align-items: center; gap: 8px; }
+.profile-section .settings-card-title i { color: var(--light-blue); }
+.profile-section .settings-card-subtitle { font-size: 0.9rem; color: var(--gray-500); line-height: 1.4; }
+</style>
+@endpush
+
+@section('content')
+    <div class="page-header animate-in">
+        <div class="page-title">
+            <i class="fas fa-user-cog"></i>
             {{ __('Profile') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
         </div>
+        <div class="page-subtitle">{{ __('Update your account profile information and password.') }}</div>
     </div>
-</x-app-layout>
+
+    @hasrole('business_owner')
+    @if(auth()->user()->tenant)
+    <div class="section animate-in" style="max-width: 42rem;">
+        @include('profile.partials.subscription-plan')
+    </div>
+    @endif
+@endhasrole
+
+    <div class="section animate-in" style="max-width: 42rem;">
+        @include('profile.partials.update-profile-information-form')
+    </div>
+
+    <div class="section animate-in" style="max-width: 42rem;">
+        @include('profile.partials.update-password-form')
+    </div>
+
+    <div class="section animate-in" style="max-width: 42rem;">
+        @include('profile.partials.delete-user-form')
+    </div>
+@endsection

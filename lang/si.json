@@ -19,6 +19,7 @@
     "Reset Password": "මුරපදය යළි සකස් කරන්න",
     "This is a secure area of the application. Please confirm your password before continuing.": "මෙය යෙදුමේ ආරක්ෂිත ප්‍රදේශයකි. ඉදිරියට යාමට පෙර ඔබේ මුරපදය තහවුරු කරන්න.",
     "Profile Information": "පැතිකඩ තොරතුරු",
+    "Update your account profile information and password.": "ඔබේ ගිණුම් පැතිකඩ තොරතුරු සහ මුරපදය යාවත්කාලීන කරන්න.",
     "Update your account's profile information and email address.": "ඔබේ ගිණුමේ පැතිකඩ තොරතුරු සහ ඊමේල් ලිපිනය යාවත්කාලීන කරන්න.",
     "Your email address is unverified.": "ඔබේ ඊමේල් ලිපිනය සත්‍යාපනය කර නැත.",
     "Click here to re-send the verification email.": "සත්‍යාපන ඊමේල් යැවීමට මෙතැන ක්ලික් කරන්න.",
@@ -30,6 +31,10 @@
     "Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.": "ඔබේ ගිණුම මකා දැමූ පසු, එහි සියලු සම්පත් සහ දත්ත ස්ථිරවම මකා දැමෙනු ඇත. ඔබේ ගිණුම මකා දැමීමට පෙර, ඔබ තබා ගැනීමට අවශ්‍ය ඕනෑම දත්ත හෝ තොරතුරු බාගත කරන්න.",
     "Are you sure you want to delete your account?": "ඔබේ ගිණුම මකා දැමීමට ඔබට අවශ්‍ය බව ඔබට විශ්වාසද?",
     "Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.": "ඔබේ ගිණුම මකා දැමූ පසු, එහි සියලු සම්පත් සහ දත්ත ස්ථිරවම මකා දැමෙනු ඇත. ඔබේ ගිණුම ස්ථිරවම මකා දැමීමට අවශ්‍ය බව තහවුරු කිරීමට ඔබේ මුරපදය ඇතුළත් කරන්න.",
+    "Subscription Plan": "දායකත්ව සැලැස්ම",
+    "Your current plan and included features.": "ඔබේ වත්මන් සැලැස්ම සහ ඇතුළත් විශේෂාංග.",
+    "Plan details": "සැලැස්ම් විස්තර",
+    "month": "මාසය",
 
     "Welcome back, :name! Here's your business overview.": "පිටුවට සාදරයෙන් පිළිගන්නවා, :name! ඔබේ ව්‍යාපාර දළ විළිපය මෙතැනින්.",
     "All tenants": "සියලු ගණුදෙණුකරුවන්",

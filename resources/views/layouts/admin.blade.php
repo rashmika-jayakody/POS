@@ -861,7 +861,9 @@
     @php
         $businessSettings = auth()->user()->tenant?->businessSetting;
         $businessName = $businessSettings?->display_name ?? optional(auth()->user()->tenant)->name ?? config('app.name');
-        $businessLogo = $businessSettings?->logo_path ? asset('storage/' . $businessSettings->logo_path) : null;
+        $businessLogo = auth()->user()->hasRole('system_owner')
+            ? asset('assets/logo.png')
+            : ($businessSettings?->logo_path ? asset('storage/' . $businessSettings->logo_path) : null);
         $primaryColor = $businessSettings?->primary_color ?? '#4A9EFF';
         $secondaryColor = $businessSettings?->secondary_color ?? '#0A1A3D';
         $accentColor = $businessSettings?->accent_color ?? '#00C9B7';
@@ -906,7 +908,9 @@
                     @else
                         <i class="fas fa-chart-line"></i>
                     @endif
-                    <span>{{ $businessName }}</span>
+                    @unless(auth()->user()->hasRole('system_owner'))
+                        <span>{{ $businessName }}</span>
+                    @endunless
                 </div>
                 <button type="button" class="sidebar-hide-btn" id="sidebarHideBtn" title="Hide menu"
                     aria-label="Hide menu">
@@ -1079,7 +1083,9 @@
                     @else
                         <i class="fas fa-chart-line"></i>
                     @endif
-                    <span>{{ $businessName }}</span>
+                    @unless(auth()->user()->hasRole('system_owner'))
+                        <span>{{ $businessName }}</span>
+                    @endunless
                 </div>
             </div>
 
