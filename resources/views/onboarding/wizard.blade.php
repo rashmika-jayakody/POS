@@ -167,27 +167,23 @@
                     <div class="form-group">
                         <label for="verification_code">Verification Code *</label>
                         <input type="text" id="verification_code" name="verification_code" value="{{ old('verification_code') }}" 
-                               required maxlength="6" pattern="[0-9]{6}" placeholder="000000"
+                               required maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="000000"
                                style="text-align: center; font-size: 1.5rem; letter-spacing: 8px; font-family: 'Courier New', monospace;">
                         <p class="hint" style="text-align: center; margin-top: 8px;">Enter the 6-digit code sent to your email</p>
                         @error('verification_code') <p class="error">{{ $message }}</p> @enderror
                     </div>
 
                     <div style="text-align: center; margin: 20px 0;">
-                        <form action="{{ route('onboarding.resend-code') }}" method="POST" style="display: inline;">
-                            @csrf
-                            <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
-                            <button type="submit" style="background: none; border: none; color: #4A9EFF; cursor: pointer; text-decoration: underline; font-size: 0.9rem;">
-                                <i class="fas fa-redo"></i> Resend code
-                            </button>
-                        </form>
+                        <button type="button" id="resendCodeBtn" style="background: none; border: none; color: #4A9EFF; cursor: pointer; text-decoration: underline; font-size: 0.9rem;">
+                            <i class="fas fa-redo"></i> Resend code
+                        </button>
                     </div>
 
                     <div class="wizard-actions" style="display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;">
                         <button type="button" id="prevStep4" style="flex: 1; min-width: 120px; padding: 13px 20px; background: white; color: #64748b; border: 1.5px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s;">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button type="submit" class="auth-btn" style="width: auto; flex: 1; min-width: 120px;">
+                        <button type="button" id="verifyAndCreateBtn" class="auth-btn" form="wizardForm" style="width: auto; flex: 1; min-width: 120px;">
                             <i class="fas fa-check" style="margin-right: 8px;"></i> Verify & Create Store
                         </button>
                     </div>
@@ -660,6 +656,56 @@
                 }
             });
         }
+
+        // Verify & Create Store: explicit click submit so button always works on step 4
+        document.getElementById('verifyAndCreateBtn')?.addEventListener('click', function() {
+            const form = document.getElementById('wizardForm');
+            const activeStep = document.querySelector('.wizard-step.active');
+            if (!form || !activeStep || activeStep.dataset.step !== '4') return;
+            var codeEl = document.getElementById('verification_code');
+            if (!codeEl || !codeEl.value || codeEl.value.trim().length !== 6) {
+                alert('Please enter the 6-digit verification code from your email.');
+                codeEl?.focus();
+                return;
+            }
+            var emailEl = document.getElementById('step4_email') || document.getElementById('hidden_email');
+            if (emailEl) {
+                var email = (document.getElementById('step4_email')?.value || document.getElementById('hidden_email')?.value || '').trim();
+                if (!email) {
+                    alert('Email is missing. Please go back to step 3 and enter your email.');
+                    return;
+                }
+            }
+            form.submit();
+        });
+
+        // Resend code (no nested form - was breaking "Verify & Create Store" submit)
+        document.getElementById('resendCodeBtn')?.addEventListener('click', async function() {
+            const btn = this;
+            const email = document.getElementById('step4_email')?.value || document.getElementById('hidden_email')?.value;
+            if (!email) {
+                alert('Email not found. Please go back to step 3 and enter your email.');
+                return;
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 4px;"></i> Sending...';
+            try {
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('input[name="_token"]').value);
+                formData.append('email', email);
+                const r = await fetch('{{ route("onboarding.resend-code") }}', { method: 'POST', body: formData });
+                if (r.ok) {
+                    const url = new URL(r.url);
+                    if (url.searchParams.get('resent')) {
+                        alert('A new code has been sent to your email.');
+                    }
+                }
+            } catch (e) {
+                alert('Could not resend code. Please try again.');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-redo"></i> Resend code';
+        });
 
         // Ensure all form data is included when submitting from step 4
         const wizardForm = document.getElementById('wizardForm');
