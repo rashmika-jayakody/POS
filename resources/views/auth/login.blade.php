@@ -42,11 +42,9 @@
                     style="margin-right: 8px;"></i>
                 Sign In</button>
 
-            @if (Route::has('register'))
-                <div class="auth-footer-link">
-                    Don't have an account? <a href="{{ route('register') }}">Create one free</a>
-                </div>
-            @endif
+            <div class="auth-footer-link">
+                Don't have an account? <a href="{{ route('onboarding.index', ['plan' => 'professional']) }}">Create new account</a>
+            </div>
 
             <div class="auth-footer-link" style="margin-top: 12px;">
                 <a href="{{ url('/') }}" style="color: #94a3b8; font-weight: 500;">

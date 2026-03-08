@@ -70,7 +70,23 @@ class DashboardController extends Controller
             ->groupBy(fn ($s) => $s->product->category_id ?? 0)
             ->map(function ($stocks, $catId) {
                 $name = $catId ? (optional($stocks->first()->product->category)->name ?? 'Uncategorized') : 'Uncategorized';
-                $costValue = $stocks->sum(fn ($s) => (float) $s->quantity * (float) ($s->product->cost_price ?? 0));
+                // Calculate cost using FIFO batch costs (correct method)
+                $costValue = $stocks->sum(function ($stock) {
+                    $batches = \App\Models\StockBatch::where('tenant_id', $stock->tenant_id)
+                        ->where('product_id', $stock->product_id)
+                        ->where('branch_id', $stock->branch_id)
+                        ->where('quantity', '>', 0)
+                        ->get();
+                    
+                    if ($batches->isNotEmpty()) {
+                        return $batches->sum(function ($batch) {
+                            return (float) $batch->quantity * (float) ($batch->purchase_price ?? 0);
+                        });
+                    } else {
+                        // Fallback to product cost_price for legacy data
+                        return (float) $stock->quantity * (float) ($stock->product->cost_price ?? 0);
+                    }
+                });
                 return ['label' => $name, 'total' => $costValue];
             })
             ->sortByDesc('total')

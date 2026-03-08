@@ -15,6 +15,7 @@ class Tenant extends Model
         'address',
         'status',
         'plan',
+        'pos_type',
     ];
 
     /**

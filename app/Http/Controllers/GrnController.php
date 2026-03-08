@@ -107,6 +107,7 @@ class GrnController extends Controller
                     'branch_id' => $grn->branch_id,
                     'batch_number' => $batchNumber,
                     'quantity' => $item->quantity,
+                    'purchase_price' => $item->unit_price, // Store actual purchase cost from GRN
                     'received_at' => $receivedAt,
                     'expiry_date' => $item->expiry_date,
                     'grn_item_id' => $item->id,
@@ -124,6 +125,12 @@ class GrnController extends Controller
                     ]
                 );
                 $stock->increment('quantity', $item->quantity);
+                
+                // Update product cost_price with latest purchase price (for reference/display)
+                $product = Product::find($item->product_id);
+                if ($product) {
+                    $product->update(['cost_price' => $item->unit_price]);
+                }
             }
 
             $grn->update(['status' => 'received']);

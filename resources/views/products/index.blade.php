@@ -10,7 +10,13 @@
                     <i class="fas fa-box"></i>
                     Product Management
                 </div>
-                <div class="page-subtitle">Manage your product catalog, pricing, and view real-time stock levels.</div>
+                <div class="page-subtitle">
+                    @if(($posType ?? 'retail') === 'restaurant')
+                        Manage your menu items, pricing, and modifiers.
+                    @else
+                        Manage your product catalog, pricing, and view real-time stock levels.
+                    @endif
+                </div>
             </div>
             <a href="{{ route('products.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
@@ -33,7 +39,9 @@
                     <tr>
                         <th>Product Information</th>
                         <th>Pricing</th>
+                        @if(($posType ?? 'retail') === 'retail')
                         <th>Stock Levels</th>
+                        @endif
                         <th>Status</th>
                         <th style="text-align: right;">Actions</th>
                     </tr>
@@ -60,6 +68,7 @@
                                 <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 2px;">Cost:
                                     {{ $currencySymbol ?? 'Rs' }}{{ number_format($product->cost_price, 2) }}</div>
                             </td>
+                            @if(($posType ?? 'retail') === 'retail')
                             <td>
                                 <div
                                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
@@ -78,12 +87,20 @@
                                     @endforeach
                                 </div>
                             </td>
+                            @endif
                             <td>
-                                @php $totalStock = $product->stocks->sum('quantity'); @endphp
-                                <span class="status-badge {{ $totalStock > 0 ? 'active' : 'inactive' }}">
-                                    <span class="status-dot"></span>
-                                    {{ $totalStock > 0 ? 'In Stock' : 'Out of Stock' }}
-                                </span>
+                                @if(($posType ?? 'retail') === 'restaurant')
+                                    <span class="status-badge {{ $product->is_active ? 'active' : 'inactive' }}">
+                                        <span class="status-dot"></span>
+                                        {{ $product->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                @else
+                                    @php $totalStock = $product->stocks->sum('quantity'); @endphp
+                                    <span class="status-badge {{ $totalStock > 0 ? 'active' : 'inactive' }}">
+                                        <span class="status-dot"></span>
+                                        {{ $totalStock > 0 ? 'In Stock' : 'Out of Stock' }}
+                                    </span>
+                                @endif
                             </td>
                             <td style="text-align: right;">
                                 <div style="display: flex; gap: 8px; justify-content: flex-end;">

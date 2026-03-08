@@ -79,14 +79,19 @@
                         <div>
                             <label
                                 style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Cost
-                                Price ($)</label>
-                            <input type="number" step="0.01" name="cost_price" required placeholder="0.00"
-                                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+                                Price ({{ $currencySymbol ?? 'Rs' }}) <span style="font-size: 0.75rem; color: var(--gray-500); font-weight: 400;">(Read-only, from GRN)</span></label>
+                            <input type="number" step="0.01" name="cost_price" value="0.00" required readonly
+                                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit; background-color: #f8f9fa; cursor: not-allowed;"
+                                id="cost_price_input"
+                                title="Cost price is automatically set from the latest GRN purchase price. This field is read-only.">
+                            <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: 4px;">
+                                <i class="fas fa-info-circle"></i> This will be updated automatically when you receive a GRN for this product.
+                            </p>
                         </div>
                         <div>
                             <label
                                 style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">Selling
-                                Price ($)</label>
+                                Price ({{ $currencySymbol ?? 'Rs' }})</label>
                             <input type="number" step="0.01" name="selling_price" required placeholder="0.00"
                                 style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
                         </div>
