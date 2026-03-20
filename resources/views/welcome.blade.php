@@ -79,9 +79,11 @@
         }
 
         .logo {
-            height: 60px;
+            height: 35px;
             width: auto;
-            object-fit: contain;
+            transform: scale(2.8);
+            transform-origin: left center;
+            margin-left: 20px;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
@@ -486,11 +488,11 @@
 
         .badge {
             position: absolute;
-            top: 20px;
+            top: 45px;
             right: -35px;
-            background: #FFD700;
-            color: #000;
-            padding: 8px 40px;
+            background: var(--accent-coral);
+            color: var(--white);
+            padding: 8px 45px;
             font-size: 0.75rem;
             font-weight: 800;
             transform: rotate(45deg);
@@ -530,20 +532,6 @@
             margin-top: -20px;
         }
 
-        .badge {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            background: var(--accent-coral);
-            color: var(--white);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: var(--shadow-sm);
-        }
 
         /* About Section */
         .about {
