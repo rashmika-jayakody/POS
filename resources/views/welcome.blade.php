@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Grocers POS | Modern Retail Solutions</title>
+    <title>PosHere | Modern Retail Solutions</title>
     <link rel="icon" type="image/png" href="{{ asset('assets/logo.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('assets/logo.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -545,51 +545,26 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* About Section */
+        /* About Section - Integrated Full Content */
         .about {
-            padding: 120px 24px;
+            padding: 100px 24px;
             background: var(--white);
         }
 
         .about-container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
+        }
+
+        .about-main {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 80px;
+            gap: 60px;
             align-items: center;
+            margin-bottom: 80px;
         }
 
-        .about-image {
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-        }
-
-        .about-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(74, 158, 255, 0.2), rgba(0, 201, 183, 0.2));
-            z-index: 1;
-        }
-
-        .about-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.5s ease;
-        }
-
-        .about-image:hover img {
-            transform: scale(1.05);
-        }
-
-        .about-content h2 {
+        .about-main-text h2 {
             font-size: 2.75rem;
             font-weight: 800;
             color: var(--navy-dark);
@@ -597,59 +572,187 @@
             line-height: 1.2;
         }
 
-        .about-content p {
-            color: var(--gray-medium);
-            line-height: 1.7;
-            margin-bottom: 32px;
+        .about-main-text p {
             font-size: 1.125rem;
+            color: var(--gray-medium);
+            margin-bottom: 20px;
+            line-height: 1.7;
         }
 
-        .features-grid {
+        .about-main-image {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .about-main-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .about-main-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Vision & Mission */
+        .vm-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-top: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 80px;
         }
 
-        .feature-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            padding: 20px;
+        .vm-card {
             background: var(--gray-light);
-            border-radius: var(--radius-md);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(0,0,0,0.05);
             transition: all 0.3s ease;
         }
 
-        .feature-item:hover {
-            transform: translateY(-4px);
+        .vm-card:hover {
+            transform: translateY(-5px);
             box-shadow: var(--shadow-md);
+            background: var(--white);
+            border-color: var(--light-blue);
         }
 
-        .feature-icon {
-            background: linear-gradient(135deg, var(--light-blue) 0%, var(--accent-teal) 100%);
-            color: var(--white);
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
+        .vm-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light-blue-bg);
+            color: var(--light-blue);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            flex-shrink: 0;
+            margin-bottom: 20px;
         }
 
-        .feature-item h4 {
+        .vm-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: var(--navy-dark);
+            font-weight: 800;
+        }
+
+        .vm-card p {
+            color: var(--gray-medium);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        /* Offers Grid */
+        .offers-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .offers-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
+        }
+
+        .offer-item {
+            padding: 24px;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .offer-item:hover {
+            background: var(--gray-light);
+            border-color: var(--light-blue);
+            transform: translateY(-3px);
+        }
+
+        .offer-icon {
+            color: var(--light-blue);
+            font-size: 1.5rem;
+            width: 40px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .offer-content h4 {
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--navy-dark);
             margin-bottom: 8px;
+            color: var(--navy-dark);
         }
 
-        .feature-item p {
+        .offer-content p {
             font-size: 0.95rem;
             color: var(--gray-medium);
             margin: 0;
+        }
+
+        /* Growth & Commitment */
+        .growth-box {
+            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-medium) 100%);
+            color: var(--white);
+            padding: 60px;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 60px;
+        }
+
+        .growth-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .growth-box p {
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+            color: var(--white);
+        }
+
+        .commitment-box {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .commitment-box h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--navy-dark);
+        }
+
+        .commitment-box .slogan {
+            font-weight: 800;
+            color: var(--light-blue);
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .about-main {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .vm-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Footer */
@@ -872,8 +975,10 @@
         <div class="nav-container">
             <div class="logo-section">
                 <!-- Replace with your logo path -->
-                <img src="/assets/logo.png" alt="Super Grocers POS Logo" class="logo">
-
+                <img src="/assets/logo.png" alt="PosHere Logo" class="logo">
+                <div class="logo-text">
+                    <h1>PosHere</h1>
+                </div>
             </div>
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
@@ -986,60 +1091,97 @@
         </div>
     </section>
 
-    <!-- About Section -->
+    <!-- About Section - Integrated New Content -->
     <section class="about" id="about">
         <div class="about-container">
-            <div class="about-image fade-in-up">
-                <!-- Replace with your POS screenshot -->
-                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                    alt="Modern POS Interface">
+            <!-- Main Intro -->
+            <div class="about-main">
+                <div class="about-main-text scroll-reveal">
+                    <h2>Modern Solutions for Modern Retail</h2>
+                    <p>PosHere is a modern cloud-based Point of Sale (POS) platform designed to help retail businesses manage their daily operations efficiently and grow with confidence.</p>
+                    <p>Our mission is to simplify business management for shop owners by providing powerful tools for sales, inventory, and business insights in one easy-to-use system.</p>
+                    <p>Created to support small and growing businesses, PosHere combines industry knowledge with cutting-edge technology to help you make better decisions.</p>
+                </div>
+                <div class="about-main-image scroll-reveal">
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Modern Retail POS Interface">
+                </div>
             </div>
-            <div class="about-content">
-                <h2 class="fade-in-up">Designed for Modern Retailers</h2>
-                <p class="fade-in-up delay-1">We're revolutionizing grocery store management with our intuitive,
-                    cloud-based POS system. Built by retail experts and technologists, we combine industry knowledge
-                    with cutting-edge technology.</p>
-                <p class="fade-in-up delay-1">Our mission is to empower store owners with tools that save time, reduce
-                    errors, and boost profitability through intelligent automation and real-time insights.</p>
 
-                <div class="features-grid fade-in-up delay-2">
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="fas fa-rocket"></i>
-                        </div>
-                        <div>
-                            <h4>Lightning Fast</h4>
-                            <p>Process transactions in under 2 seconds</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="fas fa-lock"></i>
-                        </div>
-                        <div>
-                            <h4>Bank-Grade Security</h4>
-                            <p>256-bit encryption & daily backups</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <div>
-                            <h4>Mobile Ready</h4>
-                            <p>Manage from anywhere on any device</p>
-                        </div>
-                    </div>
-                    <div class="feature-item">
-                        <div class="feature-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <div>
-                            <h4>AI Insights</h4>
-                            <p>Predictive analytics for smarter decisions</p>
-                        </div>
+            <!-- Vision & Mission -->
+            <div class="vm-grid">
+                <div class="vm-card scroll-reveal">
+                    <div class="vm-icon"><i class="fas fa-eye"></i></div>
+                    <h3>Our Vision</h3>
+                    <p>To empower businesses with simple, intelligent, and reliable POS technology that supports growth and efficiency across all retail sectors.</p>
+                </div>
+                <div class="vm-card scroll-reveal">
+                    <div class="vm-icon"><i class="fas fa-bullseye"></i></div>
+                    <h3>Our Mission</h3>
+                    <p>To provide an affordable and powerful POS solution that helps businesses streamline sales, manage inventory accurately, and gain meaningful insights into their performance.</p>
+                </div>
+            </div>
+
+            <!-- What We Offer -->
+            <div class="offers-title scroll-reveal">
+                <h2>What PosHere Offers</h2>
+                <p>A complete set of tools designed for the modern retail landscape.</p>
+            </div>
+            <div class="offers-grid">
+                <div class="offer-item scroll-reveal">
+                    <div class="offer-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="offer-content">
+                        <h4>Fast and Reliable Billing</h4>
+                        <p>Lightning-fast POS billing system that keeps your customers happy and reduces wait times.</p>
                     </div>
                 </div>
+                <div class="offer-item scroll-reveal">
+                    <div class="offer-icon"><i class="fas fa-boxes"></i></div>
+                    <div class="offer-content">
+                        <h4>Smart Inventory Management</h4>
+                        <p>Complete control over your stock with GRN tracking, batch management, and real-time alerts.</p>
+                    </div>
+                </div>
+                <div class="offer-item scroll-reveal">
+                    <div class="offer-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="offer-content">
+                        <h4>Detailed Reports</h4>
+                        <p>Access sales, inventory, and financial reports that give you a clear picture of your business health.</p>
+                    </div>
+                </div>
+                <div class="offer-item scroll-reveal">
+                    <div class="offer-icon"><i class="fas fa-users"></i></div>
+                    <div class="offer-content">
+                        <h4>Loyalty Management</h4>
+                        <p>Build lasting relationships with your customers through integrated loyalty and rewards programs.</p>
+                    </div>
+                </div>
+                <div class="offer-item scroll-reveal">
+                    <div class="offer-icon"><i class="fas fa-store"></i></div>
+                    <div class="offer-content">
+                        <h4>Multi-Store Control</h4>
+                        <p>Manage multiple outlets from a single dashboard, synchronizing stock and viewing consolidated reports.</p>
+                    </div>
+                </div>
+                <div class="offer-item scroll-reveal">
+                    <div class="offer-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="offer-content">
+                        <h4>Business Insights</h4>
+                        <p>Tailor your receipts, business reports, and dashboard to match your specific business needs and forecasting.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Box -->
+            <div class="growth-box scroll-reveal">
+                <h2>Built for Businesses That Want to Grow</h2>
+                <p>Whether you run a small retail shop or manage multiple outlets, PosHere is designed to scale with your business. Our platform focuses on simplicity, accuracy, and efficiency so that business owners can spend less time managing systems and more time serving their customers.</p>
+            </div>
+
+            <!-- Commitment -->
+            <div class="commitment-box scroll-reveal">
+                <h3>Our Commitment</h3>
+                <p>At PosHere, we are committed to continuous improvement and innovation. We listen to our users, improve our platform, and work to deliver tools that genuinely support business success.</p>
+                <div class="slogan">PosHere – Smart POS for Smarter Businesses.</div>
             </div>
         </div>
     </section>
@@ -1048,9 +1190,9 @@
     <footer id="contact">
         <div class="footer-container">
             <div class="footer-col">
-                <img src="logo.png" alt="Logo" class="footer-logo">
+                <img src="/assets/logo.png" alt="PosHere Logo" class="footer-logo">
                 <p style="color: rgba(255,255,255,0.8); margin-bottom: 24px;">Transforming retail operations with
-                    intelligent POS solutions since 2023.</p>
+                    intelligent POS solutions: PosHere.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-linkedin-in"></i></a>
@@ -1089,7 +1231,7 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2023 Super Grocers POS. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms
+            <p>&copy; 2023 PosHere. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms
                     of Service</a></p>
         </div>
     </footer>
@@ -1221,7 +1363,7 @@
         }, observerOptions);
 
         // Observe elements for animation
-        document.querySelectorAll('.package-card, .section-title h2, .section-title p, .about-content h2, .about-content p, .features-grid, .about-image').forEach(el => {
+        document.querySelectorAll('.package-card, .section-title h2, .section-title p, .scroll-reveal').forEach(el => {
             observer.observe(el);
         });
 
