@@ -19,6 +19,10 @@ Route::get('/', function () {
     return view('welcome', compact('plans'));
 });
 
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
 // Switch language (stored in session; optional: set APP_LOCALE in .env for app-wide default)
 Route::get('/locale/{locale}', function (string $locale) {
     if (in_array($locale, ['en', 'si'])) {
