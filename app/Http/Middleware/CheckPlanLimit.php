@@ -21,15 +21,18 @@ class CheckPlanLimit
 
         $tenant = auth()->user()->tenant;
 
-        if (!$tenant || !$tenant->isWithinLimit($limitType)) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => __('You have reached the limit for your current plan.')
-                ], 403);
-            }
+        // Only enforce limit on 'create' and 'store' routes
+        if ($request->routeIs('*.create', '*.store')) {
+            if (!$tenant || !$tenant->isWithinLimit($limitType)) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'message' => __('You have reached the limit for your current plan.')
+                    ], 403);
+                }
 
-            return redirect()->route('pricing.index')
-                ->with('error', __('You have reached the limit for your current plan. Please upgrade to add more items.'));
+                return redirect()->route('pricing.index')
+                    ->with('error', __('You have reached the limit for your current plan. Please upgrade to add more items.'));
+            }
         }
 
         return $next($request);
