@@ -79,12 +79,13 @@
         }
 
         .logo {
-            height: 35px;
-            width: auto;
-            transform: scale(2.8);
-            transform-origin: left center;
-            margin-left: 20px;
+            height: 45px !important;
+            width: auto !important;
+            transform: scale(3.5) !important;
+            transform-origin: left center !important;
+            margin-left: 25px !important;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            display: block !important;
         }
 
         .logo-text h1 {
