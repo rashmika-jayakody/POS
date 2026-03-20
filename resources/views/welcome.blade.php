@@ -79,8 +79,9 @@
         }
 
         .logo {
-            height: 208px;
+            height: 60px;
             width: auto;
+            object-fit: contain;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
@@ -336,10 +337,11 @@
 
         .packages-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 32px;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1400px;
             margin: 0 auto;
+            align-items: stretch;
         }
 
         .package-card {
@@ -349,105 +351,151 @@
             box-shadow: var(--shadow-md);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .package-card:hover {
-            transform: translateY(-16px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .package-card.highlighted {
+            border: 2px solid var(--light-blue);
+            transform: scale(1.02);
+            z-index: 2;
+        }
+
+        .package-card.highlighted:hover {
+            transform: scale(1.02) translateY(-12px);
         }
 
         .package-header {
-            padding: 40px 32px;
+            padding: 40px 24px 24px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .package-card:nth-child(1) .package-header {
             background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-medium) 100%);
+            color: var(--white);
         }
 
         .package-card:nth-child(2) .package-header {
             background: linear-gradient(135deg, var(--light-blue) 0%, var(--accent-teal) 100%);
+            color: var(--white);
         }
 
         .package-card:nth-child(3) .package-header {
-            background: linear-gradient(135deg, var(--navy-medium) 0%, #2D3B5D 100%);
-        }
-
-        .package-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.1;
-        }
-
-        .package-header h3 {
-            font-size: 1.75rem;
-            font-weight: 700;
+            background: linear-gradient(135deg, #2D3B5D 0%, var(--navy-dark) 100%);
             color: var(--white);
-            margin-bottom: 12px;
-            position: relative;
         }
 
-        .package-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            margin-bottom: 24px;
+        .package-card:nth-child(4) .package-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: var(--white);
+        }
+
+        .package-header h3, .package-header p {
+            color: inherit;
         }
 
         .price {
-            font-size: 3.5rem;
+            font-size: 3.25rem;
             font-weight: 800;
             color: var(--white);
-            margin: 24px 0;
+            margin: 16px 0 0;
             position: relative;
+            line-height: 1;
         }
 
         .price span {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            opacity: 0.9;
+            opacity: 0.8;
+            margin-left: 4px;
         }
 
         .package-body {
-            padding: 40px 32px;
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .features {
             list-style: none;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            flex-grow: 1;
         }
 
         .features li {
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 0;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
-            font-size: 0.95rem;
-        }
-
-        .features li:last-child {
-            border-bottom: none;
+            font-size: 0.925rem;
+            color: var(--gray-medium);
+            line-height: 1.4;
         }
 
         .features i.fa-check {
             color: var(--accent-teal);
-            background: rgba(0, 201, 183, 0.1);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            margin-top: 3px;
+            font-size: 0.85rem;
             flex-shrink: 0;
+        }
+
+        .package-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .package-card:nth-child(2) .package-btn {
+            background: var(--light-blue);
+            color: var(--white);
+        }
+
+        .package-card:not(:nth-child(2)) .package-btn {
+            background: var(--gray-light);
+            color: var(--navy-dark);
+            border: 1px solid var(--gray-200);
+        }
+
+        .package-btn:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: #FFD700;
+            color: #000;
+            padding: 8px 40px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
         }
 
         .features i.fa-times {
@@ -882,69 +930,59 @@
             <p class="fade-in-up delay-1">Choose the perfect plan that grows with your business</p>
         </div>
         <div class="packages-grid">
-            <!-- Essential Plan -->
-            <div class="package-card fade-in-up">
-                <div class="package-header">
-                    <h3>Essential</h3>
-                    <p>Perfect for startups & small stores</p>
-                    <div class="price">LKR 35,000<span>/month</span></div>
+            @php $previousFeatures = []; @endphp
+            @foreach($plans as $plan)
+                @php
+                    $isGrowth = $plan->slug === 'growth';
+                    $delay = $loop->index;
+                    
+                    // Logic to show unique features (Pro features)
+                    $uniqueFeatures = array_diff($plan->features, $previousFeatures);
+                    $previousFeatures = array_unique(array_merge($previousFeatures, $plan->features));
+                    
+                    $maxFeatures = 6;
+                    $displayFeatures = array_slice($uniqueFeatures, 0, $maxFeatures);
+                    $hasMore = count($uniqueFeatures) > $maxFeatures;
+                @endphp
+                <div class="package-card {{ $isGrowth ? 'highlighted' : '' }} fade-in-up {{ $delay > 0 ? 'delay-'.$delay : '' }}">
+                    @if($isGrowth)
+                        <div class="badge">MOST POPULAR</div>
+                    @endif
+                    <div class="package-header">
+                        <h3>{{ $plan->name }}</h3>
+                        <p>{{ $plan->description }}</p>
+                        @if($plan->slug === 'custom')
+                            <div class="price">{{ __('Custom') }}<span>/{{ __('Tailored') }}</span></div>
+                        @else
+                            <div class="price">LKR {{ number_format($plan->price_lkr) }}<span>/month</span></div>
+                        @endif
+                    </div>
+                    <div class="package-body">
+                        <ul class="features">
+                            <li style="color: var(--navy-dark); font-weight: 600;">
+                                <i class="fas fa-building" style="color: var(--light-blue);"></i> 
+                                <span>{{ $plan->max_branches === -1 ? 'Unlimited' : $plan->max_branches }} {{ $plan->max_branches == 1 ? 'Branch' : 'Branches' }}</span>
+                            </li>
+                            <li style="color: var(--navy-dark); font-weight: 600; margin-bottom: 8px;">
+                                <i class="fas fa-users" style="color: var(--light-blue);"></i> 
+                                <span>{{ $plan->max_users === -1 ? 'Unlimited' : $plan->max_users }} {{ $plan->max_users == 1 ? 'User' : 'Users' }}</span>
+                            </li>
+                            
+                            @foreach($displayFeatures as $feature)
+                                <li><i class="fas fa-check"></i> <span>{{ ucwords(str_replace('_', ' ', $feature)) }}</span></li>
+                            @endforeach
+                            @if($hasMore)
+                                <li style="color: var(--gray-medium); font-style: italic; opacity: 0.7;"><i class="fas fa-plus-circle"></i> <span>{{ __('And much more...') }}</span></li>
+                            @endif
+                        </ul>
+                        @if($plan->slug === 'custom')
+                            <a href="#contact" class="package-btn" style="background: linear-gradient(135deg, var(--gray-dark) 0%, var(--navy-dark) 100%); color: var(--white);">{{ __('Contact Us') }}</a>
+                        @else
+                            <a href="{{ route('onboarding.index', ['plan' => $plan->slug]) }}" class="package-btn">{{ __('Start :name', ['name' => $plan->name]) }}</a>
+                        @endif
+                    </div>
                 </div>
-                <div class="package-body">
-                    <ul class="features">
-                        <li><i class="fas fa-check"></i> Up to 2,000 products</li>
-                        <li><i class="fas fa-check"></i> Basic billing & sales</li>
-                        <li><i class="fas fa-check"></i> Customer management</li>
-                        <li><i class="fas fa-check"></i> Daily sales reports</li>
-                        <li><i class="fas fa-check"></i> Email support</li>
-                        <li><i class="fas fa-times"></i> <del>Inventory alerts</del></li>
-                        <li><i class="fas fa-times"></i> <del>Multi-store sync</del></li>
-                    </ul>
-                    <a href="{{ route('onboarding.index', ['plan' => 'essential']) }}" class="package-btn" style="text-align: center;">Start Essential Plan</a>
-                </div>
-            </div>
-
-            <!-- Professional Plan (Highlighted) -->
-            <div class="package-card highlighted fade-in-up delay-1">
-                <div class="badge">MOST POPULAR</div>
-                <div class="package-header">
-                    <h3>Professional</h3>
-                    <p>For growing businesses</p>
-                    <div class="price">LKR 85,000<span>/month</span></div>
-                </div>
-                <div class="package-body">
-                    <ul class="features">
-                        <li><i class="fas fa-check"></i> Up to 10,000 products</li>
-                        <li><i class="fas fa-check"></i> Advanced billing features</li>
-                        <li><i class="fas fa-check"></i> Smart inventory management</li>
-                        <li><i class="fas fa-check"></i> Supplier & vendor tracking</li>
-                        <li><i class="fas fa-check"></i> GST & invoice generation</li>
-                        <li><i class="fas fa-check"></i> Low stock alerts</li>
-                        <li><i class="fas fa-check"></i> Priority phone support</li>
-                    </ul>
-                    <a href="{{ route('onboarding.index', ['plan' => 'professional']) }}" class="package-btn" style="text-align: center;">Start Professional Plan</a>
-                </div>
-            </div>
-
-            <!-- Enterprise Plan -->
-            <div class="package-card fade-in-up delay-2">
-                <div class="package-header">
-                    <h3>Enterprise</h3>
-                    <p>For retail chains & large stores</p>
-                    <div class="price">LKR 175,000<span>/month</span></div>
-                </div>
-                <div class="package-body">
-                    <ul class="features">
-                        <li><i class="fas fa-check"></i> Unlimited products</li>
-                        <li><i class="fas fa-check"></i> Multi-store management</li>
-                        <li><i class="fas fa-check"></i> Advanced AI analytics</li>
-                        <li><i class="fas fa-check"></i> Custom loyalty programs</li>
-                        <li><i class="fas fa-check"></i> Full API access</li>
-                        <li><i class="fas fa-check"></i> Custom feature development</li>
-                        <li><i class="fas fa-check"></i> 24/7 dedicated support</li>
-                    </ul>
-                    <a href="{{ route('onboarding.index', ['plan' => 'enterprise']) }}" class="package-btn" style="text-align: center;">Start Enterprise Plan</a>
-                </div>
-            </div>
+            @endforeach
         </div>
     </section>
 

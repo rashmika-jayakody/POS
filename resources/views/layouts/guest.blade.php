@@ -80,8 +80,8 @@
         }
 
         .brand-icon {
-            width: 180px;
-            height: 80px;
+            width: 220px;
+            height: 100px;
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 24px;
@@ -212,8 +212,8 @@
         }
 
         .mobile-logo-icon {
-            width: 140px;
-            height: 60px;
+            width: 180px;
+            height: 80px;
             background: transparent;
             border-radius: 14px;
             display: flex;
@@ -441,6 +441,12 @@
 
         .back-link:hover {
             color: #1A2B4D;
+        }
+
+        /* ─── Hide Browser Native Password Icons ─── */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
         }
 
         /* ─── Password Toggle ─── */

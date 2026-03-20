@@ -15,7 +15,8 @@ use App\Http\Controllers\ReportsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $plans = \App\Models\Plan::where('is_active', true)->get();
+    return view('welcome', compact('plans'));
 });
 
 // Switch language (stored in session; optional: set APP_LOCALE in .env for app-wide default)
@@ -49,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing.index');
+    Route::put('/pricing/{slug}', [\App\Http\Controllers\PricingController::class, 'update'])->name('pricing.update');
     // Cash Drawer / POS (Retail)
     Route::get('/cash-drawer', [CashDrawerController::class, 'index'])->name('cash-drawer.index');
     Route::patch('/cash-drawer/shortcuts', [CashDrawerController::class, 'updateShortcuts'])->name('cash-drawer.shortcuts.update');
@@ -69,7 +72,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/customers/search', function (\Illuminate\Http\Request $r) {
         return response()->json([]);
-    })->name('customers.search');
+    })->name('customers.search')->middleware('plan_feature:loyalty_customers');
 
     // Business settings (business owner / system owner)
     Route::get('/business-settings', [\App\Http\Controllers\BusinessSettingsController::class, 'edit'])->name('business-settings.edit');
@@ -79,9 +82,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index')->middleware('permission:view activity log');
 
     // Management
-    Route::resource('users', \App\Http\Controllers\UserController::class);
-    Route::resource('branches', \App\Http\Controllers\BranchController::class);
-    Route::resource('roles', \App\Http\Controllers\RoleController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::resource('users', \App\Http\Controllers\UserController::class)->middleware('plan_limit:max_users');
+    Route::resource('branches', \App\Http\Controllers\BranchController::class)->middleware('plan_limit:max_branches');
+    Route::resource('roles', \App\Http\Controllers\RoleController::class)->only(['index', 'create', 'store', 'edit', 'update'])->middleware('plan_feature:staff_permission_roles');
 
     // Product & Stock Management
     Route::resource('products', \App\Http\Controllers\ProductController::class);
@@ -89,19 +92,19 @@ Route::middleware('auth')->group(function () {
     Route::resource('units', \App\Http\Controllers\UnitController::class);
 
     // Supplier & GRN Management
-    Route::resource('suppliers', \App\Http\Controllers\SupplierController::class);
+    Route::resource('suppliers', \App\Http\Controllers\SupplierController::class)->middleware('plan_feature:supplier_management');
     Route::resource('grns', \App\Http\Controllers\GrnController::class);
     Route::post('/grns/{grn}/receive', [\App\Http\Controllers\GrnController::class, 'receive'])->name('grns.receive');
 
     // Company Other Expenses
-    Route::resource('company-other-expenses', \App\Http\Controllers\CompanyOtherExpenseController::class)->except(['show']);
+    Route::resource('company-other-expenses', \App\Http\Controllers\CompanyOtherExpenseController::class)->except(['show'])->middleware('plan_feature:other_expenses');
 
     // Restaurant Features
     Route::prefix('restaurant')->name('restaurant.')->group(function () {
         Route::resource('tables', RestaurantTableController::class);
         Route::resource('orders', RestaurantOrderController::class);
         Route::resource('reservations', ReservationController::class);
-        Route::resource('customers', CustomerController::class);
+        Route::resource('customers', CustomerController::class)->middleware('plan_feature:loyalty_customers');
         Route::get('/kitchen', [KitchenDisplayController::class, 'index'])->name('kitchen.index');
         Route::post('/orders/{order}/update-status', [RestaurantOrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::post('/orders/{order}/pay', [RestaurantOrderController::class, 'pay'])->name('orders.pay');
@@ -112,11 +115,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportsController::class, 'index'])->name('index');
         Route::get('/sales-summary', [ReportsController::class, 'salesSummary'])->name('sales-summary');
-        Route::get('/profit-loss', [ReportsController::class, 'profitLoss'])->name('profit-loss');
-        Route::get('/itemwise-sales', [ReportsController::class, 'itemwiseSales'])->name('itemwise-sales');
-        Route::get('/categorywise-sales', [ReportsController::class, 'categorywiseSales'])->name('categorywise-sales');
+        Route::get('/profit-loss', [ReportsController::class, 'profitLoss'])->name('profit-loss')->middleware('plan_feature:profit_loss_report');
+        Route::get('/itemwise-sales', [ReportsController::class, 'itemwiseSales'])->name('itemwise-sales')->middleware('plan_feature:item_wise_sales_report');
+        Route::get('/categorywise-sales', [ReportsController::class, 'categorywiseSales'])->name('categorywise-sales')->middleware('plan_feature:category_wise_sales_report');
         Route::get('/cash-summary', [ReportsController::class, 'cashSummary'])->name('cash-summary');
-        Route::get('/expiry-tracking', [ReportsController::class, 'expiryTracking'])->name('expiry-tracking');
+        Route::get('/expiry-tracking', [ReportsController::class, 'expiryTracking'])->name('expiry-tracking')->middleware('plan_feature:expiry_tracking');
         Route::get('/stock-valuation', [ReportsController::class, 'stockValuation'])->name('stock-valuation');
     });
 });
