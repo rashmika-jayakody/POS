@@ -1,48 +1,49 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Update Password') }}
-        </h2>
+<div class="profile-section">
+    <div class="settings-card-title" style="margin-bottom: 6px;"><i class="fas fa-lock"></i> {{ __('Update Password') }}</div>
+    <div class="settings-card-subtitle" style="margin-bottom: 20px;">{{ __('Ensure your account is using a long, random password to stay secure.') }}</div>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
-        </p>
-    </header>
-
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('password.update') }}">
         @csrf
         @method('put')
 
-        <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+        <div style="margin-bottom: 20px;">
+            <label for="update_password_current_password" style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Current Password') }}</label>
+            <input type="password" id="update_password_current_password" name="current_password" autocomplete="current-password"
+                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+            @if(optional($errors->updatePassword)->get('current_password'))
+                @foreach($errors->updatePassword->get('current_password') as $msg)
+                    <span style="color: var(--danger); font-size: 0.8rem;">{{ $msg }}</span>
+                @endforeach
+            @endif
         </div>
 
-        <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+        <div style="margin-bottom: 20px;">
+            <label for="update_password_password" style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('New Password') }}</label>
+            <input type="password" id="update_password_password" name="password" autocomplete="new-password"
+                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+            @if(optional($errors->updatePassword)->get('password'))
+                @foreach($errors->updatePassword->get('password') as $msg)
+                    <span style="color: var(--danger); font-size: 0.8rem;">{{ $msg }}</span>
+                @endforeach
+            @endif
         </div>
 
-        <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+        <div style="margin-bottom: 20px;">
+            <label for="update_password_password_confirmation" style="display: block; font-weight: 700; color: var(--navy-dark); margin-bottom: 8px;">{{ __('Confirm Password') }}</label>
+            <input type="password" id="update_password_password_confirmation" name="password_confirmation" autocomplete="new-password"
+                style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-family: inherit;">
+            @if(optional($errors->updatePassword)->get('password_confirmation'))
+                @foreach($errors->updatePassword->get('password_confirmation') as $msg)
+                    <span style="color: var(--danger); font-size: 0.8rem;">{{ $msg }}</span>
+                @endforeach
+            @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--gray-100); padding-top: 20px;">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> {{ __('Save') }}</button>
             @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+                <span style="font-size: 0.85rem; color: var(--success); font-weight: 600;"><i class="fas fa-check-circle"></i> {{ __('Saved.') }}</span>
             @endif
         </div>
     </form>
-</section>
+</div>

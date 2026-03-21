@@ -20,7 +20,10 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['category', 'unit', 'stocks.branch'])->get();
-        return view('products.index', compact('products'));
+        $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+        $settings = auth()->user()->tenant?->businessSetting;
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        return view('products.index', compact('products', 'posType', 'currencySymbol'));
     }
 
     /**
@@ -30,7 +33,9 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $units = Unit::all();
-        return view('products.create', compact('categories', 'units'));
+        $settings = auth()->user()->tenant?->businessSetting;
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        return view('products.create', compact('categories', 'units', 'currencySymbol'));
     }
 
     /**
@@ -44,12 +49,15 @@ class ProductController extends Controller
             'unit_id' => 'required|exists:units,id',
             'code' => 'nullable|string|max:60',
             'barcode' => 'nullable|string|unique:products,barcode',
-            'cost_price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0', // Read-only, set from GRN
             'selling_price' => 'required|numeric|min:0',
             'discount_type' => 'nullable|string|in:flat,percent',
             'discount_value' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
+        
+        // Set default cost_price to 0 if not provided (will be updated when GRN is received)
+        $validated['cost_price'] = $validated['cost_price'] ?? 0;
         $validated['discount_type'] = $validated['discount_type'] ?? null;
         $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;
 
@@ -74,14 +82,18 @@ class ProductController extends Controller
             ]);
         }
 
-        $branches = Branch::all();
-        foreach ($branches as $branch) {
-            Stock::create([
-                'product_id' => $product->id,
-                'branch_id' => $branch->id,
-                'quantity' => 0,
-                'low_stock_threshold' => 10,
-            ]);
+        // Only create stock records for retail POS (restaurants don't track menu item stock)
+        $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+        if ($posType === 'retail') {
+            $branches = Branch::all();
+            foreach ($branches as $branch) {
+                Stock::create([
+                    'product_id' => $product->id,
+                    'branch_id' => $branch->id,
+                    'quantity' => 0,
+                    'low_stock_threshold' => 10,
+                ]);
+            }
         }
 
         ActivityLogService::log('product_created', "Product created: {$product->name}", ['product_id' => $product->id, 'code' => $product->code], Product::class, $product->id);
@@ -106,7 +118,24 @@ class ProductController extends Controller
         $product = Product::with('productPrices')->findOrFail($id);
         $categories = Category::all();
         $units = Unit::all();
-        return view('products.edit', compact('product', 'categories', 'units'));
+        $posType = auth()->user()->tenant?->pos_type ?? 'retail';
+        
+        // Get FIFO cost price: first batch (oldest) that has stock
+        // This represents the cost of the stock that will be sold next (FIFO)
+        $fifoBatch = \App\Models\StockBatch::where('product_id', $product->id)
+            ->where('tenant_id', $product->tenant_id)
+            ->where('quantity', '>', 0)
+            ->orderBy('received_at', 'asc')  // Oldest first (FIFO)
+            ->orderBy('id', 'asc')
+            ->first();
+        
+        // If no batches, use product cost_price as fallback
+        $fifoCostPrice = $fifoBatch ? (float) $fifoBatch->purchase_price : (float) ($product->cost_price ?? 0);
+        
+        $settings = auth()->user()->tenant?->businessSetting;
+        $currencySymbol = $settings?->currency_symbol ?? 'Rs';
+        
+        return view('products.edit', compact('product', 'categories', 'units', 'posType', 'fifoCostPrice', 'currencySymbol'));
     }
 
     /**
@@ -122,12 +151,24 @@ class ProductController extends Controller
             'unit_id' => 'required|exists:units,id',
             'code' => 'nullable|string|max:60',
             'barcode' => 'nullable|string|unique:products,barcode,' . $id,
-            'cost_price' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0', // Read-only, set from GRN
             'selling_price' => 'required|numeric|min:0',
             'discount_type' => 'nullable|string|in:flat,percent',
             'discount_value' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
+        
+        // Use FIFO cost price (first batch with stock) if available, otherwise keep existing
+        if (!isset($validated['cost_price']) || $validated['cost_price'] == 0) {
+            $fifoBatch = \App\Models\StockBatch::where('product_id', $product->id)
+                ->where('tenant_id', $product->tenant_id)
+                ->where('quantity', '>', 0)
+                ->orderBy('received_at', 'asc')  // Oldest first (FIFO)
+                ->orderBy('id', 'asc')
+                ->first();
+            
+            $validated['cost_price'] = $fifoBatch ? (float) $fifoBatch->purchase_price : $product->cost_price;
+        }
         $validated['discount_type'] = $validated['discount_type'] ?? null;
         $validated['discount_value'] = isset($validated['discount_value']) ? (float) $validated['discount_value'] : 0;
 

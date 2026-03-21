@@ -282,29 +282,85 @@ class ReportsController extends Controller
         $branchId = $request->get('branch_id');
         $f = ['branch_id' => $branchId];
 
-        $query = $this->baseStockQuery()->with('product.category', 'product.unit', 'branch');
+        // Get all batches with stock
+        $batchQuery = $this->baseStockBatchQuery()
+            ->where('quantity', '>', 0)
+            ->with('product.category', 'product.unit', 'branch', 'grnItem.grn.supplier')
+            ->orderBy('product_id')
+            ->orderBy('branch_id')
+            ->orderBy('received_at', 'asc')
+            ->orderBy('id', 'asc');
+        
         if ($branchId) {
-            $query->where('branch_id', $branchId);
+            $batchQuery->where('branch_id', $branchId);
         }
-        $rows = $query->get()->map(function ($stock) {
-            $qty = (float) $stock->quantity;
-            $cost = (float) ($stock->product->cost_price ?? 0);
-            $selling = (float) ($stock->product->selling_price ?? 0);
-            return [
-                'stock' => $stock,
-                'product' => $stock->product,
-                'branch' => $stock->branch,
+        
+        $batches = $batchQuery->get();
+        
+        // Group batches by product and branch for summary
+        $productSummary = [];
+        $batchRows = [];
+        
+        foreach ($batches as $batch) {
+            $qty = (float) $batch->quantity;
+            $purchasePrice = (float) ($batch->purchase_price ?? 0);
+            $costValue = $qty * $purchasePrice;
+            $sellingPrice = (float) ($batch->product->selling_price ?? 0);
+            $retailValue = $qty * $sellingPrice;
+            
+            $key = $batch->product_id . '_' . $batch->branch_id;
+            
+            // Add to batch rows
+            $batchRows[] = [
+                'batch' => $batch,
+                'product' => $batch->product,
+                'branch' => $batch->branch,
+                'batch_number' => $batch->batch_number,
+                'received_at' => $batch->received_at,
+                'expiry_date' => $batch->expiry_date,
+                'supplier' => $batch->grnItem?->grn?->supplier,
                 'qty' => $qty,
-                'cost_value' => $qty * $cost,
-                'retail_value' => $qty * $selling,
+                'purchase_price' => $purchasePrice,
+                'cost_value' => $costValue,
+                'retail_value' => $retailValue,
             ];
-        })->filter(fn ($r) => $r['qty'] > 0)->sortByDesc('cost_value')->values();
-
+            
+            // Aggregate by product/branch
+            if (!isset($productSummary[$key])) {
+                $productSummary[$key] = [
+                    'product' => $batch->product,
+                    'branch' => $batch->branch,
+                    'total_qty' => 0,
+                    'total_cost_value' => 0,
+                    'total_retail_value' => 0,
+                    'batch_count' => 0,
+                ];
+            }
+            
+            $productSummary[$key]['total_qty'] += $qty;
+            $productSummary[$key]['total_cost_value'] += $costValue;
+            $productSummary[$key]['total_retail_value'] += $retailValue;
+            $productSummary[$key]['batch_count']++;
+        }
+        
+        // Convert summary to array and sort
+        $summaryRows = collect($productSummary)->values()->sortByDesc(function ($item) {
+            return $item['total_cost_value'];
+        })->values();
+        
+        // Calculate totals
         $totals = [
-            'cost_value' => $rows->sum('cost_value'),
-            'retail_value' => $rows->sum('retail_value'),
+            'total_batches' => count($batchRows),
+            'total_products' => count($productSummary),
+            'total_qty' => $batches->sum('quantity'),
+            'cost_value' => $batches->sum(function ($b) {
+                return (float) $b->quantity * (float) ($b->purchase_price ?? 0);
+            }),
+            'retail_value' => $batches->sum(function ($b) {
+                return (float) $b->quantity * (float) ($b->product->selling_price ?? 0);
+            }),
         ];
 
-        return view('reports.stock-valuation', array_merge(compact('rows', 'totals', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+        return view('reports.stock-valuation', array_merge(compact('batchRows', 'summaryRows', 'totals', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
     }
 }

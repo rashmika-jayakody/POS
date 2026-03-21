@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'plan_feature' => \App\Http\Middleware\CheckPlanFeature::class,
+            'plan_limit' => \App\Http\Middleware\CheckPlanLimit::class,
+        ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

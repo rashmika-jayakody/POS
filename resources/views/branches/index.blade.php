@@ -1,17 +1,17 @@
 @extends('layouts.admin')
 
-@section('title', 'Business Locations')
+@section('title', __('Business Locations'))
 
 @section('content')
     <div class="page-header animate-in">
         <div class="page-title">
             <i class="fas fa-store"></i>
-            Business Locations
+            {{ __('Business Locations') }}
         </div>
-        <div class="page-subtitle">Manage multiple physical branches of your grocery business.</div>
+        <div class="page-subtitle">{{ __('Manage multiple physical branches of your grocery business.') }}</div>
         <div style="margin-top: 20px;">
             <a href="{{ route('branches.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add New Location
+                <i class="fas fa-plus"></i> {{ __('Add New Location') }}
             </a>
         </div>
     </div>
@@ -35,12 +35,12 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Branch Name</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Staff Count</th>
-                        <th>Status</th>
-                        <th style="text-align: right;">Actions</th>
+                        <th>{{ __('Branch Name') }}</th>
+                        <th>{{ __('Address') }}</th>
+                        <th>{{ __('Phone') }}</th>
+                        <th>{{ __('Staff Count') }}</th>
+                        <th>{{ __('Status') }}</th>
+                        <th style="text-align: right;">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,17 +48,17 @@
                         <tr>
                             <td style="font-weight: 700; color: var(--navy-dark);">{{ $branch->name }}</td>
                             <td>{{ $branch->address }}</td>
-                            <td>{{ $branch->phone ?? 'N/A' }}</td>
+                            <td>{{ $branch->phone ?? __('N/A') }}</td>
                             <td>
                                 <span
                                     style="background: var(--light-blue-bg); color: var(--light-blue); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;">
-                                    {{ $branch->users_count }} members
+                                    {{ __(':count members', ['count' => $branch->users_count]) }}
                                 </span>
                             </td>
                             <td>
                                 <span class="status-badge {{ $branch->is_active ? 'active' : 'inactive' }}">
                                     <span class="status-dot"></span>
-                                    {{ $branch->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $branch->is_active ? __('Active') : __('Inactive') }}
                                 </span>
                             </td>
                             <td style="text-align: right;">
@@ -68,7 +68,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('branches.destroy', $branch->id) }}" method="POST"
-                                        onsubmit="return confirm('Delete this location? This cannot be undone.');">
+                                        onsubmit="return confirm('{{ __('Delete this location? This cannot be undone.') }}');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn"

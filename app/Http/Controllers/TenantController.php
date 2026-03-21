@@ -23,7 +23,8 @@ class TenantController extends Controller
     public function update(Request $request, Tenant $tenant)
     {
         $validated = $request->validate([
-            'status' => 'required|in:active,suspended',
+            'status' => 'nullable|in:active,suspended',
+            'plan' => 'nullable|string|in:' . implode(',', array_keys(config('plans', []))),
         ]);
 
         $tenant->update($validated);

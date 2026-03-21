@@ -1,47 +1,56 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="auth-narrow">
+        <h2 class="auth-heading">Welcome back</h2>
+        <p class="auth-subheading">Sign in to your account to continue.</p>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+        <!-- Session Status -->
+        <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope" style="color:#4A9EFF; margin-right:6px;"></i> Email
+                    Address</label>
+                <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
+                    autocomplete="username" placeholder="hello@yourstore.com">
+                @error('email') <div class="error-text">{{ $message }}</div> @enderror
+            </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock" style="color:#4A9EFF; margin-right:6px;"></i>
+                    Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" required autocomplete="current-password"
+                        placeholder="••••••••">
+                    <button type="button" class="pw-toggle" tabindex="-1"><i class="fas fa-eye"></i></button>
+                </div>
+                @error('password') <div class="error-text">{{ $message }}</div> @enderror
+            </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            <div class="form-row">
+                <div class="form-check">
+                    <input type="checkbox" id="remember_me" name="remember">
+                    <label for="remember_me">Remember me</label>
+                </div>
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
+                @endif
+            </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+            <button type="submit" class="auth-btn"><i class="fas fa-arrow-right-to-bracket"
+                    style="margin-right: 8px;"></i>
+                Sign In</button>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+            <div class="auth-footer-link">
+                Don't have an account? <a href="{{ route('onboarding.index', ['plan' => 'professional']) }}">Create new account</a>
+            </div>
+
+            <div class="auth-footer-link" style="margin-top: 12px;">
+                <a href="{{ url('/') }}" style="color: #94a3b8; font-weight: 500;">
+                    <i class="fas fa-arrow-left" style="font-size: 0.75rem; margin-right: 4px;"></i> Back to Home
                 </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
+            </div>
+        </form>
+    </div>
 </x-guest-layout>
