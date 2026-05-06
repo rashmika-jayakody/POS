@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reservation extends Model
 {
-    use BelongsToTenant;
+    use BelongsToTenant, SoftDeletes;
 
     protected $fillable = [
         'tenant_id',
@@ -56,7 +57,7 @@ class Reservation extends Model
     {
         $this->update([
             'status' => $status,
-            $status . '_at' => now(),
+            $status.'_at' => now(),
         ]);
     }
 
@@ -66,13 +67,13 @@ class Reservation extends Model
         $lastReservation = self::where('reservation_no', 'like', "RES-{$date}-%")
             ->orderBy('reservation_no', 'desc')
             ->first();
-        
+
         $seq = 1;
         if ($lastReservation) {
             $parts = explode('-', $lastReservation->reservation_no);
             $seq = (int) end($parts) + 1;
         }
-        
-        return 'RES-' . $date . '-' . str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
+
+        return 'RES-'.$date.'-'.str_pad((string) $seq, 4, '0', STR_PAD_LEFT);
     }
 }
