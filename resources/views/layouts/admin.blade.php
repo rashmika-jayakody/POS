@@ -904,7 +904,7 @@
                 <div class="sidebar-logo">
                     @if ($businessLogo ?? null)
                         <img src="{{ $businessLogo }}" alt=""
-                            style="height: 48px; width: auto; max-width: 180px; object-fit: contain;">
+                            style="height: 30px; width: auto; transform: scale(2.8); transform-origin: left center; margin-left: 20px;">
                     @else
                         <i class="fas fa-chart-line"></i>
                     @endif
@@ -955,6 +955,9 @@
                     <i class="fas fa-shield-alt"></i> <span>{{ __('Roles & Permissions') }}</span>
                 </a>
                 @hasrole('business_owner|system_owner')
+                <a href="{{ route('pricing.index') }}" class="nav-item {{ request()->routeIs('pricing.*') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card"></i> <span>{{ __('Subscription & Plan') }}</span>
+                </a>
                 <a href="{{ route('business-settings.edit') }}"
                     class="nav-item {{ request()->is('business-settings*') ? 'active' : '' }}">
                     <i class="fas fa-cog"></i> <span>{{ __('Business Settings') }}</span>
@@ -1085,7 +1088,7 @@
                 <div class="logo-text" style="display: flex; align-items: center; gap: 10px;">
                     @if ($businessLogo ?? null)
                         <img src="{{ $businessLogo }}" alt=""
-                            style="height: 40px; width: auto; max-width: 200px; object-fit: contain;">
+                            style="height: 25px; width: auto; transform: scale(3); transform-origin: left center; margin-left:15px;">
                     @else
                         <i class="fas fa-chart-line"></i>
                     @endif

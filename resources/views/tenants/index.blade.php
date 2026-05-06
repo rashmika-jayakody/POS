@@ -27,6 +27,7 @@
                         <th>{{ __('Owner Email') }}</th>
                         <th>{{ __('Branches') }}</th>
                         <th>{{ __('Staff') }}</th>
+                        <th>{{ __('Plan') }}</th>
                         <th>{{ __('Status') }}</th>
                         <th>{{ __('Registered Date') }}</th>
                         <th style="text-align: right;">{{ __('Actions') }}</th>
@@ -39,6 +40,19 @@
                             <td>{{ $tenant->email }}</td>
                             <td>{{ $tenant->branches_count }}</td>
                             <td>{{ $tenant->users_count }}</td>
+                            <td>
+                                <form action="{{ route('tenants.update', $tenant->id) }}" method="POST" id="form-plan-{{ $tenant->id }}">
+                                    @csrf
+                                    @method('PUT')
+                                    <select name="plan" onchange="this.form.submit()" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--gray-300); font-size: 0.8rem; font-weight: 600; color: var(--navy-dark); background: white; cursor: pointer;">
+                                        @foreach(config('plans', []) as $key => $plan)
+                                            <option value="{{ $key }}" {{ $tenant->plan == $key ? 'selected' : '' }}>
+                                                {{ $plan['name'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </td>
                             <td>
                                 <span class="status-badge {{ $tenant->status == 'active' ? 'active' : 'inactive' }}">
                                     <span class="status-dot"></span>

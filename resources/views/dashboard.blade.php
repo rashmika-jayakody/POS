@@ -17,6 +17,15 @@
         </div>
         <div class="page-subtitle">
             {{ __('Welcome back, :name! Here\'s your business overview.', ['name' => auth()->user()->name]) }}
+            @php
+                $plan = auth()->user()->tenant?->plan ?? 'starter';
+                $plans = config('plans', []);
+                $planName = $plans[$plan]['name'] ?? ucfirst($plan);
+            @endphp
+            <span style="display: inline-block; margin-left: 8px; padding: 2px 10px; background: linear-gradient(135deg, #4A9EFF 0%, #00C9B7 100%); color: white; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+                <i class="fas fa-crown" style="font-size: 0.7rem; margin-right: 4px;"></i>
+                {{ $planName }}
+            </span>
             @if($isSystemOwner ?? false)
                 <span style="display: inline-block; margin-left: 8px; padding: 2px 8px; background: rgba(74, 158, 255, 0.15); color: #4A9EFF; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">{{ __('All tenants') }}</span>
             @endif

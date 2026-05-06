@@ -19,17 +19,17 @@ use Illuminate\View\View;
 
 class OnboardingWizardController extends Controller
 {
-    public static function plans(): array
+    public static function plans()
     {
-        return config('plans', []);
+        return \App\Models\Plan::where('is_active', true)->get()->keyBy('slug');
     }
 
     public function index(Request $request): View|RedirectResponse
     {
         $plans = self::plans();
-        $plan = $request->query('plan', 'professional');
-        if (!array_key_exists($plan, $plans)) {
-            $plan = 'professional';
+        $plan = $request->query('plan', 'starter');
+        if (!$plans->has($plan)) {
+            $plan = 'starter';
         }
         
         // Determine which step to show based on validation errors
@@ -59,7 +59,7 @@ class OnboardingWizardController extends Controller
         
         return view('onboarding.wizard', [
             'plan' => $plan,
-            'planInfo' => $plans[$plan],
+            'planInfo' => $plans->get($plan),
             'plans' => $plans,
             'step' => $step,
             'email' => $email,
@@ -76,8 +76,9 @@ class OnboardingWizardController extends Controller
             
             // Validate all form data first
             try {
+                $plans = self::plans();
                 $validated = $request->validate([
-                    'plan' => ['required', 'string', 'in:' . implode(',', array_keys(self::plans()))],
+                    'plan' => ['required', 'string', 'in:' . $plans->keys()->implode(',')],
                     'pos_type' => ['required', 'string', 'in:retail,restaurant'],
                     'company_name' => ['required', 'string', 'max:255'],
                     'address' => ['required', 'string', 'max:500'],
@@ -126,7 +127,7 @@ class OnboardingWizardController extends Controller
             // Make sure to store all data including password confirmation
             $sessionData = array_merge($validated, [
                 'password_confirmation' => $request->input('password_confirmation'),
-                'plan' => $request->input('plan', 'professional'),
+                'plan' => $request->input('plan', 'starter'),
             ]);
             
             // Debug: Log what we're saving
@@ -150,7 +151,7 @@ class OnboardingWizardController extends Controller
             // Always return JSON for AJAX requests, otherwise redirect
             if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
                 $redirectUrl = route('onboarding.index', [
-                    'plan' => $request->input('plan', 'professional'),
+                    'plan' => $request->input('plan', 'starter'),
                     'step' => 4
                 ]);
                 
@@ -166,7 +167,7 @@ class OnboardingWizardController extends Controller
             \Log::info('Onboarding Step 3 - Returning HTML redirect to step 4');
             
             return redirect()->route('onboarding.index', [
-                'plan' => $request->input('plan', 'professional'),
+                'plan' => $request->input('plan', 'starter'),
                 'step' => 4
             ])->with('success', 'Verification code has been sent to your email. Please check your inbox.');
         }
@@ -190,7 +191,7 @@ class OnboardingWizardController extends Controller
         // Priority: 1. Request data (for verification_code and email), 2. Session data, 3. Request fallback
         $formData = [
             'verification_code' => $request->input('verification_code'),
-            'plan' => $request->input('plan', $onboardingData['plan'] ?? 'professional'),
+            'plan' => $request->input('plan', $onboardingData['plan'] ?? 'starter'),
             'email' => $emailFromRequest ?? $onboardingData['email'] ?? old('email') ?? '',
         ];
         
@@ -235,8 +236,9 @@ class OnboardingWizardController extends Controller
         
         // Validate using merged data
         try {
+            $plans = self::plans();
             $validator = \Validator::make($formData, [
-                'plan' => ['required', 'string', 'in:' . implode(',', array_keys(self::plans()))],
+                'plan' => ['required', 'string', 'in:' . $plans->keys()->implode(',')],
                 'pos_type' => ['required', 'string', 'in:retail,restaurant'],
                 'company_name' => ['required', 'string', 'max:255'],
                 'address' => ['required', 'string', 'max:500'],
