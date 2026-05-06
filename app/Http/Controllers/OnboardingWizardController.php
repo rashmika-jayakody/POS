@@ -7,6 +7,7 @@ use App\Models\BusinessSetting;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\EmailVerificationService;
+use App\Services\PayHereService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -306,6 +307,7 @@ class OnboardingWizardController extends Controller
                 'status' => 'active',
                 'plan' => $validated['plan'],
                 'pos_type' => $validated['pos_type'],
+                'billing_email' => $validated['email'],
             ]);
 
             $branch = Branch::create([
@@ -334,17 +336,27 @@ class OnboardingWizardController extends Controller
             ]);
 
             $user->assignRole('business_owner');
+
             return $user;
         });
 
         event(new \Illuminate\Auth\Events\Registered($user));
         Auth::login($user);
 
-        // Clear onboarding session data
         Session::forget('onboarding_data');
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Welcome! Your store is ready. Your store link: ' . route('store.landing', ['tenant' => $slug]));
+        $payhere = new PayHereService();
+        $result = $payhere->createSubscription($user->tenant, $validated['plan']);
+
+        if ($result) {
+            return view('billing.checkout', [
+                'checkoutData' => $result['checkout_data'],
+                'planName' => $validated['plan'],
+            ]);
+        }
+
+        return redirect()->route('billing.index')
+            ->with('warning', 'Your account has been created! Please complete your payment to activate your subscription.');
     }
 
     /**

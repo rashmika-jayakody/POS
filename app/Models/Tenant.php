@@ -17,6 +17,8 @@ class Tenant extends Model
         'status',
         'plan',
         'pos_type',
+        'payhere_customer_id',
+        'billing_email',
     ];
 
     /**
@@ -52,45 +54,39 @@ class Tenant extends Model
         return $this->hasOne(BusinessSetting::class);
     }
 
-    /* ─── Plan Configuration Helpers ─── */
-
-    /**
-     * Get the current plan's configuration.
-     */
-    public function getPlanConfigAttribute()
+    public function activeSubscription()
     {
-        return Plan::where('slug', $this->plan)->first() ?? Plan::where('slug', 'starter')->first();
+        return $this->hasOne(Subscription::class)->whereIn('status', ['active', 'trialing', 'pending_payment'])->latestOfMany();
     }
 
-    /**
-     * Check if the tenant's plan includes a specific feature.
-     */
-    public function hasFeature(string $feature): bool
+    public function currentSubscription()
     {
-        $plan = $this->plan_config;
-        return in_array($feature, $plan->features ?? []);
+        return $this->hasOne(Subscription::class)->whereIn('status', ['active', 'trialing', 'pending_payment', 'past_due'])->latestOfMany();
     }
 
-    /**
-     * Check if the tenant has reached is within the limit for a specific metric.
-     * Metrics: 'max_branches', 'max_users'
-     */
-    public function isWithinLimit(string $metric): bool
+    public function subscriptions()
     {
-        $plan = $this->plan_config;
-        $limit = $plan->$metric ?? -1;
+        return $this->hasMany(Subscription::class);
+    }
 
-        if ($limit === -1) {
-            return true;
-        }
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 
-        $currentCount = 0;
-        if ($metric === 'max_branches') {
-            $currentCount = $this->branches()->count();
-        } elseif ($metric === 'max_users') {
-            $currentCount = $this->users()->count();
-        }
+    public function isSubscribed(): bool
+    {
+        return $this->activeSubscription && $this->activeSubscription->isActive();
+    }
 
-        return $currentCount < $limit;
+    public function isOnTrial(): bool
+    {
+        return $this->activeSubscription && $this->activeSubscription->isOnTrial();
+    }
+
+    public function needsPayment(): bool
+    {
+        $sub = $this->currentSubscription;
+        return $sub && $sub->isPendingPayment();
     }
 }

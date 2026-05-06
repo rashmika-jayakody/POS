@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sale extends Model
 {
-    use BelongsToTenant;
+    use BelongsToTenant, SoftDeletes;
 
     protected $fillable = [
         'tenant_id',
@@ -20,6 +21,7 @@ class Sale extends Model
         'tax_total',
         'grand_total',
         'payment_method',
+        'cash_drawer_session_id',
     ];
 
     protected $casts = [
@@ -43,5 +45,15 @@ class Sale extends Model
     public function items()
     {
         return $this->hasMany(SaleItem::class);
+    }
+
+    public function cashDrawerSession()
+    {
+        return $this->belongsTo(CashDrawerSession::class);
+    }
+
+    public function refunds()
+    {
+        return $this->hasMany(Refund::class, 'original_sale_id');
     }
 }

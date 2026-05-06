@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\RestaurantOrder;
 use App\Models\RestaurantOrderItem;
 use App\Models\RestaurantTable;
-use App\Models\Branch;
+use App\Services\ActivityLogService;
+use App\Services\CashDrawerSessionService;
 use App\Services\FifoStockService;
+use App\Services\PrintService;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class RestaurantOrderController extends Controller
 {
@@ -19,10 +22,10 @@ class RestaurantOrderController extends Controller
             ->with(['table', 'user', 'customer', 'items'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-        
+
         $settings = auth()->user()->tenant?->businessSetting;
         $currencySymbol = $settings?->currency_symbol ?? 'Rs';
-        
+
         return view('restaurant.orders.index', compact('orders', 'currencySymbol'));
     }
 
@@ -51,18 +54,35 @@ class RestaurantOrderController extends Controller
             'service_charge' => 'required|numeric|min:0',
             'grand_total' => 'required|numeric|min:0',
             'payment_method' => 'nullable|string|max:40',
-            'is_paid' => 'nullable|boolean', // true if paid, false if pay later
+            'is_paid' => 'nullable|boolean',
+            'tip_amount' => 'nullable|numeric|min:0',
+            'tip_type' => 'nullable|in:fixed,percentage',
         ]);
 
         $user = auth()->user();
-        
-        // Determine status based on payment
+        $tenantId = $user->tenant_id;
+        $branchId = $user->branch_id;
+
+        if (! $branchId) {
+            $branch = Branch::where('tenant_id', $tenantId)->first();
+            $branchId = $branch?->id;
+        }
+
+        if (! $branchId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No branch assigned to user.',
+            ], 400);
+        }
+
+        $activeSession = app(CashDrawerSessionService::class)->getActiveSession($tenantId, $branchId);
+
         $isPaid = $validated['is_paid'] ?? false;
         $status = $isPaid ? 'completed' : 'confirmed';
-        
+
         $orderData = [
-            'tenant_id' => $user->tenant_id,
-            'branch_id' => $user->branch_id,
+            'tenant_id' => $tenantId,
+            'branch_id' => $branchId,
             'restaurant_table_id' => $validated['restaurant_table_id'] ?? null,
             'user_id' => $validated['user_id'] ?? null,
             'customer_name' => $validated['customer_name'] ?? null,
@@ -75,20 +95,25 @@ class RestaurantOrderController extends Controller
             'tax_total' => $validated['tax_total'],
             'service_charge' => $validated['service_charge'],
             'grand_total' => $validated['grand_total'],
+            'is_paid' => $isPaid,
+            'payment_method' => $validated['payment_method'] ?? null,
+            'tip_amount' => $validated['tip_amount'] ?? 0,
+            'tip_type' => $validated['tip_type'] ?? null,
+            'cash_drawer_session_id' => $activeSession?->id,
         ];
-        
-        // Set timestamps based on status
+
         if ($status === 'confirmed') {
             $orderData['confirmed_at'] = now();
         } else {
             $orderData['completed_at'] = now();
+            $orderData['paid_at'] = now();
         }
-        
+
         $order = RestaurantOrder::create($orderData);
 
-        // Create order items
         foreach ($validated['items'] as $item) {
             $lineTotal = (float) $item['qty'] * (float) $item['unit_price'];
+
             RestaurantOrderItem::create([
                 'restaurant_order_id' => $order->id,
                 'product_id' => $item['product_id'],
@@ -98,16 +123,17 @@ class RestaurantOrderController extends Controller
                 'modifier_total' => 0,
                 'discount_amount' => 0,
                 'special_instructions' => $item['special_instructions'] ?? null,
-                'status' => $isPaid ? 'served' : 'pending', // pending if not paid yet
+                'status' => $isPaid ? 'served' : 'pending',
             ]);
         }
 
-        // If order is paid, reduce stock
         if ($isPaid) {
             $this->reduceStockForOrder($order);
+            if ($activeSession) {
+                $activeSession->increment('other_sales', $order->grand_total);
+            }
         }
 
-        // Update table status if table is assigned
         if ($order->restaurant_table_id) {
             $table = RestaurantTable::find($order->restaurant_table_id);
             if ($table) {
@@ -115,60 +141,61 @@ class RestaurantOrderController extends Controller
             }
         }
 
+        ActivityLogService::log('order_created', "Order {$order->order_no} created", [
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'grand_total' => $order->grand_total,
+            'is_paid' => $isPaid,
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Order saved successfully',
             'order_id' => $order->id,
+            'order_no' => $order->order_no,
         ]);
     }
 
     public function show(RestaurantOrder $order)
     {
-        // Check if user has access to this order
         if ($order->tenant_id !== auth()->user()->tenant_id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
-        
-        $order->load(['table', 'user', 'customer', 'items.product', 'items.product.unit', 'modifiers']);
+
+        $order->load(['table', 'user', 'customer', 'items.product', 'items.product.unit']);
         $settings = auth()->user()->tenant?->businessSetting;
         $currencySymbol = $settings?->currency_symbol ?? 'Rs';
-        
-        // Return JSON for AJAX requests or if Accept header includes application/json
+
         if (request()->wantsJson() || request()->expectsJson() || request()->ajax()) {
-            try {
-                return response()->json([
-                    'success' => true,
-                    'order' => [
-                        'id' => $order->id,
-                        'order_no' => $order->order_no,
-                        'restaurant_table_id' => $order->restaurant_table_id,
-                        'user_id' => $order->user_id,
-                        'customer_name' => $order->customer_name ?? null,
-                        'customer_phone' => $order->customer_phone ?? null,
-                        'status' => $order->status,
-                        'grand_total' => (float) $order->grand_total,
-                        'items' => $order->items->map(function($item) {
-                            return [
-                                'product_id' => $item->product_id,
-                                'product' => [
-                                    'name' => $item->product->name ?? 'Unknown Product',
-                                    'unit' => $item->product->unit ? ['short_code' => $item->product->unit->short_code] : null
-                                ],
-                                'qty' => (float) $item->qty,
-                                'unit_price' => (float) $item->unit_price,
-                            ];
-                        })->toArray()
-                    ]
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Error loading order: ' . $e->getMessage());
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error loading order: ' . $e->getMessage()
-                ], 500);
-            }
+            return response()->json([
+                'success' => true,
+                'order' => [
+                    'id' => $order->id,
+                    'order_no' => $order->order_no,
+                    'restaurant_table_id' => $order->restaurant_table_id,
+                    'user_id' => $order->user_id,
+                    'customer_name' => $order->customer_name,
+                    'customer_phone' => $order->customer_phone,
+                    'status' => $order->status,
+                    'is_paid' => $order->is_paid,
+                    'grand_total' => (float) $order->grand_total,
+                    'tip_amount' => (float) $order->tip_amount,
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'product' => [
+                                'name' => $item->product->name ?? 'Unknown',
+                                'unit' => $item->product->unit ? ['short_code' => $item->product->unit->short_code] : null,
+                            ],
+                            'qty' => (float) $item->qty,
+                            'unit_price' => (float) $item->unit_price,
+                            'special_instructions' => $item->special_instructions,
+                        ];
+                    })->toArray(),
+                ],
+            ]);
         }
-        
+
         return view('restaurant.orders.show', compact('order', 'currencySymbol'));
     }
 
@@ -195,8 +222,7 @@ class RestaurantOrderController extends Controller
 
         $status = $validated['status'];
         $updateData = ['status' => $status];
-        
-        // Update timestamps based on status
+
         switch ($status) {
             case 'confirmed':
                 $updateData['confirmed_at'] = now();
@@ -214,12 +240,11 @@ class RestaurantOrderController extends Controller
                 $updateData['completed_at'] = now();
                 break;
         }
-        
+
         $order->update($updateData);
-        
-        // Update order items status
+
         if (in_array($status, ['preparing', 'ready', 'served'])) {
-            $itemStatus = match($status) {
+            $itemStatus = match ($status) {
                 'preparing' => 'preparing',
                 'ready' => 'ready',
                 'served' => 'served',
@@ -247,29 +272,48 @@ class RestaurantOrderController extends Controller
 
     public function pay(Request $request, RestaurantOrder $order)
     {
-        // Check if user has access to this order
         if ($order->tenant_id !== auth()->user()->tenant_id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
         $validated = $request->validate([
             'payment_method' => 'required|string|max:40',
+            'tip_amount' => 'nullable|numeric|min:0',
+            'tip_type' => 'nullable|in:fixed,percentage',
         ]);
 
-        // Update order to completed status
+        $user = auth()->user();
+        $branchId = $user->branch_id;
+
+        $sessionService = app(CashDrawerSessionService::class);
+        $activeSession = $sessionService->getActiveSession($user->tenant_id, $branchId);
+
         $order->update([
             'status' => 'completed',
             'completed_at' => now(),
+            'is_paid' => true,
+            'paid_at' => now(),
             'payment_method' => $validated['payment_method'],
+            'tip_amount' => $validated['tip_amount'] ?? 0,
+            'tip_type' => $validated['tip_type'] ?? null,
+            'cash_drawer_session_id' => $activeSession?->id,
         ]);
 
-        // Update order items to served
         $order->items()->update(['status' => 'served']);
 
-        // Reduce stock for completed order
         $this->reduceStockForOrder($order);
 
-        // Update table status if table is assigned
+        if ($activeSession) {
+            $paymentMethod = strtolower($validated['payment_method']);
+            if ($paymentMethod === 'cash') {
+                $activeSession->increment('cash_sales', $order->grand_total);
+            } elseif ($paymentMethod === 'card') {
+                $activeSession->increment('card_sales', $order->grand_total);
+            } else {
+                $activeSession->increment('other_sales', $order->grand_total);
+            }
+        }
+
         if ($order->restaurant_table_id) {
             $table = RestaurantTable::find($order->restaurant_table_id);
             if ($table) {
@@ -277,26 +321,101 @@ class RestaurantOrderController extends Controller
             }
         }
 
+        ActivityLogService::log('order_paid', "Order {$order->order_no} paid", [
+            'order_id' => $order->id,
+            'order_no' => $order->order_no,
+            'payment_method' => $validated['payment_method'],
+            'grand_total' => $order->grand_total,
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Order payment processed successfully',
+            'order' => $order->fresh(['items.product']),
         ]);
     }
 
-    /**
-     * Reduce stock for restaurant order items using FIFO.
-     */
-    private function reduceStockForOrder(RestaurantOrder $order)
+    public function printKitchen(RestaurantOrder $order)
+    {
+        if ($order->tenant_id !== auth()->user()->tenant_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $order->load(['items.product', 'table', 'user']);
+
+        $printService = app(PrintService::class);
+
+        $data = [
+            'order_no' => $order->order_no,
+            'table' => $order->table?->name,
+            'waiter' => $order->user?->name ?? 'Unknown',
+            'items' => $order->items->map(function ($item) {
+                return [
+                    'name' => $item->product->name ?? 'Unknown',
+                    'qty' => $item->qty,
+                    'special_instructions' => $item->special_instructions,
+                    'modifiers' => [],
+                ];
+            })->toArray(),
+        ];
+
+        $printed = $printService->printKitchenTicket($data);
+
+        return response()->json([
+            'success' => $printed,
+            'message' => $printed ? 'Kitchen ticket printed' : 'Failed to print kitchen ticket',
+        ]);
+    }
+
+    public function printReceipt(RestaurantOrder $order)
+    {
+        if ($order->tenant_id !== auth()->user()->tenant_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $order->load(['items.product']);
+
+        $printService = app(PrintService::class);
+
+        $data = [
+            'invoice_no' => $order->order_no,
+            'order_no' => $order->order_no,
+            'items' => $order->items->map(function ($item) {
+                return [
+                    'name' => $item->product->name ?? 'Unknown',
+                    'qty' => $item->qty,
+                    'unit_price' => $item->unit_price,
+                ];
+            })->toArray(),
+            'subtotal' => (float) $order->subtotal,
+            'discount_total' => (float) $order->discount_total,
+            'tax_total' => (float) $order->tax_total,
+            'service_charge' => (float) $order->service_charge,
+            'grand_total' => (float) $order->grand_total,
+            'tip_amount' => (float) $order->tip_amount,
+            'payment_method' => $order->is_paid ? ucfirst($order->payment_method ?? 'Cash') : 'Pending',
+        ];
+
+        $html = $printService->generateReceiptHtml($data);
+
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+        ]);
+    }
+
+    protected function reduceStockForOrder(RestaurantOrder $order)
     {
         $tenantId = $order->tenant_id;
         $branchId = $order->branch_id;
 
-        if (!$tenantId || !$branchId) {
+        if (! $tenantId || ! $branchId) {
             \Log::warning('Cannot reduce stock: missing tenant_id or branch_id', [
                 'order_id' => $order->id,
                 'tenant_id' => $tenantId,
                 'branch_id' => $branchId,
             ]);
+
             return;
         }
 
@@ -314,25 +433,22 @@ class RestaurantOrderController extends Controller
                     continue;
                 }
 
-                // Deduct stock using FIFO
                 $stockResult = $fifo->deduct($tenantId, $productId, $branchId, $qty);
 
-                if (!$stockResult || !$stockResult['success']) {
+                if (! $stockResult || ! $stockResult['success']) {
                     \Log::warning('Failed to deduct stock for restaurant order item', [
                         'order_id' => $order->id,
                         'product_id' => $productId,
                         'qty' => $qty,
                     ]);
-                    // Continue with other items even if one fails
                 }
             }
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error reducing stock for restaurant order: ' . $e->getMessage(), [
+            \Log::error('Error reducing stock for restaurant order: '.$e->getMessage(), [
                 'order_id' => $order->id,
-                'trace' => $e->getTraceAsString(),
             ]);
         }
     }

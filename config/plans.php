@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'starter' => [
-        'name' => 'Starter Plan (Small Shops)',
-        'description' => 'Good for small grocery shops or kiosks.',
-        'max_branches' => 1,
-        'max_users' => 2,
-        'price_lkr' => 15000,
+    'essential' => [
+        'name' => 'Essential',
+        'price_lkr' => 35000,
+        'price_display' => 'LKR 350/month',
+        'payhere_recurrence' => '1 Month',
+        'tagline' => 'Perfect for startups & small stores',
         'features' => [
             'product_management',
             'barcode_support',
@@ -44,12 +44,12 @@ return [
             'supplier_management',
         ],
     ],
-    'business' => [
-        'name' => 'Business Plan (Large Stores)',
-        'description' => 'For supermarkets, chains, or serious retailers.',
-        'max_branches' => -1, // Unlimited
-        'max_users' => -1, // Unlimited
-        'price_lkr' => 75000,
+    'professional' => [
+        'name' => 'Professional',
+        'price_lkr' => 85000,
+        'price_display' => 'LKR 850/month',
+        'payhere_recurrence' => '1 Month',
+        'tagline' => 'For growing businesses',
         'features' => [
             'product_management',
             'barcode_support',
@@ -76,12 +76,12 @@ return [
             'sales_inventory_forecasting',
         ],
     ],
-    'custom' => [
-        'name' => 'Custom Plan (Enterprise)',
-        'description' => 'For supermarkets, chains, or serious retailers with unique needs.',
-        'max_branches' => -1, // Unlimited
-        'max_users' => -1, // Unlimited
-        'price_lkr' => 0, // Handled in UI
+    'enterprise' => [
+        'name' => 'Enterprise',
+        'price_lkr' => 175000,
+        'price_display' => 'LKR 1,750/month',
+        'payhere_recurrence' => '1 Month',
+        'tagline' => 'For retail chains & large stores',
         'features' => [
             'product_management',
             'barcode_support',

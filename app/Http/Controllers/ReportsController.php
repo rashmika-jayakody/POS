@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
-use App\Models\Category;
+use App\Models\CashDrawerSession;
 use App\Models\CompanyOtherExpense;
-use App\Models\Product;
+use App\Models\RestaurantOrder;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Stock;
 use App\Models\StockBatch;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,7 @@ class ReportsController extends Controller
         if ($this->isSystemOwner()) {
             return Branch::withoutGlobalScope('tenant')->orderBy('name')->get();
         }
+
         return Branch::where('tenant_id', $this->getTenantId())->orderBy('name')->get();
     }
 
@@ -38,7 +40,6 @@ class ReportsController extends Controller
         return auth()->user()->tenant?->businessSetting?->currency_symbol ?? 'Rs';
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder */
     protected function baseSaleQuery()
     {
         return $this->isSystemOwner()
@@ -46,7 +47,6 @@ class ReportsController extends Controller
             : Sale::where('tenant_id', $this->getTenantId());
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder */
     protected function baseExpenseQuery()
     {
         return $this->isSystemOwner()
@@ -54,7 +54,6 @@ class ReportsController extends Controller
             : CompanyOtherExpense::where('tenant_id', $this->getTenantId());
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder */
     protected function baseStockBatchQuery()
     {
         return $this->isSystemOwner()
@@ -62,12 +61,18 @@ class ReportsController extends Controller
             : StockBatch::where('tenant_id', $this->getTenantId());
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder */
     protected function baseStockQuery()
     {
         return $this->isSystemOwner()
             ? Stock::withoutGlobalScope('tenant')
             : Stock::where('tenant_id', $this->getTenantId());
+    }
+
+    protected function baseRestaurantOrderQuery()
+    {
+        return $this->isSystemOwner()
+            ? RestaurantOrder::withoutGlobalScope('tenant')
+            : RestaurantOrder::where('tenant_id', $this->getTenantId());
     }
 
     protected function getFilterDefaults(Request $request): array
@@ -77,6 +82,7 @@ class ReportsController extends Controller
         if ($from->gt($to)) {
             $from = $to->copy()->subDays(30);
         }
+
         return [
             'from' => $from->format('Y-m-d'),
             'to' => $to->format('Y-m-d'),
@@ -95,21 +101,22 @@ class ReportsController extends Controller
         $f = $this->getFilterDefaults($request);
 
         $query = $this->baseSaleQuery()
-            ->whereBetween('sale_date', [$f['from'] . ' 00:00:00', $f['to'] . ' 23:59:59']);
-        if (!empty($f['branch_id'])) {
+            ->whereBetween('sale_date', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if (! empty($f['branch_id'])) {
             $query->where('branch_id', $f['branch_id']);
         }
 
-        $period = $request->get('period', 'day'); // day, week, month
+        $period = $request->get('period', 'day');
         $dateFormat = $period === 'month' ? 'Y-m' : ($period === 'week' ? 'Y-W' : 'Y-m-d');
-        $rows = (clone $query)->get()->groupBy(function ($sale) use ($dateFormat, $period) {
+        $rows = (clone $query)->get()->groupBy(function ($sale) use ($period) {
             $d = $sale->sale_date;
             if ($period === 'week') {
-                return $d->format('Y') . '-W' . $d->weekOfYear;
+                return $d->format('Y').'-W'.$d->weekOfYear;
             }
             if ($period === 'month') {
                 return $d->format('Y-m');
             }
+
             return $d->format('Y-m-d');
         })->map(function ($group, $key) {
             return [
@@ -134,8 +141,8 @@ class ReportsController extends Controller
         $f = $this->getFilterDefaults($request);
 
         $salesQuery = $this->baseSaleQuery()
-            ->whereBetween('sale_date', [$f['from'] . ' 00:00:00', $f['to'] . ' 23:59:59']);
-        if (!empty($f['branch_id'])) {
+            ->whereBetween('sale_date', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if (! empty($f['branch_id'])) {
             $salesQuery->where('branch_id', $f['branch_id']);
         }
         $revenue = (clone $salesQuery)->sum('grand_total');
@@ -147,13 +154,12 @@ class ReportsController extends Controller
         $expensesQuery = $this->baseExpenseQuery()
             ->businessExpenses()
             ->whereBetween('expense_date', [$f['from'], $f['to']]);
-        if (!empty($f['branch_id'])) {
+        if (! empty($f['branch_id'])) {
             $expensesQuery->where('branch_id', $f['branch_id']);
         }
         $expenses = $expensesQuery->sum('amount');
 
         $rows = (clone $expensesQuery)->orderBy('expense_date')->get();
-
         $summary = [
             'revenue' => $revenue,
             'cogs' => $cogs,
@@ -171,8 +177,8 @@ class ReportsController extends Controller
         $f = $this->getFilterDefaults($request);
 
         $saleIds = $this->baseSaleQuery()
-            ->whereBetween('sale_date', [$f['from'] . ' 00:00:00', $f['to'] . ' 23:59:59']);
-        if (!empty($f['branch_id'])) {
+            ->whereBetween('sale_date', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if (! empty($f['branch_id'])) {
             $saleIds->where('branch_id', $f['branch_id']);
         }
         $saleIds = $saleIds->pluck('id');
@@ -186,6 +192,7 @@ class ReportsController extends Controller
                 $qty = $items->sum('qty');
                 $net = $items->sum('line_total');
                 $cogs = $items->sum(fn ($i) => $i->cost_price_at_sale ? $i->cost_price_at_sale * $i->qty : 0);
+
                 return [
                     'product' => $p,
                     'total_qty' => $qty,
@@ -204,8 +211,8 @@ class ReportsController extends Controller
         $f = $this->getFilterDefaults($request);
 
         $saleIds = $this->baseSaleQuery()
-            ->whereBetween('sale_date', [$f['from'] . ' 00:00:00', $f['to'] . ' 23:59:59']);
-        if (!empty($f['branch_id'])) {
+            ->whereBetween('sale_date', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if (! empty($f['branch_id'])) {
             $saleIds->where('branch_id', $f['branch_id']);
         }
         $saleIds = $saleIds->pluck('id');
@@ -219,6 +226,7 @@ class ReportsController extends Controller
                 $qty = $items->sum('qty');
                 $net = $items->sum('line_total');
                 $cogs = $items->sum(fn ($i) => $i->cost_price_at_sale ? $i->cost_price_at_sale * $i->qty : 0);
+
                 return [
                     'category' => $cat,
                     'category_name' => $cat ? $cat->name : 'Uncategorized',
@@ -238,8 +246,8 @@ class ReportsController extends Controller
         $f = $this->getFilterDefaults($request);
 
         $query = $this->baseSaleQuery()
-            ->whereBetween('sale_date', [$f['from'] . ' 00:00:00', $f['to'] . ' 23:59:59']);
-        if (!empty($f['branch_id'])) {
+            ->whereBetween('sale_date', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if (! empty($f['branch_id'])) {
             $query->where('branch_id', $f['branch_id']);
         }
         $rows = (clone $query)->get()->groupBy('payment_method')->map(function ($group, $method) {
@@ -259,7 +267,7 @@ class ReportsController extends Controller
     {
         $branches = $this->getBranches();
         $branchId = $request->get('branch_id');
-        $type = $request->get('type', 'expired'); // expired, soon
+        $type = $request->get('type', 'expired');
         $f = ['branch_id' => $branchId];
 
         $query = $this->baseStockBatchQuery()->where('quantity', '>', 0);
@@ -282,7 +290,6 @@ class ReportsController extends Controller
         $branchId = $request->get('branch_id');
         $f = ['branch_id' => $branchId];
 
-        // Get all batches with stock
         $batchQuery = $this->baseStockBatchQuery()
             ->where('quantity', '>', 0)
             ->with('product.category', 'product.unit', 'branch', 'grnItem.grn.supplier')
@@ -290,27 +297,25 @@ class ReportsController extends Controller
             ->orderBy('branch_id')
             ->orderBy('received_at', 'asc')
             ->orderBy('id', 'asc');
-        
+
         if ($branchId) {
             $batchQuery->where('branch_id', $branchId);
         }
-        
+
         $batches = $batchQuery->get();
-        
-        // Group batches by product and branch for summary
+
         $productSummary = [];
         $batchRows = [];
-        
+
         foreach ($batches as $batch) {
             $qty = (float) $batch->quantity;
             $purchasePrice = (float) ($batch->purchase_price ?? 0);
             $costValue = $qty * $purchasePrice;
             $sellingPrice = (float) ($batch->product->selling_price ?? 0);
             $retailValue = $qty * $sellingPrice;
-            
-            $key = $batch->product_id . '_' . $batch->branch_id;
-            
-            // Add to batch rows
+
+            $key = $batch->product_id.'_'.$batch->branch_id;
+
             $batchRows[] = [
                 'batch' => $batch,
                 'product' => $batch->product,
@@ -324,9 +329,8 @@ class ReportsController extends Controller
                 'cost_value' => $costValue,
                 'retail_value' => $retailValue,
             ];
-            
-            // Aggregate by product/branch
-            if (!isset($productSummary[$key])) {
+
+            if (! isset($productSummary[$key])) {
                 $productSummary[$key] = [
                     'product' => $batch->product,
                     'branch' => $batch->branch,
@@ -336,19 +340,17 @@ class ReportsController extends Controller
                     'batch_count' => 0,
                 ];
             }
-            
+
             $productSummary[$key]['total_qty'] += $qty;
             $productSummary[$key]['total_cost_value'] += $costValue;
             $productSummary[$key]['total_retail_value'] += $retailValue;
             $productSummary[$key]['batch_count']++;
         }
-        
-        // Convert summary to array and sort
+
         $summaryRows = collect($productSummary)->values()->sortByDesc(function ($item) {
             return $item['total_cost_value'];
         })->values();
-        
-        // Calculate totals
+
         $totals = [
             'total_batches' => count($batchRows),
             'total_products' => count($productSummary),
@@ -362,5 +364,263 @@ class ReportsController extends Controller
         ];
 
         return view('reports.stock-valuation', array_merge(compact('batchRows', 'summaryRows', 'totals', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function refundsReport(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+
+        $query = \App\Models\Refund::where('tenant_id', $this->getTenantId())
+            ->whereBetween('created_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if (! empty($f['branch_id'])) {
+            $query->where('branch_id', $f['branch_id']);
+        }
+        $rows = $query->with(['items.product', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        $summary = [
+            'total_refunds' => $query->count(),
+            'total_amount' => $query->sum('grand_total'),
+        ];
+
+        return view('reports.refunds', array_merge(compact('rows', 'summary', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function employeePerformance(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+        $tenantId = $this->getTenantId();
+        $branchId = $f['branch_id'];
+
+        $users = User::where('tenant_id', $tenantId)
+            ->where('is_active', true)
+            ->when('branch_id', $branchId)
+            ->with(['sales', 'restaurantOrders'])
+            ->orderBy('name')
+            ->get();
+
+        $salesData = Sale::where('user_id', $users->pluck('id'))
+            ->whereBetween('sale_date', [$f['from'].' 00:00:00', $f['to'].' 23:59:59'])
+            ->get()
+            ->groupBy('user_id')
+            ->keyBy('user_id');
+        $restaurantData = RestaurantOrder::where('user_id', $users->pluck('id'))
+            ->where('is_paid', true)
+            ->whereBetween('created_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59'])
+            ->get()
+            ->groupBy('user_id')
+            ->keyBy('user_id');
+        $rows = [];
+        foreach ($users as $user) {
+            $userSales = $salesData[$user->id] ?? collect();
+            $userOrders = $restaurantData[$user->id] ?? collect();
+            $salesTotal = $userSales->sum('grand_total');
+            $ordersTotal = $userOrders->sum('grand_total');
+            $tipsTotal = $userOrders->sum('tip_amount');
+            $rows[] = [
+                'user' => $user,
+                'sales_total' => $salesTotal,
+                'sales_count' => $userSales->count(),
+                'orders_total' => $ordersTotal,
+                'orders_count' => $userOrders->count(),
+                'tips_total' => $tipsTotal,
+                'grand_total' => $salesTotal + $ordersTotal,
+            ];
+        }
+        $rows = collect($rows)->sortByDesc('grand_total')->values();
+
+        return view('reports.employee-performance', array_merge(compact('rows', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function restaurantSalesSummary(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+        $tenantId = $this->getTenantId();
+        $branchId = $f['branch_id'];
+
+        $query = $this->baseRestaurantOrderQuery()
+            ->where('is_paid', true);
+
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        if (! empty($f['from']) && ! empty($f['to'])) {
+            $query->whereBetween('created_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        }
+
+        $period = $request->get('period', 'day');
+        $dateFormat = $period === 'month' ? 'Y-m' : ($period === 'week' ? 'Y-W' : 'Y-m-d');
+        $rows = (clone $query)->get()->groupBy(function ($order) use ($period) {
+            $d = $order->created_at;
+            if ($period === 'week') {
+                return $d->format('Y').'-W'.$d->weekOfYear;
+            }
+            if ($period === 'month') {
+                return $d->format('Y-m');
+            }
+
+            return $d->format('Y-m-d');
+        })->map(function ($group, $key) {
+            return [
+                'period' => $key,
+                'orders' => $group->count(),
+                'total_sales' => $group->sum('grand_total'),
+                'service_charge' => $group->sum('service_charge'),
+                'tips' => $group->sum('tip_amount'),
+                'avg_order' => $group->avg('grand_total'),
+            ];
+        })->sortKeys()->values();
+
+        $summary = [
+            'total_orders' => (clone $query)->count(),
+            'total_sales' => (clone $query)->sum('grand_total'),
+            'total_service_charge' => (clone $query)->sum('service_charge'),
+            'total_tips' => (clone $query)->sum('tip_amount'),
+        ];
+
+        return view('reports.restaurant-sales-summary', array_merge(compact('rows', 'summary', 'branches', 'f', 'period'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function restaurantProfitLoss(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+        $tenantId = $this->getTenantId();
+        $branchId = $f['branch_id'];
+
+        $ordersQuery = $this->baseRestaurantOrderQuery()
+            ->where('is_paid', true)
+            ->whereBetween('created_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if ($branchId) {
+            $ordersQuery->where('branch_id', $branchId);
+        }
+        $revenue = (clone $ordersQuery)->sum('grand_total');
+        $serviceCharge = (clone $ordersQuery)->sum('service_charge');
+        $tips = (clone $ordersQuery)->sum('tip_amount');
+        $expensesQuery = $this->baseExpenseQuery()
+            ->businessExpenses()
+            ->whereBetween('expense_date', [$f['from'], $f['to']]);
+        if ($branchId) {
+            $expensesQuery->where('branch_id', $branchId);
+        }
+        $expenses = $expensesQuery->sum('amount');
+        $rows = (clone $expensesQuery)->orderBy('expense_date')->get();
+        $summary = [
+            'revenue' => $revenue,
+            'service_charge' => $serviceCharge,
+            'tips' => $tips,
+            'total_income' => $revenue + $serviceCharge + $tips,
+            'expenses' => $expenses,
+            'net_profit' => $revenue + $serviceCharge + $tips - $expenses,
+        ];
+
+        return view('reports.restaurant-profit-loss', array_merge(compact('summary', 'rows', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function restaurantItemwiseSales(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+        $tenantId = $this->getTenantId();
+        $branchId = $f['branch_id'];
+
+        $orderIds = $this->baseRestaurantOrderQuery()
+            ->where('is_paid', true)
+            ->whereBetween('created_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if ($branchId) {
+            $orderIds->where('branch_id', $branchId);
+        }
+        $orderIds = $orderIds->pluck('id');
+
+        $rows = \App\Models\RestaurantOrderItem::whereIn('restaurant_order_id', $orderIds)
+            ->with('product.category', 'product.unit')
+            ->get()
+            ->groupBy('product_id')
+            ->map(function ($items, $productId) {
+                $p = $items->first()->product;
+                $qty = $items->sum('qty');
+                $net = $items->sum('line_total');
+
+                return [
+                    'product' => $p,
+                    'total_qty' => $qty,
+                    'net_sales' => $net,
+                    'profit' => $net,
+                ];
+            })->sortByDesc('net_sales')->values();
+
+        return view('reports.restaurant-itemwise-sales', array_merge(compact('rows', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function restaurantCategorywiseSales(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+        $tenantId = $this->getTenantId();
+        $branchId = $f['branch_id'];
+
+        $orderIds = $this->baseRestaurantOrderQuery()
+            ->where('is_paid', true)
+            ->whereBetween('created_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        if ($branchId) {
+            $orderIds->where('branch_id', $branchId);
+        }
+        $orderIds = $orderIds->pluck('id');
+
+        $rows = \App\Models\RestaurantOrderItem::whereIn('restaurant_order_id', $orderIds)
+            ->with('product.category')
+            ->get()
+            ->groupBy(fn ($i) => $i->product->category_id ?? 0)
+            ->map(function ($items, $catId) {
+                $cat = $catId ? $items->first()->product->category : null;
+                $qty = $items->sum('qty');
+                $net = $items->sum('line_total');
+
+                return [
+                    'category' => $cat,
+                    'category_name' => $cat ? $cat->name : 'Uncategorized',
+                    'total_qty' => $qty,
+                    'net_sales' => $net,
+                    'profit' => $net,
+                ];
+            })->sortByDesc('net_sales')->values();
+
+        return view('reports.restaurant-categorywise-sales', array_merge(compact('rows', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
+    }
+
+    public function cashDrawerSessionsReport(Request $request)
+    {
+        $branches = $this->getBranches();
+        $f = $this->getFilterDefaults($request);
+        $tenantId = $this->getTenantId();
+        $branchId = $f['branch_id'];
+
+        $query = CashDrawerSession::where('tenant_id', $tenantId)
+            ->with(['user', 'branch']);
+
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
+        }
+
+        if (! empty($f['from']) && ! empty($f['to'])) {
+            $query->whereBetween('opened_at', [$f['from'].' 00:00:00', $f['to'].' 23:59:59']);
+        }
+
+        $rows = $query->orderBy('opened_at', 'desc')
+            ->paginate(20);
+
+        $summary = [
+            'total_sessions' => $query->count(),
+            'total_opening_balance' => $query->sum('opening_balance'),
+            'total_closing_balance' => $query->sum('closing_balance'),
+            'total_variance' => $query->sum('variance'),
+        ];
+
+        return view('reports.cash-drawer-sessions', array_merge(compact('rows', 'summary', 'branches', 'f'), ['currencySymbol' => $this->getCurrencySymbol()]));
     }
 }

@@ -969,6 +969,12 @@
                         <i class="fas fa-history"></i> <span>{{ __('Activity Log') }}</span>
                     </a>
                 @endcan
+                @hasrole('business_owner|system_owner')
+                <a href="{{ route('billing.index') }}"
+                    class="nav-item {{ request()->is('billing*') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card"></i> <span>{{ __('Billing') }}</span>
+                </a>
+                @endhasrole
             </div>
 
             <div class="nav-section">
